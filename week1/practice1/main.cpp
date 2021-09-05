@@ -57,7 +57,6 @@ int main() {
 
 	// Задание 1.в
 	one_c();
-    one_b();
 
 	return 0;
 }
