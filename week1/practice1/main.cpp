@@ -90,6 +90,10 @@ void bit_sort() {
 	print(arr, size);
 }
 
+void bit_sort_with_chars() {
+
+}
+
 int main() {
 	// Задание 1.а
 	one_a();
