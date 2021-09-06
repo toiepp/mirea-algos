@@ -1,7 +1,11 @@
 #include <bitset>
+#include <chrono>
+#include <fstream>
 #include <iostream>
+#include <random>
 
 //#define TOP
+#define GENERATE
 
 #ifdef TOP
 const int MAX = 8;
@@ -9,11 +13,30 @@ const int MAX = 8;
 const int MAX = 64;
 #endif
 
+const int COUNT = 150'000;
+
 void print(int *arr, int size) {
 	for (int i = 0; i < size; ++i) {
 		std::cout << arr[i] << " ";
 	}
 	std::cout << std::endl;
+}
+
+// Генерирует файл
+void generate_file() {
+	std::random_device rd;
+	std::mt19937 mersenne(rd());
+	std::ofstream out("../week1/practice1/numbers_input.txt");
+	if (out.is_open()) {
+		// Пока размер файла не равен 1 MB
+		for (int i = 1; i < COUNT; i++) {
+			out << 1'000'000 + mersenne() % 1'000'000 << " ";
+			if (i % 10 == 0) {
+				out << "\n";
+			}
+		}
+	}
+	out.close();
 }
 
 void one_a() {
@@ -118,7 +141,7 @@ void bit_sort_with_chars() {
 
 	// Создаю битовый массив, равный 64 битам,
 	// в котором все поля равны 0
-	const int size_of_bit_set = 8; // размер битового массива в байтах
+	const int size_of_bit_set = 8;// размер битового массива в байтах
 	auto *bitset = new unsigned char[8];
 	for (int i = 0; i < size_of_bit_set; ++i) {
 		bitset[i] = 0;
@@ -160,25 +183,77 @@ void bit_sort_with_chars() {
 }
 #endif
 
+int quick_sort_file() {
+	auto bitset = std::bitset<9'999'999>();                    // отсчет идет справа
+	std::ifstream in("../week1/practice1/numbers_input.txt");  // для чтения файла
+	std::ofstream out("../week1/practice1/numbers_output.txt");// для записи в файл
+	int number;
+	if (in.is_open()) {
+		// Читаю файл с числами и заполняю битовый массив
+		while (in >> number) {
+			if (bitset.test(number)) {
+				std::cout << "Присутсвует повторение чисел: " << number << std::endl;
+				in.close();
+				out.close();
+				return 0;
+			}
+			bitset.set(number, true);
+		}
+		int count = 0;
+		for (int i = 1'000'000; i < 9'999'999; ++i) {
+			if (bitset.test(i) == 1) {
+				out << i << " ";
+				count++;
+				if (count % 10 == 0 && count != 0) {
+					out << "\n";
+				}
+			}
+		}
+		in.close();
+		out.close();
+		return 1;
+	} else {
+		std::cout << "Что-то не так с файлами!" << std::endl;
+		return 0;
+		in.close();
+		out.close();
+	}
+}
+
+
 int main() {
 	// Задание 1.а
-	one_a();
+	//	one_a();
 
 	// Задание 1.а
-	one_b();
+	//	one_b();
 
 	// Задание 1.в
-	one_c();
+	//	one_c();
 
-//	bit_sort();
-	bit_sort_with_chars();
+	// Задание 2.а, 2.б
+	//	bit_sort();
 
-//	unsigned char c = 0b10101010;
-//	for (int i = 7; i >= 0; --i) {
-//		std::cout << 8 - i - 1 << ": ";
-//		std::cout << ((c >> i) & 1) << std::endl;
-//	}
-//	std::cout << std::endl;
+	// Задание 2.в
+	//	bit_sort_with_chars();
+
+	// Задание 3.а
+#ifdef GENERATE
+	auto s = std::chrono::high_resolution_clock::now();
+	generate_file();
+	auto e = std::chrono::high_resolution_clock::now();
+	std::cout << "Файл сгенерирован за " << std::chrono::duration_cast<std::chrono::milliseconds>(e - s).count() << " мс" << std::endl;
+#endif
+
+	auto start = std::chrono::high_resolution_clock::now();
+	int res = quick_sort_file();
+	auto end = std::chrono::high_resolution_clock::now();
+	if (res) {
+		std::cout << "Файл отсортирован за " << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << " мс" << std::endl;
+	} else {
+		std::cout << "Файл не отсортирован. Ошибка!" << std::endl;
+	}
+
 
 	return 0;
 }
