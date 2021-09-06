@@ -1,7 +1,7 @@
 #include <bitset>
 #include <iostream>
 
-//#define TOP
+#define TOP
 #ifdef TOP
 const int MAX = 8;
 #else
@@ -61,8 +61,13 @@ void one_c() {
 	std::cout << std::endl;
 }
 
+// Данный метод может сортировать массив от
 void bit_sort() {
+#ifdef TOP
 	std::cout << "Задание 2.а" << std::endl;
+#else
+	std::cout << "Задание 2.б" << std::endl;
+#endif
 	// Создаю массив
 	int size;
 	std::cout << "Введите размер массива: ";
@@ -84,14 +89,31 @@ void bit_sort() {
 
 	int null_count = 0;
 	for (int i = 0; i < MAX; ++i) {
-		if (bitset[MAX - i - 1]) arr[i - null_count] = i;
-		else null_count++;
+		if (bitset[MAX - i - 1])
+			arr[i - null_count] = i;
+		else
+			null_count++;
 	}
 	print(arr, size);
 }
 
 void bit_sort_with_chars() {
+	std::cout << "Задание 2.в" << std::endl;
+	// Создаю массив чисел
+	int size;
+	std::cout << "Введите размер массива: ";
+	std::cin >> size;
+	int *arr = new int[size];
+	std::cout << "Введите массив (8, 0-7): ";
+	for (int i = 0; i < size; ++i) {
+		std::cin >> arr[i];
+	}
 
+	// Создаю битовый массив, равный 64 битам
+	auto *bitset = new unsigned char[8];
+	for (int i = 0; i < 8; ++i) {
+		bitset[i] = 0;
+	}
 }
 
 int main() {
