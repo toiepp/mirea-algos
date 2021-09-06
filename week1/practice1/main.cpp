@@ -68,7 +68,11 @@ void bit_sort() {
 	std::cout << "Введите размер массива: ";
 	std::cin >> size;
 	int *arr = new int[size];
+#ifdef TOP
 	std::cout << "Введите массив (8, 0-7): ";
+#else
+	std::cout << "Введите массив (64, 0-63): ";
+#endif
 	for (int i = 0; i < size; ++i) {
 		std::cin >> arr[i];
 	}
