@@ -137,14 +137,22 @@ void bit_sort_with_chars() {
 		}
 		std::cout << " ";
 	}
+	std::cout << std::endl;
 
 	// Обхожу битовый массив
 	int zero_count = 0;
-	for (int i = 0; i < size_of_bit_set; ++i) {
-		for (int j = 0; j < 8; ++j) {
-
+	// Позиция элемента в отсортированном массиве
+	int j = 0;
+	for (int i = 0; i < size_of_bit_set * 8; ++i) {
+		if (((bitset[i / 8] >> (i % 8)) & 1) == 1) {
+			arr[j] = i;
+			j++;
+		} else {
+			zero_count++;
 		}
 	}
+
+	print(arr, size);
 }
 #endif
 
@@ -163,7 +171,8 @@ int main() {
 
 //	unsigned char c = 0b10101010;
 //	for (int i = 7; i >= 0; --i) {
-//		std::cout << ((c >> i) & 0x1) << " ";
+//		std::cout << 8 - i - 1 << ": ";
+//		std::cout << ((c >> i) & 1) << std::endl;
 //	}
 //	std::cout << std::endl;
 
