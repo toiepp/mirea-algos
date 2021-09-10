@@ -1,7 +1,7 @@
 #include "main.h"
 
 int Account::hash_code() {
-	return 1;
+	return 42;
 }
 
 std::ostream& operator << (std::ostream &out, const Account& account) {
