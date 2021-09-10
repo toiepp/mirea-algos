@@ -1,7 +1,10 @@
 # mirea-algos
 Репозиторий для задания и конспектов по предмету "Структуры и алгоритмы обработки данных"
 ## Тема 1. Битовые операции
-<i>week1</i> - папка данной темы\
-Тема практической: [Сортировка числового файла с помощью битового массива.](https://online-edu.mirea.ru/pluginfile.php?file=%2F536071%2Fmod_assign%2Fintroattachment%2F0%2F%D0%9F%D0%A0-2.1%20%28%D0%91%D0%B8%D1%82.%D0%BE%D0%BF%D0%B5%D1%80.%29.pdf&amp;forcedownload=1)
-
+Расположение: <i>[путь](week1/practice1)</i>\
+Ссылка на [содержание практической](https://online-edu.mirea.ru/mod/assign/view.php?id=120139)
+---
 ## Тема 2. Хэширование
+Расположение: <i>[путь](week2/practice2)</i>\
+Ссылка на [содержание практической](https://online-edu.mirea.ru/mod/assign/view.php?id=120138)
+
