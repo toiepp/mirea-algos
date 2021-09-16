@@ -29,6 +29,9 @@ bool HashSet::find(Account &account) const {
 }
 
 void HashSet::print() const {
+	for (int i = 0; i < capacity; ++i) {
+		if (arr[i] != nullptr) std::cout << arr[i] << std::endl;
+	}
 }
 
 void HashSet::rehash() {
