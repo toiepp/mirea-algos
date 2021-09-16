@@ -12,10 +12,15 @@ public:
 	HashSet();
 	HashSet(int);
 	HashSet(int, double);
+	// добавление метода в коллекцию
 	void put(Account&);
+	// удаление первого попавшегося элемента в коллекцию
 	bool remove(Account&);
-	bool find(Account&);
+	// получение первого попавшегося элемента в коллекции
+	Account find(Account&);
+	// вывод коллекции в консоль
 	void print();
+	// перераспределение элементов коллекции после достижения заполнения 75%
 	void rehash();
 };
 

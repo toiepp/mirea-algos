@@ -17,7 +17,7 @@ HashSet::HashSet(int capacity, double load)
 }
 
 void HashSet::put(Account &account) {
-
+	int hash = account.hash_code();
 }
 
 bool HashSet::remove(Account &account) {
