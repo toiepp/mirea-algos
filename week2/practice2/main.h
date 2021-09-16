@@ -7,8 +7,6 @@
 unsigned XorShift128();
 
 struct Account {
-	Account* prev = nullptr;
-	Account* next = nullptr;
 	int id;
 	std::string name;
 	std::string address;
