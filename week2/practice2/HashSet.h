@@ -1,29 +1,32 @@
-#ifndef MIREA_ALGOS_HASHSET_H
-#define MIREA_ALGOS_HASHSET_H
+#ifndef MIREA_ALGOS_HASHSEAccount_H
+#define MIREA_ALGOS_HASHSEAccount_H
 
 #include "main.h"
+#include <map>
 
-template<typename T>
 class HashSet {
 private:
-	T *arr;
-	int capacity;
-	double load;
+	Account **arr = new *Account[16];
+	int capacity = 16;
+	double load_factor = 0.75;
+	std::map<Account, short int> *shifts = new std::map<Account, short int >();
 public:
 	HashSet();
-	HashSet(int);
-	HashSet(int, double);
+	HashSet(int initial_capacity);
+	HashSet(int initial_capacity, double load_factor);
 	// добавление метода в коллекцию
-	void put(T&);
+	void put(Account&);
 	// удаление первого попавшегося элемента в коллекцию
-	bool remove(T&);
+	bool remove(Account&);
 	// получение первого попавшегося элемента в коллекции
-	T find(T&);
+	bool find(Account&) const;
 	// вывод коллекции в консоль
-	void print();
+	void print() const;
 	// перераспределение элементов коллекции после достижения заполнения 75%
 	void rehash();
+	// алгоритм поиска смещения
+	int with_shift(unsigned hash) const;
 };
 
 
-#endif//MIREA_ALGOS_HASHSET_H
+#endif//MIREA_ALGOS_HASHSEAccount_H
