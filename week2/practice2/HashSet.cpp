@@ -1,35 +1,48 @@
 #include "HashSet.h"
 
-HashSet::HashSet()
-	: arr(new Account[16])
+template<typename T>
+HashSet<T>::HashSet()
+	: arr(new T[16])
 	, capacity(16)
-	, load(0.75) { }
+	, load(0.75) {
+	for (int i = 0; i < capacity; ++i) {
+		arr[i] = nullptr;
+	}
+}
 
-HashSet::HashSet(int capacity)
-	: arr(new Account[capacity])
+template<typename T>
+HashSet<T>::HashSet(int capacity)
+	: arr(new T[capacity])
 	, capacity(capacity)
 	, load(0.75) { }
 
-HashSet::HashSet(int capacity, double load)
+template<typename T>
+HashSet<T>::HashSet(int capacity, double load)
 	: HashSet(capacity) {
 	this->capacity = capacity;
 	this->load = load;
 }
 
-void HashSet::put(Account &account) {
-	int hash = account.hash_code();
+template<typename T>
+void HashSet<T>::put(T &account) {
+	unsigned pos = account.hash_code();
 }
 
-bool HashSet::remove(Account &account) {
+template<typename T>
+bool HashSet<T>::remove(T &account) {
 	return false;
 }
 
-bool HashSet::find(Account &account) {
-	return false;
+template<typename T>
+T HashSet<T>::find(T &account) {
 }
 
-void HashSet::print() {
+template<typename T>
+void HashSet<T>::print() {
 
 }
-void HashSet::rehash() {
+
+template<typename T>
+void HashSet<T>::rehash() {
+
 }

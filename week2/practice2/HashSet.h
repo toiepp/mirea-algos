@@ -3,9 +3,10 @@
 
 #include "main.h"
 
+template<typename T>
 class HashSet {
 private:
-	Account *arr;
+	T *arr;
 	int capacity;
 	double load;
 public:
@@ -13,11 +14,11 @@ public:
 	HashSet(int);
 	HashSet(int, double);
 	// добавление метода в коллекцию
-	void put(Account&);
+	void put(T&);
 	// удаление первого попавшегося элемента в коллекцию
-	bool remove(Account&);
+	bool remove(T&);
 	// получение первого попавшегося элемента в коллекции
-	Account find(Account&);
+	T find(T&);
 	// вывод коллекции в консоль
 	void print();
 	// перераспределение элементов коллекции после достижения заполнения 75%
