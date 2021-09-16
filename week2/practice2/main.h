@@ -4,6 +4,8 @@
 #include <iostream>
 #include <string>
 
+unsigned XorShift128();
+
 struct Account {
 	Account* prev = nullptr;
 	Account* next = nullptr;
@@ -11,9 +13,13 @@ struct Account {
 	std::string name;
 	std::string address;
 
-	int hash_code();
+	Account();
+
+	Account(int, std::string, std::string);
+
+	unsigned hash_code() const;
 };
 
 int main();
 
-#endif//MIREA_ALGOS_MAIN_H
+#endif //MIREA_ALGOS_MAIN_H
