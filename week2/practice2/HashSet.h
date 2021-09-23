@@ -2,11 +2,12 @@
 #define MIREA_ALGOS_HASHSEAccount_H
 
 #include "main.h"
+#include "Account.h"
 #include <map>
 
 class HashSet {
 private:
-	Account **arr = new *Account[16];
+	Account *arr = new Account[16];
 	int capacity = 16;
 	double load_factor = 0.75;
 	std::map<Account, short int> *shifts = new std::map<Account, short int >();
@@ -24,8 +25,6 @@ public:
 	void print() const;
 	// перераспределение элементов коллекции после достижения заполнения 75%
 	void rehash();
-	// алгоритм поиска смещения
-	int with_shift(unsigned hash) const;
 };
 
 
