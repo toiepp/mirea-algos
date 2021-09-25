@@ -8,7 +8,7 @@
 #include <utility>
 
 class Account {
-	// WARN
+	// WARN Переделать алгоритм генерации уникального id
 	static unsigned generate_id();
 
 public:
@@ -16,11 +16,12 @@ public:
 	std::string name;
 	std::string address;
 
-	Account();
-
 	Account(std::string, std::string);
 
 	unsigned hash_code() const;
 };
+
+std::ostream &operator<<(std::ostream &out, const Account &account);
+std::istream &operator>>(std::istream &in, Account account);
 
 #endif//MIREA_ALGOS_ACCOUNT_H
