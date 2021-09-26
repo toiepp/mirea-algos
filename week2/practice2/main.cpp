@@ -7,40 +7,35 @@ int main() {
 	HashSet set = HashSet();
 
 	auto a1 = Account("Ivan", "Nagornaya");
-	auto a2 = Account("fjabfk", "ajkbfhkalfb");
-	auto a3 = Account("qegq", "tttrAAT");
-	auto a4 = Account("gtwhwh", ";ajbv");
-	auto a5 = Account("gqrhteshe", "khzabfl");
-	auto a6 = Account("arlsdngsnl", "aya");
-	auto a7 = Account("jfagvlarba", "ahrahr");
-	auto a8 = Account("cdajrbflva", "ejgbvvlsk");
-	auto a9 = Account("fejdnjdn", "fncbflfakfb");
-	// Выскакивает ошибка в map out_of_range
+	auto a2 = Account("Jack", "ajkbfhkalfb");
+	auto a3 = Account("Olga", "tttrAAT");
+	auto a4 = Account("Nick", ";ajbv");
+	auto a5 = Account("Denis", "khzabfl");
+	auto a6 = Account("Tayka", "aya");
+	auto a7 = Account("Aboba", "ahrahr");
+	auto a8 = Account("Michael", "ejgbvvlsk");
+	auto a9 = Account("Frank", "fncbflfakfb");
+	auto a10 = Account("Miles", "fncbflfakfb");
+	auto a11 = Account("Neil", "fncbflfakfb");
+	auto a12 = Account("Gabe", "fncbflfakfb");
+	auto a13 = Account("Karen", "fncbflfakfb");
+	auto a14 = Account("Denis", "khzabfl");
+
 	set.put(a1);
-	set.print();
-	std::cout << std::endl;
 	set.put(a2);
-	set.print();
-	std::cout << std::endl;
 	set.put(a3);
-	set.print();
-	std::cout << std::endl;
 	set.put(a4);
-	set.print();
-	std::cout << std::endl;
 	set.put(a5);
-	set.print();
-	std::cout << std::endl;
 	set.put(a6);
-	set.print();
-	std::cout << std::endl;
 	set.put(a7);
-	set.print();
-	std::cout << std::endl;
 	set.put(a8);
-	set.print();
-	std::cout << std::endl;
 	set.put(a9);
+	set.put(a10);
+	set.put(a11);
+	set.put(a12);
+	set.put(a13);
+	set.put(a14);
+
 	set.print();
 	std::cout << std::endl;
 

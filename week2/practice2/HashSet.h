@@ -28,6 +28,9 @@ public:
 	void print() const;
 	// перераспределение элементов коллекции после достижения заполнения 75%
 	void rehash();
+	int h(const Account &, int &) const;
+
+private:
 	int f(const Account &account) const;
 	int g(const Account &account) const;
 };

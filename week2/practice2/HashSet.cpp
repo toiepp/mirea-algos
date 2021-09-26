@@ -9,13 +9,13 @@ HashSet::HashSet(int initial_capacity, double load_factor) : HashSet(initial_cap
 }
 
 void HashSet::put(Account &account) {
+	int pos = f(account);
+	if (arr.at(pos) == &account) return; // дублирующий ключ
 	// Проверить заполнение массива, если надо перераспределить массив
-	// WARN По-моему неправильно работает определение заполнения списка
 	if (((double) (100 * (size + 1)) / capacity) > this->load_factor) {
 		rehash();
 	}
 	// Получаю позицию, в которую должен вставиться элемент
-	int pos = f(account);
 	// Если ячейка не занята, то кладу в нее элемент.
 	// И добавляю по данному ключу счетчик
 	if (arr.at(pos) == nullptr) {
@@ -28,7 +28,7 @@ void HashSet::put(Account &account) {
 	if (arr.at(pos) != nullptr) {
 		// Получаю новую позицию элемента в таблице
 		shifts.at(pos)++;
-		pos = g(account); // WARN какая-то хуйня
+		pos = g(account, shifts.at(pos));
 		arr[pos] = &account;
 		// Увеличиваю счетчик по данному хэш-коду
 	}
@@ -46,6 +46,8 @@ void HashSet::print() const {
 	for (int i = 0; i < capacity; ++i) {
 		if (arr.at(i) != nullptr) {
 			std::cout << "(" << i << ", " << (*arr.at(i)).hash_code() << "): " << (*arr.at(i)) << std::endl;
+		} else {
+			std::cout << "(" << i << ", ___):" << std::endl;
 		}
 	}
 }
@@ -53,19 +55,18 @@ void HashSet::print() const {
 void HashSet::rehash() {
 }
 
-int HashSet::f(const Account &account) const {
-	int hash_code = abs(((int) account.hash_code()));
-	return hash_code % this->capacity;
+int HashSet::h(const Account &account, int &i) const {
+	return (f(account) + i * g(account));
 }
 
+// k mod N
+int HashSet::f(const Account &account) const {
+	int hash_code = (int) account.hash_code();
+	return abs((hash_code % this->capacity));
+}
+
+// 1 + k mod (N - 2)
 int HashSet::g(const Account &account) const {
-	/*
-	 * k - ключ поиска (хэшкод элемента)
-	 * i - счетчик (кол-во элементов с одинаковым хэшкодом)
-	 * N - вместимость структуры данных
-	 * */
-	int init_pos = f(account);                   // изначальная позиция элемента
-	int i = shifts.at((int) account.hash_code());// кол-во элементов с таким же хэш кодом
-	int k = (int) account.hash_code();           // хэш код элемента
-	return (int) (init_pos + i * (1 + k % (capacity - 2)));
+//	return (int) (account.hash_code() % capacity + i * (1 + account.hash_code() % (capacity - 2)));
+	return (int) (1 + account.hash_code() % (capacity - 2));
 }
