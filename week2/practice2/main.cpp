@@ -19,7 +19,6 @@ int main() {
 	auto a11 = Account("Neil", "fncbflfakfb");
 	auto a12 = Account("Gabe", "fncbflfakfb");
 	auto a13 = Account("Karen", "fncbflfakfb");
-	auto a14 = Account("Denis", "khzabfl");
 
 	set.put(a1);
 	set.put(a2);
@@ -34,7 +33,6 @@ int main() {
 	set.put(a11);
 	set.put(a12);
 	set.put(a13);
-	set.put(a14);
 
 	set.print();
 	std::cout << std::endl;

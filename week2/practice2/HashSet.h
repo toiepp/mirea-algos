@@ -8,11 +8,10 @@
 
 class HashSet {
 private:
-	std::vector<Account *> arr = std::vector<Account *>(16, nullptr);
-	int capacity = 16;
+	int capacity = 13;
 	int size = 0;
 	double load_factor = 0.75;
-	std::map<unsigned, int> shifts = std::map<unsigned, int>();
+	std::vector<Account *> arr = std::vector<Account *>(capacity, nullptr);
 
 public:
 	HashSet();
@@ -28,11 +27,9 @@ public:
 	void print() const;
 	// перераспределение элементов коллекции после достижения заполнения 75%
 	void rehash();
-	int h(const Account &, int &) const;
-
 private:
-	int f(const Account &account) const;
-	int g(const Account &account) const;
+	int h1(const Account &account) const;
+	int h2(const Account &account) const;
 };
 
 
