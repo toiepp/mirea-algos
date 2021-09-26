@@ -47,8 +47,28 @@ bool HashSet::find(Account &account) const {
 }
 
 bool HashSet::remove(Account &account) {
+	int x = h1(account);
+	int y = h2(account);
+	for (int i = 0; i < capacity; ++i) {
+		if (arr.at(x) != nullptr) {
+			if (*arr.at(x) == account) {
+				arr[x] = nullptr;
+				return true;
+			} else {
+				x = (x + y) % capacity;
+			}
+		} else {
+			x = (x + y) % capacity;
+		}
+	}
 	return false;
 }
+
+//bool HashSet::remove(std::string &key) {
+//	for (int i = 0; i < capacity; ++i) {
+//		if ()
+//	}
+//}
 
 void HashSet::print() const {
 	for (int i = 0; i < capacity; ++i) {

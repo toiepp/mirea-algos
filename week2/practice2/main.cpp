@@ -37,7 +37,7 @@ int main() {
 	set.print();
 	std::cout << std::endl;
 
-	std::cout << set.find("Ivan") << ": " << *set.find("Ivan") << std::endl;
+	/*std::cout << set.find("Ivan") << ": " << *set.find("Ivan") << std::endl;
 	std::cout << set.find("Jack") << ": " << *set.find("Jack") << std::endl;
 	std::cout << set.find("Miles") << ": " << *set.find("Miles") << std::endl;
 
@@ -66,6 +66,19 @@ int main() {
 	std::cout << a13 << ": " << set.find(a13) << std::endl;
 
 	auto no = Account(find_me, "London");
-	std::cout << no << ": " << set.find(no) << std::endl;
+	std::cout << no << ": " << set.find(no) << std::endl;*/
+
+	std::cout << set.remove(a1) << std::endl;
+	std::cout << set.remove(a12) << std::endl;
+	std::cout << set.remove(a8) << std::endl;
+	std::cout << set.remove(a13) << std::endl;
+	std::cout << set.remove(a1) << std::endl;
+	std::cout << set.remove(a8) << std::endl;
+	std::cout << set.remove(a12) << std::endl;
+	std::cout << set.remove(a13) << std::endl;
+	std::cout << std::endl;
+
+	set.print();
+	std::cout << std::endl;
 	return 0;
 }

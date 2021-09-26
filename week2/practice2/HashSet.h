@@ -9,7 +9,6 @@
 class HashSet {
 private:
 	int capacity = 13;
-	int size = 0;
 	double load_factor = 0.75;
 	std::vector<Account *> arr = std::vector<Account *>(capacity, nullptr);
 
@@ -19,19 +18,19 @@ public:
 	HashSet(int initial_capacity, double load_factor);
 	// добавление метода в коллекцию
 	void put(Account &);
-	// удаление первого попавшегося элемента в коллекцию
-	bool remove(Account &);
 	// получение первого попавшегося элемента в коллекции
 	// Поиск по ключу
-	Account* find(const std::string&) const;
+	Account *find(const std::string &) const;
 	// Поиск по элементу
 	bool find(Account &) const;
+	// удаление первого попавшегося элемента в коллекцию
+	bool remove(Account &);
 	// вывод коллекции в консоль
 	void print() const;
-	// перераспределение элементов коллекции после достижения заполнения 75%
-	void rehash();
 
 private:
+	// перераспределение элементов коллекции после достижения заполнения 75%
+	void rehash();
 	int h1(const Account &account) const;
 	int h2(const Account &account) const;
 };
