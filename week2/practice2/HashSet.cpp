@@ -30,6 +30,22 @@ Account* HashSet::find(const std::string& key) const {
 	return nullptr;
 }
 
+bool HashSet::find(Account &account) const {
+	int x = h1(account);
+	int y = h2(account);
+	for (int i = 0; i < capacity; ++i) {
+		if (arr.at(x) != nullptr) {
+			if (*arr.at(x) == account) {
+				return true;
+			}
+		} else {
+			return false;
+		}
+		x = (x + y) % capacity;
+	}
+	return false;
+}
+
 bool HashSet::remove(Account &account) {
 	return false;
 }

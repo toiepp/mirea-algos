@@ -22,3 +22,9 @@ std::istream &operator>>(std::istream &in, Account account) {
 	in >> account.id >> account.name >> account.address;
 	return in;
 }
+
+bool operator==(const Account &a1, const Account &a2) {
+	return a1.id == a2.id &&
+		   a1.name == a2.name &&
+		   a1.address == a2.address;
+}
