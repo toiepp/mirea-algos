@@ -6,7 +6,7 @@ int main() {
 
 	HashSet set = HashSet();
 
-	auto a1 = Account("Ivan", "Nagornaya");
+	auto a1 = Account("Ivan", "faggfdsahj");
 	auto a2 = Account("Jack", "ajkbfhkalfb");
 	auto a3 = Account("Olga", "tttrAAT");
 	auto a4 = Account("Nick", ";ajbv");
@@ -19,7 +19,20 @@ int main() {
 	auto a11 = Account("Neil", "gjsj");
 	auto a12 = Account("Gabe", "fncbflfsjjhsyjsakfb");
 	auto a13 = Account("Karen", "srjsrjhsrjs");
+	auto a14 = Account("Ron", "asssssgahaed");
+	auto a15 = Account("Lily", "ttjhsgsgjsgjgjDD");
+	auto a16 = Account("Rick", "adgagdadgadgad");
+	auto a17 = Account("Matt", "ddlkhjghbdhjklgfhbdahjlk");
+	auto a18 = Account("Vanessa", "dgsag");
+	auto a19 = Account("Barry", "vrvrvrjrtds");
+	auto a20 = Account("Paul", "dfadafdasfdf");
+	auto a21 = Account("Brick", "kjhddfjkhdsaklj");
+	auto a22 = Account("Von", "dwghfjahsgbd");
+	auto a23 = Account("Michael", "adhgfhafha");
+	auto a24 = Account("Lisa", "fsfs");
+	auto a25 = Account("Mark", "dlngflaksfj");
 
+	// TODO Тестирую вставку и перераспределение после переполнения массива
 	set.put(a1);
 	set.put(a2);
 	set.put(a3);
@@ -30,14 +43,30 @@ int main() {
 	set.put(a8);
 	set.put(a9);
 	set.put(a10);
+	// Перехэширование
 	set.put(a11);
 	set.put(a12);
 	set.put(a13);
+	set.put(a14);
+	set.put(a15);
+	set.put(a16);
+	set.put(a17);
+	set.put(a18);
+	set.put(a19);
+	set.put(a20);
+	set.put(a21);
+	set.put(a22);
+	set.put(a23);
+	// перехэширование
+	set.put(a24);
+	set.put(a25);
 
 	set.print();
-	std::cout << std::endl;
+	std::cout << std::endl
+			  << std::endl;
 
-	/*std::cout << set.find("Ivan") << ": " << *set.find("Ivan") << std::endl;
+	std::cout << "Проверка нахождения элементов в множестве" << std::endl;
+	std::cout << set.find("Ivan") << ": " << *set.find("Ivan") << std::endl;
 	std::cout << set.find("Jack") << ": " << *set.find("Jack") << std::endl;
 	std::cout << set.find("Miles") << ": " << *set.find("Miles") << std::endl;
 
@@ -51,33 +80,35 @@ int main() {
 	}
 	std::cout << std::endl;
 
-	std::cout << a1 << ": " << set.find(a1) << std::endl;
-	std::cout << a2 << ": " << set.find(a2) << std::endl;
-	std::cout << a3 << ": " << set.find(a3) << std::endl;
-	std::cout << a4 << ": " << set.find(a4) << std::endl;
-	std::cout << a5 << ": " << set.find(a5) << std::endl;
-	std::cout << a6 << ": " << set.find(a6) << std::endl;
-	std::cout << a7 << ": " << set.find(a7) << std::endl;
-	std::cout << a8 << ": " << set.find(a8) << std::endl;
-	std::cout << a9 << ": " << set.find(a9) << std::endl;
-	std::cout << a10 << ": " << set.find(a10) << std::endl;
-	std::cout << a11 << ": " << set.find(a11) << std::endl;
-	std::cout << a12 << ": " << set.find(a12) << std::endl;
-	std::cout << a13 << ": " << set.find(a13) << std::endl;
+	std::cout << set.find(a1) << ": " << a1 << std::endl;
+	std::cout << set.find(a2) << ": " << a2 << std::endl;
+	std::cout << set.find(a3) << ": " << a3 << std::endl;
+	std::cout << set.find(a4) << ": " << a4 << std::endl;
+	std::cout << set.find(a5) << ": " << a5 << std::endl;
+	std::cout << set.find(a6) << ": " << a6 << std::endl;
+	std::cout << set.find(a7) << ": " << a7 << std::endl;
+	std::cout << set.find(a8) << ": " << a8 << std::endl;
+	std::cout << set.find(a9) << ": " << a9 << std::endl;
+	std::cout << set.find(a10) << ": " << a10 << std::endl;
+	std::cout << set.find(a11) << ": " << a11 << std::endl;
+	std::cout << set.find(a12) << ": " << a12 << std::endl;
+	std::cout << set.find(a13) << ": " << a13 << std::endl;
 
 	auto no = Account(find_me, "London");
-	std::cout << no << ": " << set.find(no) << std::endl;*/
-
-	std::cout << set.remove(a1) << std::endl;
-	std::cout << set.remove(a12) << std::endl;
-	std::cout << set.remove(a8) << std::endl;
-	std::cout << set.remove(a13) << std::endl;
-	std::cout << set.remove(a1) << std::endl;
-	std::cout << set.remove(a8) << std::endl;
-	std::cout << set.remove(a12) << std::endl;
-	std::cout << set.remove(a13) << std::endl;
+	std::cout << set.find(no) << ": " << no << std::endl;
 	std::cout << std::endl;
 
+	std::cout << set.remove(a1) << std::endl;
+	std::cout << set.remove(a12) << std::endl;
+	std::cout << set.remove(a8) << std::endl;
+	std::cout << set.remove(a13) << std::endl;
+	std::cout << set.remove(a1) << std::endl;
+	std::cout << set.remove(a8) << std::endl;
+	std::cout << set.remove(a12) << std::endl;
+	std::cout << set.remove(a13) << std::endl;
+	std::cout << std::endl << std::endl;
+
+	std::cout << "Множество после удаления" << std::endl;
 	set.print();
 	std::cout << std::endl;
 	return 0;

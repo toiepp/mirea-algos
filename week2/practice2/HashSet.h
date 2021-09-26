@@ -8,7 +8,9 @@
 
 class HashSet {
 private:
+	int init = 6;
 	int capacity = 13;
+	int load = 0; // кол-во элементов в массиве.
 	double load_factor = 0.75;
 	std::vector<Account *> arr = std::vector<Account *>(capacity, nullptr);
 
@@ -18,7 +20,6 @@ public:
 	HashSet(int initial_capacity, double load_factor);
 	// добавление метода в коллекцию
 	void put(Account &);
-	// получение первого попавшегося элемента в коллекции
 	// Поиск по ключу
 	Account *find(const std::string &) const;
 	// Поиск по элементу
@@ -29,6 +30,8 @@ public:
 	void print() const;
 
 private:
+	// Находит следующее (через 4) простое число и увеличивает до н1о
+	int find_next_capacity();
 	// перераспределение элементов коллекции после достижения заполнения 75%
 	void rehash();
 	int h1(const Account &account) const;
