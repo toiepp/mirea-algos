@@ -22,11 +22,13 @@ public:
 	// удаление первого попавшегося элемента в коллекцию
 	bool remove(Account &);
 	// получение первого попавшегося элемента в коллекции
-	bool find(Account &) const;
+	// Поиск по ключу
+	Account* find(const std::string&) const;
 	// вывод коллекции в консоль
 	void print() const;
 	// перераспределение элементов коллекции после достижения заполнения 75%
 	void rehash();
+
 private:
 	int h1(const Account &account) const;
 	int h2(const Account &account) const;

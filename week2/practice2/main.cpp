@@ -11,8 +11,8 @@ int main() {
 	auto a3 = Account("Olga", "tttrAAT");
 	auto a4 = Account("Nick", ";ajbv");
 	auto a5 = Account("Denis", "khzabfl");
-	auto a6 = Account("Tayka", "aya");
-	auto a7 = Account("Aboba", "ahrahr");
+	auto a6 = Account("Tamika", "aya");
+	auto a7 = Account("Victor", "ahrahr");
 	auto a8 = Account("Michael", "ejgbvvlsk");
 	auto a9 = Account("Frank", "fncbflfakfb");
 	auto a10 = Account("Miles", "fncbflfakfb");
@@ -36,6 +36,16 @@ int main() {
 
 	set.print();
 	std::cout << std::endl;
+
+	std::cout << set.find("Ivan") << ": " << *set.find("Ivan") << std::endl;
+	std::cout << set.find("Jack") << ": " << *set.find("Jack") << std::endl;
+	std::cout << set.find("Miles") << ": " << *set.find("Miles") << std::endl;
+
+	if (!set.find("Blake")) {
+		std::cout << "Blake doesn't exist" << std::endl;
+	} else {
+		std::cout << "Blake exists" << std::endl;
+	}
 
 	return 0;
 }

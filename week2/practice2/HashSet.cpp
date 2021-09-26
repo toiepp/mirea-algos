@@ -21,11 +21,16 @@ void HashSet::put(Account &account) {
 	rehash();
 }
 
-bool HashSet::remove(Account &account) {
-	return false;
+Account* HashSet::find(const std::string& key) const {
+	for (int i = 0; i < capacity; ++i) {
+		if (arr.at(i) != nullptr) {
+			if (arr.at(i)->name == key) { return arr.at(i); }
+		}
+	}
+	return nullptr;
 }
 
-bool HashSet::find(Account &account) const {
+bool HashSet::remove(Account &account) {
 	return false;
 }
 
