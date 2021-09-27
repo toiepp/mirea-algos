@@ -66,7 +66,7 @@ int main() {
 			  << std::endl;
 
 	std::cout << "Проверка нахождения элементов в множестве" << std::endl;
-	std::cout << set.find("John") << ": " << *set.find("Ivan") << std::endl;
+	std::cout << set.find("John") << ": " << *set.find("John") << std::endl;
 	std::cout << set.find("Jack") << ": " << *set.find("Jack") << std::endl;
 	std::cout << set.find("Miles") << ": " << *set.find("Miles") << std::endl;
 
