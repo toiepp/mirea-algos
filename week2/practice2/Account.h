@@ -8,7 +8,6 @@
 #include <utility>
 
 class Account {
-	// WARN Переделать алгоритм генерации уникального id
 	static unsigned generate_id();
 
 public:
@@ -25,4 +24,4 @@ std::ostream &operator<<(std::ostream &out, const Account &account);
 std::istream &operator>>(std::istream &in, Account account);
 bool operator==(const Account &a1, const Account &a2);
 
-#endif//MIREA_ALGOS_ACCOUNT_H
+#endif

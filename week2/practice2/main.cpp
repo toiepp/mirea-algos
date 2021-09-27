@@ -6,7 +6,7 @@ int main() {
 
 	HashSet set = HashSet();
 
-	auto a1 = Account("Ivan", "faggfdsahj");
+	auto a1 = Account("John", "faggfdsahj");
 	auto a2 = Account("Jack", "ajkbfhkalfb");
 	auto a3 = Account("Olga", "tttrAAT");
 	auto a4 = Account("Nick", ";ajbv");
@@ -66,7 +66,7 @@ int main() {
 			  << std::endl;
 
 	std::cout << "Проверка нахождения элементов в множестве" << std::endl;
-	std::cout << set.find("Ivan") << ": " << *set.find("Ivan") << std::endl;
+	std::cout << set.find("John") << ": " << *set.find("Ivan") << std::endl;
 	std::cout << set.find("Jack") << ": " << *set.find("Jack") << std::endl;
 	std::cout << set.find("Miles") << ": " << *set.find("Miles") << std::endl;
 
