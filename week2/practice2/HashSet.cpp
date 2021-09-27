@@ -9,7 +9,7 @@ HashSet::HashSet(int initial_capacity, double load_factor) : HashSet(initial_cap
 }
 
 void HashSet::put(Account &account) {
-	double check = (double) load / (double) capacity;
+	double check = (double) (load + 1) / (double) capacity;
 	if (check >= load_factor) rehash();
 	int x = h1(account);
 	int y = h2(account);
