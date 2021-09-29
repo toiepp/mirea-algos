@@ -76,7 +76,7 @@ int main() {
 	if (!set.find(find_me)) {
 		std::cout << find_me << " doesn't exist" << std::endl;
 	} else {
-		std::cout << find_me << " exists" << std::endl;
+		std::cout << find_me << " exists" << *set.find(find_me) << std::endl;
 	}
 	std::cout << std::endl;
 

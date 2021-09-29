@@ -9,7 +9,7 @@ Account::Account(std::string name, std::string address)
 	: id(generate_id()), name(std::move(name)), address(std::move(address)) {}
 
 unsigned Account::hash_code() const {
-	return (this->id + std::hash<std::string>{}(this->name) + std::hash<std::string>{}(this->address));
+	return this->id;
 }
 
 std::ostream &operator<<(std::ostream &out, const Account &account) {
