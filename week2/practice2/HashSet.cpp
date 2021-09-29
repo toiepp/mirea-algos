@@ -2,12 +2,6 @@
 
 HashSet::HashSet() = default;
 
-HashSet::HashSet(int initial_capacity) : capacity(initial_capacity) {}
-
-HashSet::HashSet(int initial_capacity, double load_factor) : HashSet(initial_capacity) {
-	this->load_factor = load_factor;
-}
-
 void HashSet::put(Account &account) {
 	double check = (double) (load + 1) / (double) capacity;
 	if (check >= load_factor) rehash();

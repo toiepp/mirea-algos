@@ -16,8 +16,6 @@ private:
 
 public:
 	HashSet();
-	HashSet(int initial_capacity);
-	HashSet(int initial_capacity, double load_factor);
 	// добавление метода в коллекцию
 	void put(Account &);
 	// Поиск по ключу
