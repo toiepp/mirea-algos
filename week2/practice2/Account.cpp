@@ -1,16 +1,15 @@
 #include "Account.h"
 
 unsigned Account::generate_id() {
-	std::random_device rd;
-	std::mt19937 gen(rd());
-	return gen() % 10'000'000;
+	double fraction = 1.0 / (static_cast<double>(RAND_MAX) + 1.0);
+	return static_cast<int>(rand() * fraction * (9'999'999 - 1'000'000 + 1) + 1'000'000);
 }
 
 Account::Account(std::string name, std::string address)
 	: id(generate_id()), name(std::move(name)), address(std::move(address)) {}
 
 unsigned Account::hash_code() const {
-	return abs(this->id + std::hash<std::string>{}(this->name) + std::hash<std::string>{}(this->address));
+	return (this->id + std::hash<std::string>{}(this->name) + std::hash<std::string>{}(this->address));
 }
 
 std::ostream &operator<<(std::ostream &out, const Account &account) {
