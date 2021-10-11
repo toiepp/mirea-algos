@@ -1,6 +1,5 @@
 #include "TextParser.h"
 
-
 TextParser::TextParser(std::string &s) : sentence(s) {}
 
 void TextParser::set_new(std::string &s) {
@@ -9,9 +8,9 @@ void TextParser::set_new(std::string &s) {
 
 std::string TextParser::find_longest_with_same_edges() {
 	std::string result;
-	size_t max_length = 0;	// Значение самой длинной строки с одинаковыми буквами по краям
-	size_t flp = 0;			// позиция первой буквы проверяемого слова
-	size_t llp = sentence.find(' ', flp) - 1; // позиции последней буквы проверяемого слова
+	size_t max_length = 0;                   // Значение самой длинной строки с одинаковыми буквами по краям
+	size_t flp = 0;                          // позиция первой буквы проверяемого слова
+	size_t llp = sentence.find(' ', flp) - 1;// позиции последней буквы проверяемого слова
 	while (llp != 18446744073709551614U) {
 		if (sentence[flp] == sentence[llp]) {
 			if (llp - flp + 1 > max_length) {
@@ -31,6 +30,30 @@ std::string TextParser::find_longest_with_same_edges() {
 	return result;
 }
 
-int TextParser::find_last(std::string) {
-	return 0;
+size_t TextParser::find_last(const std::string &pat) {
+	std::vector<int> pf(pat.length(), 0);
+
+	for (int k = 0, i = 1; i < pat.length(); ++i) {
+		while ((k > 0) && (pat[i] != pat[k])) {
+			k = pf[k - 1];
+		}
+
+		if (pat[i] == pat[k]) k++;
+
+		pf[i] = k;
+	}
+
+	for (int k = 0, i = 0; i < sentence.length(); ++i) {
+		while ((k > 0) && (pat[k] != sentence[i])) {
+			k = pf[k - 1];
+		}
+
+		k++;
+
+		if (k == pat.length()) {
+			return (i - pat.length() + 1); //либо продолжаем поиск следующих вхождений
+		}
+	}
+
+	return -1;
 }
