@@ -2,6 +2,7 @@
 #define MIREA_ALGOS_TEXTPARSER_H
 
 #include <string>
+#include <iostream>
 
 class TextParser {
 	std::string sentence;
