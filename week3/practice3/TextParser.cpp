@@ -31,6 +31,6 @@ std::string TextParser::find_longest_with_same_edges() {
 	return result;
 }
 
-int TextParser::find_last() {
+int TextParser::find_last(std::string) {
 	return 0;
 }
