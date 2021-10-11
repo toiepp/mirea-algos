@@ -1,8 +1,6 @@
-//
-// Created by mikholskiyivan on 9/29/21.
-//
-
 #include "TextParser.h"
+
+
 TextParser::TextParser(std::string &s) : sentence(s) {}
 
 void TextParser::set_new(std::string &s) {

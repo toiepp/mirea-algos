@@ -8,9 +8,9 @@ void HashSet::put(Account &account) {
 	int x = h1(account);
 	int y = h2(account);
 	for (int i = 0; i < capacity; ++i) {
-		if (arr.at(x) == nullptr) {
+		if (arr.at(x).data == nullptr) {
 			load++;
-			arr[x] = &account;
+			arr[x].data = &account;
 			return;
 		}
 		x = (x + y) % capacity;
@@ -19,8 +19,8 @@ void HashSet::put(Account &account) {
 
 Account *HashSet::find(const std::string &key) const {
 	for (int i = 0; i < capacity; ++i) {
-		if (arr.at(i) != nullptr) {
-			if (arr.at(i)->name == key) { return arr.at(i); }
+		if (arr.at(i).data != nullptr) {
+			if (arr.at(i).data->name == key) { return arr.at(i).data; }
 		}
 	}
 	return nullptr;
@@ -30,8 +30,8 @@ bool HashSet::find(Account &account) const {
 	int x = h1(account);
 	int y = h2(account);
 	for (int i = 0; i < capacity; ++i) {
-		if (arr.at(x) != nullptr) {
-			if (*arr.at(x) == account) {
+		if (arr.at(x).data != nullptr) {
+			if (*arr.at(x).data == account) {
 				return true;
 			}
 		} else {
@@ -46,9 +46,9 @@ bool HashSet::remove(Account &account) {
 	int x = h1(account);
 	int y = h2(account);
 	for (int i = 0; i < capacity; ++i) {
-		if (arr.at(x) != nullptr) {
-			if (*arr.at(x) == account) {
-				arr[x] = nullptr;
+		if (arr.at(x).data != nullptr) {
+			if (*arr.at(x).data == account) {
+				arr[x].data = nullptr;
 				load--;
 				return true;
 			} else {
@@ -63,11 +63,11 @@ bool HashSet::remove(Account &account) {
 
 void HashSet::print() const {
 	for (int i = 0; i < capacity; ++i) {
-		if (arr.at(i) != nullptr) {
+		if (arr.at(i).data != nullptr) {
 			std::cout << "("
 					  << i << ", "
-					  << (*arr.at(i)).hash_code()
-					  << "):\t" << (*arr.at(i)) << std::endl;
+					  << (*arr.at(i).data).hash_code()
+					  << "):\t" << (*arr.at(i).data) << std::endl;
 		} else {
 			std::cout << "(" << i << ", ___):" << std::endl;
 		}
@@ -120,23 +120,26 @@ void HashSet::rehash() {
 	 * Сохранить элементы из старого массива и перенести их в новый*/
 	capacity = find_next_capacity();
 	load = 0;
-	std::vector<Account*> new_arr = std::vector<Account*>(capacity, nullptr);
+	std::vector<Node> new_arr = std::vector<Node>(capacity);
 	// Прохожусь по старому массиву и переношу их в новый
 	for (auto &acc : arr) {
-		if (acc != nullptr) {
-			int x = h1(*acc);
-			int y = h2(*acc);
+		if (acc.data != nullptr) {
+			int x = h1(*acc.data);
+			int y = h2(*acc.data);
 			for (int i = 0; i < capacity; ++i) {
-				if (new_arr.at(x) == nullptr) {
+				if (new_arr.at(x).data == nullptr) {
 					load++;
-					new_arr[x] = acc;
+					new_arr[x].data = acc.data;
 					break;
 				}
 				x = (x + y) % capacity;
 			}
 		}
 	}
-	arr = new_arr;
+	arr.clear();
+	for (const auto& el : new_arr) {
+		arr.push_back(el);
+	}
 }
 
 int HashSet::h1(const Account &account) const {
