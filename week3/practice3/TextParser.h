@@ -1,8 +1,9 @@
 #ifndef MIREA_ALGOS_TEXTPARSER_H
 #define MIREA_ALGOS_TEXTPARSER_H
 
-#include <string>
 #include <iostream>
+#include <vector>
+#include <string>
 
 class TextParser {
 	std::string sentence;
@@ -18,7 +19,7 @@ public:
 	/*
 	 * Используя алгоритм Кнута-Мориса-Пратта, найти индекс
 	 * последнего вхождения образца в текст.*/
-	int find_last(std::string);
+	size_t find_last(const std::string&);
 };
 
 
