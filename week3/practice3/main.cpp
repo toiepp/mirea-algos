@@ -18,16 +18,16 @@ int main() {
 	TextParser tp = TextParser(s);
 
 	std::cout << tp.find_longest_with_same_edges() << std::endl;
-//	std::cout << tp.find_last("vel") << std::endl;
+	std::cout << tp.find_last("vel") << std::endl;
 
 
 	s = "dsjhfl dskjafhjglskd  flfghru jalghfjkg gfualifua jg fguiafgrahdshaalkjgf";
 	tp.set_new(s);
 	std::cout << tp.find_longest_with_same_edges() << std::endl;
-//	std::cout << tp.find_last("jg") << std::endl;
+	std::cout << tp.find_last("jg") << std::endl;
 
 	s = "abcabccabcabdcaabcabd";
 	tp.set_new(s);
-	std::cout << tp.find_last("aabaab") << std::endl;
+	std::cout << tp.find_last("abcabd") << std::endl;
 	return 0;
 }

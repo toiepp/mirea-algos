@@ -46,12 +46,13 @@ size_t TextParser::find_last(const std::string &pat) {
 			std::string p_on_start = prefix.substr(0, j);
 			std::string p_on_end = prefix.substr(prefix.length() - j, i);
 			if (p_on_start == p_on_end) {
-				if (p_on_start.length() > max) {
-					max = (int) p_on_start.length();
-				}
+				pf[i - 1] = (int) p_on_start.length();
+//				if (p_on_start.length() > max) {
+//					max = (int) p_on_start.length();
+//				}
 			}
 		}
-		pf[j - 1] = max;
+//		pf[j - 1] = max;
 	}
 	return -1;
 }
