@@ -8,9 +8,12 @@ void TextParser::set_new(std::string &s) {
 
 std::string TextParser::find_longest_with_same_edges() {
 	std::string result;
-	size_t max_length = 0;                   // Значение самой длинной строки с одинаковыми буквами по краям
-	size_t flp = 0;                          // позиция первой буквы проверяемого слова
-	size_t llp = sentence.find(' ', flp) - 1;// позиции последней буквы проверяемого слова
+	// Значение самой длинной строки с одинаковыми буквами по краям
+	size_t max_length = 0;
+	// позиция первой буквы проверяемого слова
+	size_t flp = 0;
+	// позиции последней буквы проверяемого слова
+	size_t llp = sentence.find(' ', flp) - 1;
 	while (llp != 18446744073709551614U) {
 		if (sentence[flp] == sentence[llp]) {
 			if (llp - flp + 1 > max_length) {
