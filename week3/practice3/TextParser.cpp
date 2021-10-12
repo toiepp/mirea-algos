@@ -31,15 +31,9 @@ std::string TextParser::find_longest_with_same_edges() {
 }
 
 size_t TextParser::find_last(const std::string &pat) {
-	// a b c a b d 	==> 0 0 0 1 2 0
-	// a b				l = 2
-	// a b c			l = 3
-	// a b c a			l = 4
-	// a b c a b		l = 5
 	std::vector<int> pf(pat.length(), 0);
 	std::string prefix;
 	for (int i = 2; i < pat.length(); ++i) {
-		int max = 0; // макс. длина одинаковых префикса и суффикса в префиксе
 		prefix = pat.substr(0, i);
 		int j = 1;
 		for (; j < i; ++j) {
@@ -47,12 +41,8 @@ size_t TextParser::find_last(const std::string &pat) {
 			std::string p_on_end = prefix.substr(prefix.length() - j, i);
 			if (p_on_start == p_on_end) {
 				pf[i - 1] = (int) p_on_start.length();
-//				if (p_on_start.length() > max) {
-//					max = (int) p_on_start.length();
-//				}
 			}
 		}
-//		pf[j - 1] = max;
 	}
 	return -1;
 }
