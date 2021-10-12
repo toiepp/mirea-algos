@@ -29,5 +29,8 @@ int main() {
 	tp.set_new(s);
 	std::cout << tp.find_last("ava") << std::endl;
 
+	s = "abcabeabcabcabd";
+	tp.set_new(s);
+	std::cout << tp.find_last("abcabd") << std::endl;
 	return 0;
 }

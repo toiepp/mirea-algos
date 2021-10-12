@@ -56,7 +56,6 @@ size_t TextParser::find_last(const std::string &pat) {
 		// если произошло полное совпадение образа
 		if (k == pat.length()) {
 			last = i - pat.length() + 1;
-			std::cout << "(" << last << ") ";
 		}
 	}
 
