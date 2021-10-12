@@ -8,11 +8,15 @@
 
 class HashSet {
 private:
+	struct Node {
+		Account* data = nullptr;
+		bool collision = false;
+	};
 	int init = 6;
 	int capacity = 13;
 	int load = 0; // кол-во элементов в массиве.
 	double load_factor = 0.75;
-	std::vector<Account *> arr = std::vector<Account *>(capacity, nullptr);
+	std::vector<Node> arr = std::vector<Node>(capacity);
 
 public:
 	HashSet();
