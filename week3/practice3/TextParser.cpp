@@ -32,17 +32,33 @@ std::string TextParser::find_longest_with_same_edges() {
 
 size_t TextParser::find_last(const std::string &pat) {
 	std::vector<int> pf(pat.length(), 0);
-	std::string prefix;
+	// Префикс-функция
 	for (int i = 2; i < pat.length(); ++i) {
-		prefix = pat.substr(0, i);
+		std::string prefix = pat.substr(0, i);
 		int j = 1;
 		for (; j < i; ++j) {
 			std::string p_on_start = prefix.substr(0, j);
-			std::string p_on_end = prefix.substr(prefix.length() - j, i);
-			if (p_on_start == p_on_end) {
+			if (p_on_start == prefix.substr(prefix.length() - j, i)) {
 				pf[i - 1] = (int) p_on_start.length();
 			}
 		}
 	}
-	return -1;
+
+	// индекс последнего вхождения образа
+	size_t last = std::string::npos;
+	for (int k = 0, i = 0; i < sentence.length(); ++i) {
+		while ((k > 0) && (pat[k] != sentence[i])) {
+			k = pf[k - 1];
+		}
+
+		k++;
+
+		// если произошло полное совпадение образа
+		if (k == pat.length()) {
+			last = i - pat.length() + 1;
+			std::cout << "(" << last << ") ";
+		}
+	}
+
+	return last;
 }
