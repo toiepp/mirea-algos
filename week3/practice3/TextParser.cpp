@@ -31,29 +31,5 @@ std::string TextParser::find_longest_with_same_edges() {
 }
 
 size_t TextParser::find_last(const std::string &pat) {
-	std::vector<int> pf(pat.length(), 0);
 
-	for (int k = 0, i = 1; i < pat.length(); ++i) {
-		while ((k > 0) && (pat[i] != pat[k])) {
-			k = pf[k - 1];
-		}
-
-		if (pat[i] == pat[k]) k++;
-
-		pf[i] = k;
-	}
-
-	for (int k = 0, i = 0; i < sentence.length(); ++i) {
-		while ((k > 0) && (pat[k] != sentence[i])) {
-			k = pf[k - 1];
-		}
-
-		k++;
-
-		if (k == pat.length()) {
-			return (i - pat.length() + 1); //либо продолжаем поиск следующих вхождений
-		}
-	}
-
-	return -1;
 }
