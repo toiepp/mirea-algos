@@ -28,7 +28,7 @@ void build_binary_tree(TreeNode<T> *, const T &);
 
 // Функция вставки нового элемента
 template<typename T>
-void insert(TreeNode<T> *, TreeNode<T> *);
+void insert(TreeNode<T> *, T);
 
 // Функция симметричного обхода
 template<typename T>
@@ -65,6 +65,20 @@ int main() {
 		build_binary_tree(root, data);
 	}
 
+	// ------------------------------------
+
+	std::cout << "Какой элемент добавить: ";
+	std::cin >> data;
+	insert(root, data);
+
+	std::cout << "Какой элемент добавить: ";
+	std::cin >> data;
+	insert(root, data);
+
+	std::cout << "Какой элемент добавить: ";
+	std::cin >> data;
+	insert(root, data);
+
 	return 0;
 }
 
@@ -88,7 +102,14 @@ void build_binary_tree(TreeNode<T> *node, const T &data) {
 	}
 	if (data < node->data) {
 		node->left = new TreeNode(data);
+		node->left->parent = node;
 	} else {
 		node->right = new TreeNode(data);
+		node->right->parent = node;
 	}
+}
+
+template<typename T>
+void insert(TreeNode<T> *node, T to_insert) {
+	build_binary_tree(node, to_insert);
 }
