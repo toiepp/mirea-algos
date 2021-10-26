@@ -57,6 +57,7 @@ int main() {
 
 	std::cin >> data;
 
+	// корневой элемент дерева
 	auto *root = new TreeNode<int>(data);
 
 	for (int i = 0; i < n - 1; ++i) {
@@ -67,24 +68,27 @@ int main() {
 	return 0;
 }
 
+// Без дубликатов
 // 26 30 32 6 41 2 19 21 4 25 7 44 45 24 17 13 34 35 22 27
+// С дубликатами
+// 26 21 32 2 41 2 19 21
 // left[data] < this[data] <= right[data]
 template<typename T>
-void build_binary_tree(TreeNode<T> *root, const T &data) {
+void build_binary_tree(TreeNode<T> *node, const T &data) {
 	// Если узел уже имеет двух потомков или нужно сменить корневой текущий узел
-	if ((root->left && root->right) /*еще одно условие должно быть*/
-		|| (data > root->data && root->right)
-		|| (data <= root->data && root->left)) {
-		if (data < root->data) {
-			build_binary_tree(root->left, data);
+	if ((node->left && node->right) /*еще одно условие должно быть*/
+		|| (data >= node->data && node->right)
+		|| (data < node->data && node->left)) {
+		if (data < node->data) {
+			build_binary_tree(node->left, data);
 		} else {
-			build_binary_tree(root->right, data);
+			build_binary_tree(node->right, data);
 		}
 		return;
 	}
-	if (data < root->data) {
-		root->left = new TreeNode(data);
+	if (data < node->data) {
+		node->left = new TreeNode(data);
 	} else {
-		root->right = new TreeNode(data);
+		node->right = new TreeNode(data);
 	}
 }
