@@ -41,7 +41,7 @@ void level_print(TreeNode<T> *);
 
 // Функция вычисления длины пути от корня до заданного значения
 template<typename T>
-int get_length(TreeNode<T> *, TreeNode<T> *);
+size_t get_length(TreeNode<T> *, T);
 
 // Функция вычисления высоты дерева
 template<typename T>
@@ -105,6 +105,13 @@ int main() {
 	// ------------------------------------
 
 	std::cout << "=== Поиск длины пути от корня до элемента ===" << std::endl;
+
+	for (int i = 0; i < 3; ++i) {
+		int to_find;
+		std::cout << "Найти длину до: ";
+		std::cin >> to_find;
+		std::cout << get_length(root, to_find) << std::endl;
+	}
 
 	std::cout << std::endl << std::endl;
 
@@ -174,7 +181,20 @@ void level_print(TreeNode<T> *node) {
 }
 
 template<typename T>
-int get_length(TreeNode<T> *node, TreeNode<T> *dest) {
+size_t get_length(TreeNode<T> *node, T dest) {
+	TreeNode<T>* iter = node;
+	size_t length = 0;
+	while (iter->data != dest || iter != nullptr) {
+		if (dest > iter->data) {
+			iter = iter->right;
+			length++;
+		} else if (dest < iter->data) {
+			iter = iter->left;
+			length++;
+		} else {
+			return length;
+		}
+	}
 	return 0;
 }
 
