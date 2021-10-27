@@ -1,17 +1,16 @@
 #include <iostream>
 #include <queue>
-#define TEST_PRINT
 
 /*
- * Вариант 12
- * Тип значения узла: Строка - город				+
- * Тип дерева: Бинарное дерево поиска				+
- * Вставка элемента									+
- * Симметричный обход								+
- * Обход в ширину									+
- * Найти длину пути от корня до заданного значения	+
- * Найти высоту дерева								+
- */
+	 * Вариант 12
+	 * Тип значения узла: Строка - город				+
+	 * Тип дерева: Бинарное дерево поиска				+
+	 * Вставка элемента									+
+	 * Симметричный обход								+
+	 * Обход в ширину									+
+	 * Найти длину пути от корня до заданного значения	+
+	 * Найти высоту дерева								+
+	 */
 
 template<typename T>
 struct TreeNode {
@@ -36,7 +35,7 @@ void level_print(TreeNode<T> *);
 
 // Функция вычисления длины пути от корня до заданного значения
 template<typename T>
-size_t get_length(TreeNode<T> *, T);
+int get_length(TreeNode<T> *, T);
 
 // Функция вычисления высоты дерева
 template<typename T>
@@ -45,13 +44,14 @@ int get_height(TreeNode<T> *);
 int main() {
 	std::cout << "=== Практическая работа №4 ===" << std::endl;
 	std::cout << "===       Вариант 12       ===" << std::endl;
-	std::cout << std::endl;
-
-//	aaa bbb ccc aad ggg aaaa hhh ppp z fff
 
 	int to_do;
+	std::string data;
 	TreeNode<std::string> *root = nullptr;
 
+	// Engure Babolsar Watoona Panxi Marugame Chochkan Overkalix Mandala Tilang Takanini
+	// Longra Portland Jintan Poitiers Tabatinga Mayma Shibukawa Lebu Miguel Bearna
+	// Вставка Kalepasan и Hamburg
 	do {
 		std::cout << std::endl
 				  << "=== === === === === === === === === ===\n"
@@ -73,7 +73,6 @@ int main() {
 			}
 			case 1: {
 				size_t n;
-				std::string data;
 				std::cout << "Введите кол-во элементов: ";
 				std::cin >> n;
 				std::cout << "Введите данный: ";
@@ -86,7 +85,6 @@ int main() {
 				break;
 			}
 			case 2: {
-				std::string data;
 				std::cout << "Элемент для вставки: ";
 				std::cin >> data;
 				add(root, data);
@@ -103,10 +101,14 @@ int main() {
 				break;
 			}
 			case 5: {
-				std::string data;
 				std::cout << "Введите элемент: ";
 				std::cin >> data;
-				std::cout << "Длина от корня до " << data << ": " << get_length(root, data) << std::endl;
+				int l = get_length(root, data);
+				if (l < 0) {
+					std::cout << "Узла с таким ключом нет!" << std::endl;
+				} else {
+					std::cout << "Длина от корня до " << data << ": " << l << std::endl;
+				}
 				break;
 			}
 			case 6: {
@@ -118,12 +120,24 @@ int main() {
 		}
 	} while (to_do);
 
+	/*std::string d1;
+	std::string d2;
+	while (true) {
+		std::cin >> d1 >> d2;
+		if (d1 > d2) {
+			std::cout << d1 << " > " << d2 << " : " << (d1 > d2) << std::endl;
+		} else {
+			std::cout << d1 << " <= " << d2 << " : " << (d1 <= d2) << std::endl;
+		}
+	}*/
+
 	return 0;
 }
 
 template<typename T>
 void add(TreeNode<T> *node, const T &data) {
-	// Если узел уже имеет двух потомков или нужно сменить корневой текущий узел
+	// Если узел уже имеет двух потомков или
+	// перейти к правому или левому поддереву
 	if ((node->left && node->right) ||
 		(data >= node->data && node->right) ||
 		(data < node->data && node->left)) {
@@ -134,6 +148,7 @@ void add(TreeNode<T> *node, const T &data) {
 		}
 		return;
 	}
+	// Добавляю потомка в соотв. сторону
 	if (data < node->data) {
 		node->left = new TreeNode(data);
 	} else {
@@ -165,14 +180,14 @@ void level_print(TreeNode<T> *node) {
 }
 
 template<typename T>
-size_t get_length(TreeNode<T> *node, T dest) {
+int get_length(TreeNode<T> *node, T dest) {
 	TreeNode<T> *iter = node;
 	size_t length = 0;
-	while (iter->data != dest && iter != nullptr) {
+	while (iter != nullptr && iter->data != dest) {
 		iter = (dest > iter->data) ? iter->right : iter->left;
 		length++;
 	}
-	return length;
+	return (iter != nullptr) ? length : -1;
 }
 
 template<typename T>
