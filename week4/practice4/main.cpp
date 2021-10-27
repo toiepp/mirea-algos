@@ -71,24 +71,26 @@ int main() {
 
 	// ------------------------------------
 
-	std::cout << "=== Вставка элементов ===" << std::endl;
-	std::cout << "Какой элемент добавить: ";
-	std::cin >> data;
-	insert(root, data);
-
-	std::cout << "Какой элемент добавить: ";
-	std::cin >> data;
-	insert(root, data);
-
-	std::cout << "Какой элемент добавить: ";
-	std::cin >> data;
-	insert(root, data);
-
-	std::cout << std::endl;
+//	std::cout << "=== Вставка элементов ===" << std::endl;
+//	std::cout << "Какой элемент добавить: ";
+//	std::cin >> data;
+//	insert(root, data);
+//
+//	std::cout << "Какой элемент добавить: ";
+//	std::cin >> data;
+//	insert(root, data);
+//
+//	std::cout << "Какой элемент добавить: ";
+//	std::cin >> data;
+//	insert(root, data);
+//
+//	std::cout << std::endl;
 
 	// ------------------------------------
 
 	std::cout << "=== Симметричный обход дерева ===" << std::endl;
+
+	symmetric_print(root);
 
 	std::cout << std::endl;
 
@@ -115,6 +117,7 @@ int main() {
 
 // Без дубликатов
 // 26 30 32 6 41 2 19 21 4 25 7 44 45 24 17 13 34 35 22 27
+// 26, 30, 32, 6, 41, 2, 19, 21, 4, 25, 7, 44, 45, 24, 17, 13, 34, 35, 22, 27
 // С дубликатами
 // 26 21 32 2 41 2 19 21
 // left[data] < this[data] <= right[data]
@@ -143,4 +146,12 @@ void build_binary_tree(TreeNode<T> *node, const T &data) {
 template<typename T>
 void insert(TreeNode<T> *node, T to_insert) {
 	build_binary_tree(node, to_insert);
+}
+
+template<typename T>
+void symmetric_print(TreeNode<T> *node) {
+	if (node == nullptr) return;
+	symmetric_print(node->left);
+	std::cout << node->data << " ";
+	symmetric_print(node->right);
 }
