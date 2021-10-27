@@ -22,14 +22,9 @@ struct TreeNode {
 	explicit TreeNode(T data) : data(std::move(data)) {}
 };
 
-// Функция создания бинарного дерева поиска с заданным
-// количеством элементов
+// Функция добавления элемента
 template<typename T>
 void add(TreeNode<T> *, const T &);
-
-// Функция вставки нового элемента
-template<typename T>
-void insert(TreeNode<T> *, T);
 
 // Функция симметричного обхода
 template<typename T>
@@ -52,86 +47,80 @@ int main() {
 	std::cout << "===       Вариант 12       ===" << std::endl;
 	std::cout << std::endl;
 
-	std::cout << "=== Создание бинарвого дерева поиска ===" << std::endl;
+//	aaa bbb ccc aad ggg aaaa hhh ppp z fff
 
-	size_t n;
-	int data;
-	std::cout << "Введите кол-во городов: ";
-	std::cin >> n;
+	int to_do;
+	TreeNode<std::string> *root = nullptr;
 
-	std::cin >> data;
-
-	// корневой элемент дерева
-	auto *root = new TreeNode<int>(data);
-
-	for (int i = 0; i < n - 1; ++i) {
-		std::cin >> data;
-		add(root, data);
-	}
-	std::cout << std::endl;
-
-	// ------------------------------------
-#ifndef TEST_PRINT
-	std::cout << "=== Вставка элементов ===" << std::endl;
-	std::cout << "Какой элемент добавить: ";
-	std::cin >> data;
-	insert(root, data);
-
-	std::cout << "Какой элемент добавить: ";
-	std::cin >> data;
-	insert(root, data);
-
-	std::cout << "Какой элемент добавить: ";
-	std::cin >> data;
-	insert(root, data);
-
-	std::cout << std::endl << std::endl;
-#endif
-	// ------------------------------------
-
-	std::cout << "=== Симметричный обход дерева ===" << std::endl;
-
-	symmetric_print(root);
-
-	std::cout << std::endl << std::endl;
-
-	// ------------------------------------
-
-	std::cout << "=== Обход дерева в ширину ===" << std::endl;
-
-	level_print(root);
-
-	std::cout << std::endl << std::endl;
-	// ------------------------------------
-
-	std::cout << "=== Поиск длины пути от корня до элемента ===" << std::endl;
-
-	for (int i = 0; i < 3; ++i) {
-		int to_find;
-		std::cout << "Найти длину до: ";
-		std::cin >> to_find;
-		std::cout << get_length(root, to_find) << std::endl;
-	}
-
-	std::cout << std::endl << std::endl;
-
-	// ------------------------------------
-
-	std::cout << "=== Поиск высоты дерева ===" << std::endl;
-
-	std::cout << get_height(root) << std::endl;
-
-	std::cout << std::endl;
+	do {
+		std::cout << std::endl
+				  << "=== === === === === === === === === ===\n"
+				  << "=== [1] Создать дерево              ===\n"
+				  << "=== [2] Вставить элемен             ===\n"
+				  << "=== [3] Симметричный обход          ===\n"
+				  << "=== [4] Обход в ширину              ===\n"
+				  << "=== [5] Получить длину до элемента  ===\n"
+				  << "=== [6] Получить высоту дерева      ===\n"
+				  << "=== [0] Выйти                       ===\n"
+				  << "=== === === === === === === === === ===\n"
+				  << std::endl;
+		std::cout << "Команда (1-6): ";
+		std::cin >> to_do;
+		switch (to_do) {
+			case 0: {
+				std::cout << "Выход" << std::endl;
+				break;
+			}
+			case 1: {
+				size_t n;
+				std::string data;
+				std::cout << "Введите кол-во элементов: ";
+				std::cin >> n;
+				std::cout << "Введите данный: ";
+				std::cin >> data;
+				root = new TreeNode<std::string>(data);
+				for (int i = 0; i < n - 1; ++i) {
+					std::cin >> data;
+					add(root, data);
+				}
+				break;
+			}
+			case 2: {
+				std::string data;
+				std::cout << "Элемент для вставки: ";
+				std::cin >> data;
+				add(root, data);
+				break;
+			}
+			case 3: {
+				symmetric_print(root);
+				std::cout << std::endl;
+				break;
+			}
+			case 4: {
+				level_print(root);
+				std::cout << std::endl;
+				break;
+			}
+			case 5: {
+				std::string data;
+				std::cout << "Введите элемент: ";
+				std::cin >> data;
+				std::cout << "Длина от корня до " << data << ": " << get_length(root, data) << std::endl;
+				break;
+			}
+			case 6: {
+				std::cout << "Высота дерева: " << get_height(root) << std::endl;
+				break;
+			}
+			default:
+				std::cout << "Неверная команда: " << to_do << std::endl;
+		}
+	} while (to_do);
 
 	return 0;
 }
 
-// Без дубликатов
-// 26 30 32 6 41 2 19 21 4 25 7 44 45 24 17 13 34 35 22 27
-// 26, 30, 32, 6, 41, 2, 19, 21, 4, 25, 7, 44, 45, 24, 17, 13, 34, 35, 22, 27
-// С дубликатами
-// 26 21 32 2 41 2 19 21
-// left[data] < this[data] <= right[data]
 template<typename T>
 void add(TreeNode<T> *node, const T &data) {
 	// Если узел уже имеет двух потомков или нужно сменить корневой текущий узел
@@ -153,11 +142,6 @@ void add(TreeNode<T> *node, const T &data) {
 }
 
 template<typename T>
-void insert(TreeNode<T> *node, T to_insert) {
-	add(node, to_insert);
-}
-
-template<typename T>
 void symmetric_print(TreeNode<T> *node) {
 	if (!node) return;
 	symmetric_print(node->left);
@@ -168,7 +152,7 @@ void symmetric_print(TreeNode<T> *node) {
 template<typename T>
 void level_print(TreeNode<T> *node) {
 	if (node) {
-		std::queue<TreeNode<T>*> queue;
+		std::queue<TreeNode<T> *> queue;
 		queue.push(node);
 		while (!queue.empty()) {
 			node = queue.front();
@@ -182,7 +166,7 @@ void level_print(TreeNode<T> *node) {
 
 template<typename T>
 size_t get_length(TreeNode<T> *node, T dest) {
-	TreeNode<T>* iter = node;
+	TreeNode<T> *iter = node;
 	size_t length = 0;
 	while (iter->data != dest && iter != nullptr) {
 		iter = (dest > iter->data) ? iter->right : iter->left;
