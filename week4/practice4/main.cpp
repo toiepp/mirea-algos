@@ -4,13 +4,13 @@
 
 /*
  * Вариант 12
- * Тип значения узла: Строка - город
- * Тип дерева: Бинарное дерево поиска
- * Вставка элемента
- * Симметричный обход
- * Обход в ширину
- * Найти длину пути от корня до заданного значения
- * Найти высоту дерева
+ * Тип значения узла: Строка - город				+
+ * Тип дерева: Бинарное дерево поиска				+
+ * Вставка элемента									+
+ * Симметричный обход								+
+ * Обход в ширину									+
+ * Найти длину пути от корня до заданного значения	+
+ * Найти высоту дерева								+
  */
 
 template<typename T>
@@ -184,18 +184,11 @@ template<typename T>
 size_t get_length(TreeNode<T> *node, T dest) {
 	TreeNode<T>* iter = node;
 	size_t length = 0;
-	while (iter->data != dest || iter != nullptr) {
-		if (dest > iter->data) {
-			iter = iter->right;
-			length++;
-		} else if (dest < iter->data) {
-			iter = iter->left;
-			length++;
-		} else {
-			return length;
-		}
+	while (iter->data != dest && iter != nullptr) {
+		iter = (dest > iter->data) ? iter->right : iter->left;
+		length++;
 	}
-	return 0;
+	return length;
 }
 
 template<typename T>
