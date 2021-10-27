@@ -112,6 +112,8 @@ int main() {
 
 	std::cout << "=== Поиск высоты дерева ===" << std::endl;
 
+	std::cout << get_height(root) << std::endl;
+
 	std::cout << std::endl;
 
 	return 0;
@@ -158,13 +160,38 @@ void symmetric_print(TreeNode<T> *node) {
 
 template<typename T>
 void level_print(TreeNode<T> *node) {
-	std::queue<TreeNode<T>*> queue;
-	queue.push(node);
-	while (!queue.empty()) {
-		node = queue.front();
-		queue.pop();
-		std::cout << node->data << " ";
-		if (node->left) queue.push(node->left);
-		if (node->right) queue.push(node->right);
+	if (node) {
+		std::queue<TreeNode<T>*> queue;
+		queue.push(node);
+		while (!queue.empty()) {
+			node = queue.front();
+			queue.pop();
+			std::cout << node->data << " ";
+			if (node->left) queue.push(node->left);
+			if (node->right) queue.push(node->right);
+		}
 	}
+}
+
+template<typename T>
+int get_length(TreeNode<T> *node, TreeNode<T> *dest) {
+	return 0;
+}
+
+template<typename T>
+int get_height(TreeNode<T> *node) {
+	int left = 0;
+	int right = 0;
+
+	if (node->right != nullptr) {
+		right += get_height(node->right);
+		right++;
+	}
+
+	if (node->left != nullptr) {
+		left += get_height(node->left);
+		left++;
+	}
+
+	return std::max(left, right);
 }
