@@ -1,4 +1,6 @@
 #include <iostream>
+#include <queue>
+#define TEST_PRINT
 
 /*
  * Вариант 12
@@ -13,7 +15,6 @@
 
 template<typename T>
 struct TreeNode {
-	TreeNode *parent = nullptr;
 	T data;
 	TreeNode *left = nullptr;
 	TreeNode *right = nullptr;
@@ -24,7 +25,7 @@ struct TreeNode {
 // Функция создания бинарного дерева поиска с заданным
 // количеством элементов
 template<typename T>
-void build_binary_tree(TreeNode<T> *, const T &);
+void add(TreeNode<T> *, const T &);
 
 // Функция вставки нового элемента
 template<typename T>
@@ -36,7 +37,7 @@ void symmetric_print(TreeNode<T> *);
 
 // Функция обхода в ширину
 template<typename T>
-void wide_print(TreeNode<T> *);
+void level_print(TreeNode<T> *);
 
 // Функция вычисления длины пути от корня до заданного значения
 template<typename T>
@@ -65,46 +66,47 @@ int main() {
 
 	for (int i = 0; i < n - 1; ++i) {
 		std::cin >> data;
-		build_binary_tree(root, data);
+		add(root, data);
 	}
 	std::cout << std::endl;
 
 	// ------------------------------------
+#ifndef TEST_PRINT
+	std::cout << "=== Вставка элементов ===" << std::endl;
+	std::cout << "Какой элемент добавить: ";
+	std::cin >> data;
+	insert(root, data);
 
-//	std::cout << "=== Вставка элементов ===" << std::endl;
-//	std::cout << "Какой элемент добавить: ";
-//	std::cin >> data;
-//	insert(root, data);
-//
-//	std::cout << "Какой элемент добавить: ";
-//	std::cin >> data;
-//	insert(root, data);
-//
-//	std::cout << "Какой элемент добавить: ";
-//	std::cin >> data;
-//	insert(root, data);
-//
-//	std::cout << std::endl;
+	std::cout << "Какой элемент добавить: ";
+	std::cin >> data;
+	insert(root, data);
 
+	std::cout << "Какой элемент добавить: ";
+	std::cin >> data;
+	insert(root, data);
+
+	std::cout << std::endl << std::endl;
+#endif
 	// ------------------------------------
 
 	std::cout << "=== Симметричный обход дерева ===" << std::endl;
 
 	symmetric_print(root);
 
-	std::cout << std::endl;
+	std::cout << std::endl << std::endl;
 
 	// ------------------------------------
 
 	std::cout << "=== Обход дерева в ширину ===" << std::endl;
 
-	std::cout << std::endl;
+	level_print(root);
 
+	std::cout << std::endl << std::endl;
 	// ------------------------------------
 
 	std::cout << "=== Поиск длины пути от корня до элемента ===" << std::endl;
 
-	std::cout << std::endl;
+	std::cout << std::endl << std::endl;
 
 	// ------------------------------------
 
@@ -122,36 +124,47 @@ int main() {
 // 26 21 32 2 41 2 19 21
 // left[data] < this[data] <= right[data]
 template<typename T>
-void build_binary_tree(TreeNode<T> *node, const T &data) {
+void add(TreeNode<T> *node, const T &data) {
 	// Если узел уже имеет двух потомков или нужно сменить корневой текущий узел
-	if ((node->left && node->right) /*еще одно условие должно быть*/
-		|| (data >= node->data && node->right)
-		|| (data < node->data && node->left)) {
+	if ((node->left && node->right) ||
+		(data >= node->data && node->right) ||
+		(data < node->data && node->left)) {
 		if (data < node->data) {
-			build_binary_tree(node->left, data);
+			add(node->left, data);
 		} else {
-			build_binary_tree(node->right, data);
+			add(node->right, data);
 		}
 		return;
 	}
 	if (data < node->data) {
 		node->left = new TreeNode(data);
-		node->left->parent = node;
 	} else {
 		node->right = new TreeNode(data);
-		node->right->parent = node;
 	}
 }
 
 template<typename T>
 void insert(TreeNode<T> *node, T to_insert) {
-	build_binary_tree(node, to_insert);
+	add(node, to_insert);
 }
 
 template<typename T>
 void symmetric_print(TreeNode<T> *node) {
-	if (node == nullptr) return;
+	if (!node) return;
 	symmetric_print(node->left);
 	std::cout << node->data << " ";
 	symmetric_print(node->right);
+}
+
+template<typename T>
+void level_print(TreeNode<T> *node) {
+	std::queue<TreeNode<T>*> queue;
+	queue.push(node);
+	while (!queue.empty()) {
+		node = queue.front();
+		queue.pop();
+		std::cout << node->data << " ";
+		if (node->left) queue.push(node->left);
+		if (node->right) queue.push(node->right);
+	}
 }
