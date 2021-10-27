@@ -49,6 +49,9 @@ int get_height(TreeNode<T> *);
 int main() {
 	std::cout << "=== Практическая работа №4 ===" << std::endl;
 	std::cout << "===       Вариант 12       ===" << std::endl;
+	std::cout << std::endl;
+
+	std::cout << "=== Создание бинарвого дерева поиска ===" << std::endl;
 
 	size_t n;
 	int data;
@@ -64,9 +67,11 @@ int main() {
 		std::cin >> data;
 		build_binary_tree(root, data);
 	}
+	std::cout << std::endl;
 
 	// ------------------------------------
 
+	std::cout << "=== Вставка элементов ===" << std::endl;
 	std::cout << "Какой элемент добавить: ";
 	std::cin >> data;
 	insert(root, data);
@@ -78,6 +83,32 @@ int main() {
 	std::cout << "Какой элемент добавить: ";
 	std::cin >> data;
 	insert(root, data);
+
+	std::cout << std::endl;
+
+	// ------------------------------------
+
+	std::cout << "=== Симметричный обход дерева ===" << std::endl;
+
+	std::cout << std::endl;
+
+	// ------------------------------------
+
+	std::cout << "=== Обход дерева в ширину ===" << std::endl;
+
+	std::cout << std::endl;
+
+	// ------------------------------------
+
+	std::cout << "=== Поиск длины пути от корня до элемента ===" << std::endl;
+
+	std::cout << std::endl;
+
+	// ------------------------------------
+
+	std::cout << "=== Поиск высоты дерева ===" << std::endl;
+
+	std::cout << std::endl;
 
 	return 0;
 }
