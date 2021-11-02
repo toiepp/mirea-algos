@@ -29,21 +29,20 @@ void euler_cycle(std::vector<Info> &graph) {
 	std::vector<int> visited(10);
 }
 
-void level_order(std::vector<Info> &graph) {
-	int start; // вершина начала обхода
-	std::cout << "Начало: ";
-	std::cin >> start;
-
+void level_order(std::vector<Info> &graph, int start) {
 	std::queue<int> queue;
 	queue.push(start);
 	// массив, показывающий была ли соотв.
 	// вершина посещена при обходе
 	bool visited[10];
+	visited[start - 1] = true;
 
 	while (!queue.empty()) {
 		int v = queue.front();
 		queue.pop();
-		std::cout << v << " ";
+		if (visited[v - 1]) {
+			std::cout << v << " ";
+		}
 		for (Info &el : graph) {
 			if (el.begin == v && !visited[el.end - 1]) {
 				queue.push(el.end);
@@ -57,8 +56,8 @@ void level_order(std::vector<Info> &graph) {
 int main() {
 	std::cout << "=== Практическая 5 ===" << std::endl;
 	std::cout << "===   Вариант 28   ===" << std::endl;
-	std::cout << std::endl;
 	std::cout << "Граф создан на основе списка ребер." << std::endl;
+	std::cout << std::endl;
 
 	std::vector<Info> graph = {
 			Info(1, 2, 3),
@@ -87,7 +86,15 @@ int main() {
 
 	std::cout << "=== Обход в ширину ===" << std::endl;
 
-	level_order(graph);
+	int start;
+	std::cout << "Начало: ";
+	std::cin >> start;
+
+	if (start <= 10) {
+		level_order(graph, start);
+	} else {
+		std::cout << "Такой вершины в графе нет: " << start << std::endl;
+	}
 
 	return 0;
 }
