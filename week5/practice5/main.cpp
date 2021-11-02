@@ -1,4 +1,6 @@
 #include <iostream>
+#include <queue>
+#include <set>
 #include <vector>
 
 /*
@@ -18,18 +20,37 @@ struct Info {
 	Info(int b, int e, int w) : begin(b), end(e), weight(w) {}
 };
 
-std::ostream & operator << (std::ostream& out, Info info) {
+std::ostream &operator<<(std::ostream &out, Info info) {
 	out << "(" << info.begin << ") ==" << info.weight << "==> (" << info.end << ")";
 	return out;
 }
 
-
-void euler_cycle(std::vector<Info>& graph) {
+void euler_cycle(std::vector<Info> &graph) {
 	std::vector<int> visited(10);
 }
 
-void level_order(std::vector<Info>& graph) {
+void level_order(std::vector<Info> &graph) {
+	int start;
+	std::cout << "Начало: ";
+	std::cin >> start;
 
+	std::set<int> visited;
+	std::queue<int> queue;
+	queue.push(start);
+	visited.insert(start);
+
+	while (!queue.empty()) {
+		int v = queue.front();
+		queue.pop();
+		std::cout << v << " ";
+		for (Info &el : graph) {
+			if (el.begin == v && !visited.contains(el.end)) {
+				queue.push(el.end);
+				visited.insert(el.end);
+			}
+		}
+	}
+	std::cout << std::endl;
 }
 
 int main() {
@@ -39,9 +60,9 @@ int main() {
 	std::cout << "Граф создан на основе списка ребер." << std::endl;
 
 	std::vector<Info> graph = {
-			Info(1, 4, 2),
 			Info(1, 2, 3),
 			Info(1, 3, 4),
+			Info(1, 4, 2),
 			Info(2, 6, 3),
 			Info(3, 6, 6),
 			Info(4, 5, 5),
