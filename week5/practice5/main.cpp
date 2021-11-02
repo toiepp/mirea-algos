@@ -30,23 +30,24 @@ void euler_cycle(std::vector<Info> &graph) {
 }
 
 void level_order(std::vector<Info> &graph) {
-	int start;
+	int start; // вершина начала обхода
 	std::cout << "Начало: ";
 	std::cin >> start;
 
-	std::set<int> visited;
 	std::queue<int> queue;
 	queue.push(start);
-	visited.insert(start);
+	// массив, показывающий была ли соотв.
+	// вершина посещена при обходе
+	bool visited[10];
 
 	while (!queue.empty()) {
 		int v = queue.front();
 		queue.pop();
 		std::cout << v << " ";
 		for (Info &el : graph) {
-			if (el.begin == v && !visited.contains(el.end)) {
+			if (el.begin == v && !visited[el.end - 1]) {
 				queue.push(el.end);
-				visited.insert(el.end);
+				visited[el.end - 1] = true;
 			}
 		}
 	}
@@ -84,7 +85,7 @@ int main() {
 
 	std::cout << std::endl;
 
-	std::cout << "=== Обход в глубину ===" << std::endl;
+	std::cout << "=== Обход в ширину ===" << std::endl;
 
 	level_order(graph);
 
