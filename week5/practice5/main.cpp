@@ -1,65 +1,104 @@
 #include <iostream>
-#include <vector>
 #include <queue>
+#include <vector>
+
+/*
+ * Граф, содержащий Эйлеров цикл
+0 1 1 0 1 1 0 0 0 0
+1 0 1 1 1 0 0 0 0 0
+1 1 0 1 0 0 0 0 1 0
+0 1 1 0 0 0 0 1 1 0
+1 1 0 0 0 1 1 0 0 0
+1 0 0 0 1 0 1 0 0 1
+0 0 0 0 1 1 0 1 0 1
+0 0 0 1 0 0 1 0 1 1
+0 0 1 1 0 0 0 1 0 1
+0 0 0 0 0 1 1 1 1 0
+*/
 
 /*
  * 1. Найти и вывести эйлеров цикл в графе.
+ *
+ * Эйлеров цикл — эйлеров путь, являющийся циклом,
+ * то есть замкнутый путь, проходящий через каждое
+ * ребро графа ровно по одному разу.
+ *
+ * Эйлеров цикл существует тогда и только тогда,
+ * когда граф связный или будет являться связным,
+ * если удалить из него все изолированные вершины,
+ * и в нём отсутствуют вершины нечётной степени.
+ *
+ *
  * 2. Реализовать обход графа в ширину.
  * */
 
-/*
- * http://graphonline.ru/?graph=iNcyQqXCvUvaRpfI
- * */
+// http://graphonline.ru/?graph=HDumlQSPEidmrFMJ
 
-struct Info {
-	int begin;
-	int end;
-	int weight;
-
-	Info(int b, int e, int w) : begin(b), end(e), weight(w) {}
-};
-
-std::ostream &operator<<(std::ostream &out, const Info& info) {
-	out << "(" << info.begin << ") ==" << info.weight << "==> (" << info.end << ")";
-	return out;
-}
-std::istream &operator>>(std::istream &in, Info info) {
-	in >> info.begin >> info.end >> info.weight;
-	return in;
-}
-
-void print_graph(std::vector<Info> &graph) {
-	for (auto & el : graph) {
-		std::cout << el << std::endl;
-	}
-}
-
-void euler_cycle(std::vector<Info> &graph) {
-	bool visited[10];
-}
-
-void level_order(std::vector<Info> &graph, int start) {
-	std::queue<int> queue;
-	queue.push(start);
-	// массив, показывающий была ли соотв.
-	// вершина посещена при обходе
-	bool visited[10];
-	visited[start - 1] = true;
-
-	while (!queue.empty()) {
-		int v = queue.front();
-		queue.pop();
-		if (visited[v - 1]) {
-			std::cout << v << " ";
+bool is_even_deg(std::vector<bool> &vertex) {
+	bool result = vertex.at(0);
+	for (size_t i = 1; i < vertex.size(); ++i) {
+		if (vertex.at(i)) {                // если есть ребро
+			result = result ^ vertex.at(i);// XOR
 		}
-		for (Info &el : graph) {
-			if (el.begin == v && !visited[el.end - 1]) {
-				queue.push(el.end);
-				visited[el.end - 1] = true;
+	}
+	return !result;
+}
+
+void euler_cycle(std::vector<std::vector<bool>> &graph, std::vector<char> &nodes) {
+	// Проверяю, является ли граф связным
+	for (std::vector<bool> & vertex : graph) {
+		std::vector<bool>::iterator found = std::find(vertex.begin(), vertex.end(), true);
+		if (found == vertex.end()) {
+			std::cout << "Граф не содержит Эйлеров цикл (граф несвязный)" << std::endl;
+			return;
+		}
+	}
+	// Проверяю, содержит ли граф вершины с нечетной степенью
+	for (std::vector<bool> &vertex : graph) {
+		if (!is_even_deg(vertex)) {
+			std::cout << "Граф не содержет Эйлеров цикл (содержит вершины нечётной степени)" << std::endl;
+			return;
+		}
+	}
+
+	bool visited[10];
+}
+
+/*
+  a b c d f g h i j k
+a 0 1 1 0 1 1 0 0 0 0
+b 1 0 1 1 1 0 0 0 0 0
+c 1 1 0 1 0 0 0 0 1 0
+d 0 1 1 0 0 0 0 1 1 0
+f 1 1 0 0 0 1 1 0 0 0
+g 1 0 0 0 1 0 1 0 0 1
+h 0 0 0 0 1 1 0 1 0 1
+i 0 0 0 1 0 0 1 0 1 1
+j 0 0 1 1 0 0 0 1 0 1
+k 0 0 0 0 0 1 1 1 1 0
+ */
+
+/* обход начинается с первой вершины из матрицы смежности */
+void level_order(/* матрица смежности графа */std::vector<std::vector<bool>> &graph,
+				 /* имена вершин графа */std::vector<char> &nodes) {
+	bool visited[nodes.size()]; // массив вершин, которые я уже обошел
+	std::queue<std::vector<bool>> queue;
+	queue.push(graph.at(0));
+	visited[0] = true;
+	std::cout << nodes.at(0) << " ";
+
+	while(!queue.empty()) {
+		std::vector<bool> vertex = queue.front();
+		queue.pop();
+		for (int i = 0; i < vertex.size(); ++i) {
+			// если у вершины есть ребро с i-й вершиной и ее ещё не обошли
+			if (vertex.at(i) && !visited[i]) {
+				std::cout << nodes.at(i) << " "; // вывожу имя этой вершины
+				queue.push(graph.at(i)); // кладу эту вершину в очередь
+				visited[i] = true;
 			}
 		}
 	}
-	std::cout << std::endl;
 }
 
 int main() {
@@ -72,62 +111,58 @@ int main() {
 	std::cout << "Ввести граф (1) или использовать граф по умолчанию (2): ";
 	std::cin >> option;
 
-	std::vector<Info> graph;
+	std::vector<char> nodes;
+	std::vector<std::vector<bool>> graph;
 
 	// создание графи на основе ввода с клавиатуры
 	if (option == 1) {
-		std::cout << "Для завершения введите 0" << std::endl;
-		int begin, end, weight;
-		do {
-			std::cin >> begin;
-			if (begin == 0) break;
-			std::cin >> end >> weight;
-			Info info(begin, end, weight);
-			graph.push_back(info);
-		} while (true);
+		int n;
+		char name;
+		std::cout << "Кол-во вершин в графе: ";
+		std::cin >> n;
+		std::cout << "Названия вершин: ";
+		for (int i = 0; i < n; ++i) {
+			std::cin >> name;
+			nodes.push_back(name);
+		}
+		std::cout << "Введите матрицу смежности: " << std::endl;
+		for (int i = 0; i < n; ++i) {
+			std::vector<bool> tmp(n);
+			for (int j = 0; j < n; ++j) {
+				int r;
+				std::cin >> r;
+				tmp.push_back(r);
+			}
+			graph.push_back(tmp);
+			tmp.clear();
+		}
 	}
 	// граф, определнный в варинте
 	if (option == 2) {
+		nodes = {'a', 'b', 'c', 'd', 'f', 'g', 'h', 'i', 'j', 'k'};
 		graph = {
-				Info(1, 2, 3),
-				Info(1, 3, 4),
-				Info(1, 4, 2),
-				Info(2, 6, 3),
-				Info(3, 6, 6),
-				Info(4, 5, 5),
-				Info(4, 6, 2),
-				Info(5, 7, 6),
-				Info(5, 9, 12),
-				Info(6, 5, 1),
-				Info(6, 7, 8),
-				Info(6, 8, 7),
-				Info(7, 10, 4),
-				Info(8, 10, 3),
-				Info(9, 8, 6),
-				Info(9, 10, 11),
-
-		};
+				//     a  b  c  d  f  g  h  i  j  k
+				/*a*/ {0, 1, 0, 0, 1, 0, 0, 0, 0, 0},
+				/*b*/ {1, 0, 1, 1, 1, 0, 0, 0, 0, 0},
+				/*c*/ {0, 1, 0, 1, 0, 0, 0, 0, 1, 0},
+				/*d*/ {0, 1, 1, 0, 0, 0, 0, 1, 1, 0},
+				/*f*/ {1, 1, 0, 0, 0, 1, 1, 0, 0, 0},
+				/*g*/ {0, 0, 0, 0, 1, 0, 1, 0, 0, 0},
+				/*h*/ {0, 0, 0, 0, 1, 1, 0, 1, 0, 1},
+				/*i*/ {0, 0, 0, 1, 0, 0, 1, 0, 1, 1},
+				/*j*/ {0, 0, 1, 1, 0, 0, 0, 1, 0, 0},
+				/*k*/ {0, 0, 0, 0, 0, 0, 1, 1, 0, 0}};
 	}
 
-	print_graph(graph);
+	//	print_graph(graph);
 	std::cout << std::endl;
 
 	std::cout << "=== Эйлеров цикл ===" << std::endl;
-
-	euler_cycle(graph);
+	euler_cycle(graph, nodes);
 	std::cout << std::endl;
 
 	std::cout << "=== Обход в ширину ===" << std::endl;
-
-	int start;
-	std::cout << "Начало: ";
-	std::cin >> start;
-
-	if (start <= 10) {
-		level_order(graph, start);
-	} else {
-		std::cout << "Такой вершины в графе нет: " << start << std::endl;
-	}
+	level_order(graph, nodes);
 
 	return 0;
 }
