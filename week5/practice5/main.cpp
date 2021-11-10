@@ -18,10 +18,10 @@ a b c d e f g h i j
 0 1 1 0 0 0 0 1 1 0
 1 1 0 0 0 1 1 0 0 0
 1 0 0 0 1 0 1 0 0 1
-0 0 0 0 1 1 0 0 0 1
+0 0 0 0 1 1 0 1 0 1
 0 0 0 1 0 0 1 0 1 1
-0 0 1 1 0 0 0 0 0 1
-0 0 0 0 0 1 1 0 1 0
+0 0 1 1 0 0 0 1 0 1
+0 0 0 0 0 1 1 1 1 0
 */
 
 /*
@@ -42,6 +42,21 @@ a b c d e f g h i j
 
 bool deg(std::vector<bool> &vertex) {
 	return std::count(vertex.begin(), vertex.end(), true);
+}
+
+void print_matrix(std::vector<Graph> &graph) {
+	std::cout << "  ";
+	std::for_each(graph.begin(), graph.end(), [](const Graph &v){
+		std::cout << v.sign << " ";
+	});
+	std::cout << std::endl;
+	for (int i = 0; i < graph.size(); ++i) {
+		std::cout << graph.at(i).sign << " ";
+		for (int j = 0; j < graph.size(); ++j) {
+			std::cout << graph.at(i).edges.at(j) << " ";
+		}
+		std::cout << std::endl;
+	}
 }
 
 void euler_path(std::vector<std::vector<bool>> &graph, std::vector<char> &nodes) {
@@ -82,7 +97,7 @@ void euler_path(std::vector<std::vector<bool>> &graph, std::vector<char> &nodes)
 													 [](const std::vector<bool> &vertex) {
 														 return std::count(vertex.begin(), vertex.end(), true) % 2;
 													 }));
-	stack.push(&g_vec.at(idx_of_start));
+	stack.push(&g_vec.at((idx_of_start != g_vec.size()) ? idx_of_start : 0));
 
 	while (!stack.empty()) {
 		Graph *V = stack.top();
@@ -90,17 +105,19 @@ void euler_path(std::vector<std::vector<bool>> &graph, std::vector<char> &nodes)
 		stack.pop();
 		for (int i = 0; i < nodes.size(); ++i) {
 			if (V->edges.at(i)) {
-				// Удаляю ребро, которое было пройдено
-				// WARN неправильно удаляет ребро
-				V->edges.at(i) = false;
-				g_vec.at(i).edges[i + 1] = false;
 				// Кладу другой конец этой вершины в стек
 				stack.push(&g_vec.at(i));
+				// Удаляю ребро, которое было пройдено
+				V->edges.at(i) = false;
+				g_vec.at(i).edges[std::distance(g_vec.begin(), std::find_if(g_vec.begin(), g_vec.end(), [&V](const Graph &G) {
+													return G.sign == V->sign;
+												}))] = false;
 				break;
 			}
 		}
 	}
 
+	print_matrix(g_vec);
 
 	std::for_each(result.begin(),
 				  result.end() - 1,
