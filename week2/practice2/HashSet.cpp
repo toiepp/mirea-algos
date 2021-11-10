@@ -20,9 +20,6 @@ void HashSet::put(Account &account) {
 	}
 }
 
-/* WARN Коллизия не играет никакой
- *  роли так как идет поиск по ключу,
- *  а не хэш-коду */
 Account *HashSet::find(const std::string &key) const {
 	for (int i = 0; i < capacity; ++i) {      // прохожусь по всем ячейкам тадлицы
 		if (arr.at(i).data != nullptr) {      // если ячейка не пустая
