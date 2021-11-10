@@ -72,7 +72,7 @@ bool HashSet::remove(Account &account) {
 					return false;            // возвращаю значение
 				}
 			}
-		} else {                       // если ячейка оказалася пустой
+		} else {                       // если ячейка пуста
 			if (arr.at(x).collision) { // но была коллизия
 				x = (x + y) % capacity;// продолжаю поиск
 			}
@@ -136,13 +136,9 @@ int HashSet::find_next_capacity() {
 }
 
 void HashSet::rehash() {
-	/* Создать новый массив, который будет простого размера и почти в 2 раза больше
-	 * Умеличить capacity
-	 * Сохранить элементы из старого массива и перенести их в новый*/
 	capacity = find_next_capacity();
 	load = 0;
 	std::vector<Node> new_arr = std::vector<Node>(capacity);
-	// Прохожусь по старому массиву и переношу их в новый
 	for (auto &acc : arr) {       // прохожу по старой таблице
 		if (acc.data != nullptr) {// если ячейка старой таблицы непуста
 			int x = h1(*acc.data);
