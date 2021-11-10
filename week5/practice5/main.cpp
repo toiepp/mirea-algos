@@ -101,10 +101,10 @@ void euler_path(std::vector<std::vector<bool>> &graph, std::vector<char> &nodes)
 
 	while (!stack.empty()) {
 		Graph *V = stack.top();
-		result.push_back(V->sign);
-		stack.pop();
+		bool found = false;
 		for (int i = 0; i < nodes.size(); ++i) {
 			if (V->edges.at(i)) {
+				found = true;
 				// Кладу другой конец этой вершины в стек
 				stack.push(&g_vec.at(i));
 				// Удаляю ребро, которое было пройдено
@@ -114,6 +114,10 @@ void euler_path(std::vector<std::vector<bool>> &graph, std::vector<char> &nodes)
 												}))] = false;
 				break;
 			}
+		}
+		if (!found) {
+			stack.pop();
+			result.push_back(V->sign);
 		}
 	}
 
