@@ -65,7 +65,6 @@ bool HashSet::remove(Account &account) {
 	for (int i = 0; i < capacity; ++i) {     // обхожу хэш-таблицу
 		if (arr.at(x).data != nullptr) {     // если найдена непустая ячейка
 			if (*arr.at(x).data == account) {// если равна искомой
-//				delete arr.at(x).data;       // освобождаю содердимое указателя
 				arr[x].data = nullptr;       // удаляю содержимое
 				load--;                      // уменьшаю загруженность таблицы
 				return true;                 // возвращаю значение
