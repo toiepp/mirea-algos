@@ -31,7 +31,7 @@ void symmetric_print(TreeNode<T> *);
 
 // Функция обхода в ширину
 template<typename T>
-void level_print(TreeNode<T> *);
+void breadth_order_traversal(TreeNode<T> *);
 
 // Функция вычисления длины пути от корня до заданного значения
 template<typename T>
