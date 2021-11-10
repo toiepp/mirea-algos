@@ -165,7 +165,7 @@ void symmetric_print(TreeNode<T> *node) {
 }
 
 template<typename T>
-void level_print(TreeNode<T> *node) {
+void breadth_order_traversal(TreeNode<T> *node) {
 	if (node) {
 		std::queue<TreeNode<T> *> queue;
 		queue.push(node);
