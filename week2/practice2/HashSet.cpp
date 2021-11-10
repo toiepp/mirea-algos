@@ -7,20 +7,28 @@ void HashSet::put(Account &account) {
 	if (check >= load_factor) rehash();
 	int x = h1(account);
 	int y = h2(account);
+	// ищу куда вставить элемент
 	for (int i = 0; i < capacity; ++i) {
-		if (arr.at(x).data == nullptr) {
-			load++;
-			arr[x].data = &account;
-			return;
+		if (arr.at(x).data == nullptr) {// нашел пустую ячейку
+			load++;                     // увеличиваю загруженность
+			arr.at(x).data = &account;  // вставляю элементв в набор
+			return;                     // завершаю вставку
+		} else {                        // произошла коллизия
+			arr.at(x).collision = true; // указываю что произошла коллизия
+			x = (x + y) % capacity;     // ищу следующую ячейку
 		}
-		x = (x + y) % capacity;
 	}
 }
 
+/* WARN Коллизия не играет никакой
+ *  роли так как идет поиск по ключу,
+ *  а не хэш-коду */
 Account *HashSet::find(const std::string &key) const {
-	for (int i = 0; i < capacity; ++i) {
-		if (arr.at(i).data != nullptr) {
-			if (arr.at(i).data->name == key) { return arr.at(i).data; }
+	for (int i = 0; i < capacity; ++i) {      // прохожусь по всем ячейкам тадлицы
+		if (arr.at(i).data != nullptr) {      // если ячейка не пустая
+			if (arr.at(i).data->name == key) {// если ее ключ равен искомому
+				return arr.at(i).data;        // возвращаю содержимое ячейки
+			}
 		}
 	}
 	return nullptr;
@@ -29,15 +37,24 @@ Account *HashSet::find(const std::string &key) const {
 bool HashSet::find(Account &account) const {
 	int x = h1(account);
 	int y = h2(account);
-	for (int i = 0; i < capacity; ++i) {
-		if (arr.at(x).data != nullptr) {
-			if (*arr.at(x).data == account) {
-				return true;
+	for (int i = 0; i < capacity; ++i) {     // прохожусь по хэштаблице
+		if (arr.at(x).data != nullptr) {     // если нашел не пустую ячей
+			if (*arr.at(x).data == account) {// если равно искомому элементу
+				return true;                 // возвращаю значение
+			} else {                         // если не равно искомому значению
+				if (arr.at(x).collision) {   // если была коллизия
+					x = (x + y) % capacity;  // продолжаю поиск
+				} else {                     // если не было коллизии
+					return false;            // возвразаю значение
+				}
 			}
-		} else {
-			return false;
+		} else {                       // если ячейка была пустой
+			if (arr.at(x).collision) { // если была коллизия
+				x = (x + y) % capacity;// продолжаю поиск
+			} else {                   // если не было коллизии
+				return false;          // возвращаю значение
+			}
 		}
-		x = (x + y) % capacity;
 	}
 	return false;
 }
@@ -45,17 +62,24 @@ bool HashSet::find(Account &account) const {
 bool HashSet::remove(Account &account) {
 	int x = h1(account);
 	int y = h2(account);
-	for (int i = 0; i < capacity; ++i) {
-		if (arr.at(x).data != nullptr) {
-			if (*arr.at(x).data == account) {
-				arr[x].data = nullptr;
-				load--;
-				return true;
-			} else {
-				x = (x + y) % capacity;
+	for (int i = 0; i < capacity; ++i) {     // обхожу хэш-таблицу
+		if (arr.at(x).data != nullptr) {     // если найдена непустая ячейка
+			if (*arr.at(x).data == account) {// если равна искомой
+//				delete arr.at(x).data;       // освобождаю содердимое указателя
+				arr[x].data = nullptr;       // удаляю содержимое
+				load--;                      // уменьшаю загруженность таблицы
+				return true;                 // возвращаю значение
+			} else {                         // если ячейка не равна искомому значению
+				if (arr.at(x).collision) {   // если была коллизия
+					x = (x + y) % capacity;  // продолжаю поиск
+				} else {                     // если коллизии не было
+					return false;            // возвращаю значение
+				}
 			}
-		} else {
-			x = (x + y) % capacity;
+		} else {                       // если ячейка оказалася пустой
+			if (arr.at(x).collision) { // но была коллизия
+				x = (x + y) % capacity;// продолжаю поиск
+			}
 		}
 	}
 	return false;
@@ -67,6 +91,7 @@ void HashSet::print() const {
 			std::cout << "("
 					  << i << ", "
 					  << (*arr.at(i).data).hash_code()
+					  << ", " << ((arr.at(i).collision) ? 1 : 0)
 					  << "):\t" << (*arr.at(i).data) << std::endl;
 		} else {
 			std::cout << "(" << i << ", ___):" << std::endl;
@@ -122,23 +147,26 @@ void HashSet::rehash() {
 	load = 0;
 	std::vector<Node> new_arr = std::vector<Node>(capacity);
 	// Прохожусь по старому массиву и переношу их в новый
-	for (auto &acc : arr) {
-		if (acc.data != nullptr) {
+	for (auto &acc : arr) {       // прохожу по старой таблице
+		if (acc.data != nullptr) {// если ячейка старой таблицы непуста
 			int x = h1(*acc.data);
 			int y = h2(*acc.data);
-			for (int i = 0; i < capacity; ++i) {
-				if (new_arr.at(x).data == nullptr) {
-					load++;
-					new_arr[x].data = acc.data;
+			for (int i = 0; i < capacity; ++i) {    // ищу куда вставить элемент в новой таблице
+				if (new_arr.at(x).data == nullptr) {// если ячейка пуста
+					load++;                         // увеличиваю загруженность нового массива
+					new_arr[x].data = acc.data;     // вставляю в ячейку значение
 					break;
+				} else {                           // если ячейка была не пуста
+					new_arr.at(x).collision = true;// указываю что была коллизия
+					x = (x + y) % capacity;        // продолжаю поиск месте вставки
 				}
-				x = (x + y) % capacity;
 			}
 		}
 	}
 	arr.clear();
-	for (const auto& el : new_arr) {
-		arr.push_back(el);
+	arr.resize(new_arr.size());
+	for (size_t i = 0; i < new_arr.size(); ++i) {
+		arr[i] = new_arr.at(i);
 	}
 }
 
