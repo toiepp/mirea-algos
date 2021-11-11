@@ -1,0 +1,3 @@
+/home/mikholskiyivan/main/mirea/mirea-algos/CMakeFiles/rebuild_cache.dir
+/home/mikholskiyivan/main/mirea/mirea-algos/CMakeFiles/edit_cache.dir
+/home/mikholskiyivan/main/mirea/mirea-algos/CMakeFiles/mirea_algos.dir
