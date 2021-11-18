@@ -30,6 +30,10 @@ namespace util {
 				  << "}";
 		std::cout << " ]" << std::endl;
 	}
+
+	double sum(std::vector<double> &prob) {
+		return (double) std::accumulate(prob.begin(), prob.end(), 0.0);
+	}
 }// namespace util
 
 /* Задания
@@ -88,15 +92,15 @@ int main() {
 								 "Пятерка, шестерка,\n"
 								 "утюг.";
 
-	std::string default_str_en = "Do not go gentle into that good night,\n"
-								 "Old age should burn and rave at close of day;\n"
-								 "Rage, rage against the dying of the light.\n"
-								 "Though wise men at their end know dark is right,\n"
-								 "Because their words had forked no lightning they\n"
-								 "Do not go gentle into that good night.\n"
-								 "Rage, rage against the dying of the light.";
-//
-//	std::string default_str_en = "aaaaaaaaaabbbbaaabbbaaab";
+		std::string default_str_en = "Do not go gentle into that good night,\n"
+									 "Old age should burn and rave at close of day;\n"
+									 "Rage, rage against the dying of the light.\n"
+									 "Though wise men at their end know dark is right,\n"
+									 "Because their words had forked no lightning they\n"
+									 "Do not go gentle into that good night.\n"
+									 "Rage, rage against the dying of the light.";
+
+//	std::string default_str_en = "bbbbbbbbbbbbbbddddddddddddddddddddddddddddddddddddddeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeedddddddddddbbbbbbbbbbbbbbbbbbbbbbbbbaaaaaaaaaaaaaaaaaacccccccccccffffffffffffffffffffffffcccccccaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
 
 	LENGTH = default_str_en.size();
 
@@ -136,8 +140,6 @@ void shannon_fano(std::string &s, bool flag) {
 	// Строю дерево
 	Tree *root = new Tree(std::make_tuple(alphabet, probability));
 	build_prefix_tree(root);
-
-	return;
 }
 
 // ERR (неправильно работает построение префиксного дерева)
@@ -145,49 +147,49 @@ void build_prefix_tree(Tree *root) {
 	// если размер оставшихся буква равен 1, то это дерево построено
 	if (std::get<0>(root->data).size() == 1) return;
 	// считаю размер левой части
-	int size_of_left_side = 0;
-	double accumulate = 0;
-	double current_sum = sum(std::get<1>(root->data));
-	if (std::get<1>(root->data).at(0) >= 0.5 || std::get<1>(root->data).size() == 2) {
-		size_of_left_side = 1;
+	/*Посчитать кол-во элементов в правой половине поддерева,
+	 * так как шаг суммы будет меньше*/
+	int size_of_right_side = 0;
+	double accumulate = .0;
+	double current_sum = util::sum(std::get<1>(root->data));
+	if (std::get<1>(root->data).at(0) >= .5 || std::get<1>(root->data).size() == 2) {
+		size_of_right_side = std::get<1>(root->data).size() - 1;
 	} else {
-		for (int i = 0; i < std::get<0>(root->data).size(); ++i) {
+		for (size_t i = std::get<0>(root->data).size() - 1; i >= 0; --i) {
 			accumulate += std::get<1>(root->data).at(i);
 			if (accumulate >= current_sum / 2) {
-				size_of_left_side = i;
+				size_of_right_side = std::get<0>(root->data).size() - i;
 				break;
 			}
 		}
 	}
-	printf("%d", size_of_left_side);
+	printf("%d", size_of_right_side);
 
 	root->left = new Tree(
 			std::make_tuple(
 					std::vector<char>(
 							std::get<0>(root->data).begin(),
-							std::get<0>(root->data).begin() + size_of_left_side),
+							std::get<0>(root->data).end() - size_of_right_side),
 					std::vector<double>(
 							std::get<1>(root->data).begin(),
-							std::get<1>(root->data).begin() + size_of_left_side)));
+							std::get<1>(root->data).end() - size_of_right_side)));
 
 	root->right = new Tree(
 			std::make_tuple(
 					std::vector<char>(
-							std::get<0>(root->data).begin() + size_of_left_side,
+							std::get<0>(root->data).end() - size_of_right_side,
 							std::get<0>(root->data).end()),
 					std::vector<double>(
-							std::get<1>(root->data).begin() + size_of_left_side,
+							std::get<1>(root->data).end() - size_of_right_side,
 							std::get<1>(root->data).end())));
 
-	std::cout << std::endl << "=== === === ===" << std::endl;
+	std::cout << std::endl
+			  << "=== === === ===" << std::endl;
 	util::print_tuple(root->left->data);
 	util::print_tuple(root->right->data);
-	std::cout << std::endl << "=== === === ===" << std::endl;
+	std::cout << std::endl
+			  << "=== === === ===" << std::endl;
 
 	build_prefix_tree(root->left);
 	build_prefix_tree(root->right);
-}
-
-double sum(std::vector<double> &prob) {
-	return (double) std::accumulate(prob.begin(), prob.end(), 0.0);
 }
