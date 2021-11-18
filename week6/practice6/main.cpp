@@ -30,7 +30,7 @@ namespace util {
 				  << "}";
 		std::cout << " ]" << std::endl;
 	}
-}
+}// namespace util
 
 /* Задания
  * 1.
@@ -105,7 +105,6 @@ int main() {
 	return 0;
 }
 
-// ERR неправильно работает
 void shannon_fano(std::string &s, bool flag) {
 	SP p;// отображение символа, к его вероятности
 	for (size_t i = 0; i < s.size(); ++i) {
@@ -134,7 +133,6 @@ void shannon_fano(std::string &s, bool flag) {
 		}
 	}
 
-
 	// Строю дерево
 	Tree *root = new Tree(std::make_tuple(alphabet, probability));
 	build_prefix_tree(root);
@@ -142,7 +140,9 @@ void shannon_fano(std::string &s, bool flag) {
 	return;
 }
 
+// ERR (неправильно работает построение префиксного дерева)
 void build_prefix_tree(Tree *root) {
+	// если размер оставшихся буква равен 1, то это дерево построено
 	if (std::get<0>(root->data).size() == 1) return;
 	// считаю размер левой части
 	int size_of_left_side = 0;
@@ -189,9 +189,5 @@ void build_prefix_tree(Tree *root) {
 }
 
 double sum(std::vector<double> &prob) {
-	double res = 0.0;
-	for (size_t i = 0; i < prob.size(); ++i) {
-		res += prob.at(i);
-	}
-	return res;
+	return (double) std::accumulate(prob.begin(), prob.end(), 0.0);
 }
