@@ -1,11 +1,20 @@
 #include <iomanip>
 #include <iostream>
 #include <map>
-#include <set>
 #include <numeric>
+#include <set>
 #include <vector>
 
+std::vector<std::tuple<char, std::string>> CODES;
+
 namespace util {
+	std::string get_code(char symbol) {
+		for (int i = 0; i < CODES.size(); ++i) {
+			if (std::get<0>(CODES.at(i)) == symbol) return std::get<1>(CODES.at(i));
+		}
+		return "";
+	}
+
 	double sum(std::vector<double> &prob,
 			   std::vector<double>::iterator &begin,
 			   std::vector<double>::iterator &end) {
@@ -45,7 +54,7 @@ namespace util {
 			for (size_t i = end - 1; i >= start; --i) {
 				accumulate += std::get<1>(alph_prob).at(i);
 				if (accumulate >= current_sum / 2) {
-					size_of_right = end - i; // WARN неправильно расчитывается
+					size_of_right = end - i;// WARN неправильно расчитывается
 					std::get<1>(codes[i]) = "0" + std::get<1>(codes[i]);
 					break;
 				}
@@ -88,31 +97,33 @@ int main() {
 	std::cout << "=== Практическая работа №6 ===" << std::endl;
 	std::cout << "===       Вариант 19       ===" << std::endl;
 
-	// WARN Работает некорректно с кириллицей, т.к. не UTF-8 помещается в char
 	std::string default_str_ru = "Перводан, другодан,\n"
 								 "На колоде барабан;\n"
 								 "Свинистель, коростель,\n"
 								 "Пятерка, шестерка,\n"
 								 "утюг.";
 
-		std::string default_str_en = "Do not go gentle into that good night,\n"
-									 "Old age should burn and rave at close of day;\n"
-									 "Rage, rage against the dying of the light.\n"
-									 "Though wise men at their end know dark is right,\n"
-									 "Because their words had forked no lightning they\n"
-									 "Do not go gentle into that good night.\n"
-									 "Rage, rage against the dying of the light.";
+	std::string default_str_en = "Do not go gentle into that good night,\n"
+								 "Old age should burn and rave at close of day;\n"
+								 "Rage, rage against the dying of the light.\n"
+								 "Though wise men at their end know dark is right,\n"
+								 "Because their words had forked no lightning they\n"
+								 "Do not go gentle into that good night.\n"
+								 "Rage, rage against the dying of the light.";
 
+//	default_str_en = "accaabaabaacc";
+	std::cout << default_str_en.size() << std::endl;
 	shannon_fano(default_str_en);
+	std::cout << default_str_en << std::endl;
 
 	return 0;
 }
 
-void shannon_fano(std::string &s, bool flag) {
-	if (flag) { // если надо закодировать строку
+void shannon_fano(std::string &string, bool flag) {
+	if (flag) {                  // если надо закодировать строку
 		std::map<char, double> p;// отображение символа, к его вероятности
-		for (size_t i = 0; i < s.size(); ++i) {
-			p[s[i]] += (1 / (double) s.size());
+		for (size_t i = 0; i < string.size(); ++i) {
+			p[string[i]] += (1 / (double) string.size());
 		}
 
 		std::vector<char> alphabet;
@@ -123,7 +134,7 @@ void shannon_fano(std::string &s, bool flag) {
 			probability.push_back(e.second);
 		}
 
-		// сортирую массивы по невозрастанию вероятности
+		//		 сортирую массивы по невозрастанию вероятности
 		for (size_t i = 1; i < alphabet.size(); ++i) {
 			for (size_t j = 0; j < alphabet.size() - i; ++j) {
 				if (probability.at(j) < probability.at(j + 1)) {
@@ -138,18 +149,20 @@ void shannon_fano(std::string &s, bool flag) {
 		}
 
 		// вектор кодов симполов
-		std::vector<std::tuple<char, std::string>> codes(alphabet.size());
+		CODES = std::vector<std::tuple<char, std::string>>(alphabet.size());
 		for (size_t i = 0; i < alphabet.size(); ++i) {
-			std::get<0>(codes.at(i)) = alphabet.at(i);
-			std::get<1>(codes.at(i)) = "";
+			std::get<0>(CODES.at(i)) = alphabet.at(i);
+			std::get<1>(CODES.at(i)) = "";
 		}
 		// передаю вектор функции, которая найдет коды
-		util::find_codes(codes, std::make_tuple(alphabet, probability), 0, alphabet.size());
+		util::find_codes(CODES, std::make_tuple(alphabet, probability), 0, alphabet.size());
 
-		// Таблица кодов построена
 		// Кодирование строки
-	}
-	else { // если надо расшифровать строку
-
+		std::string result;
+		for (size_t i = 0; i < string.size(); ++i) {
+			result += util::get_code(string.at(i));
+		}
+		string = result;
+	} else {// если надо расшифровать строку
 	}
 }
