@@ -14,64 +14,68 @@
 //};
 
 namespace util {
-	double sum(std::vector<double> &prob) {
-		return static_cast<double>(std::accumulate(prob.begin(), prob.end(), .0));
+	double sum(std::vector<double> &prob,
+			   std::vector<double>::iterator &begin,
+			   std::vector<double>::iterator &end) {
+		return static_cast<double>(std::accumulate(begin, end, .0));
 	}
 
 	// метод нахождения кодов символов
 	void find_codes(std::vector<std::tuple<char, std::string>> &codes,
 					std::tuple<std::vector<char>, std::vector<double>> alph_prob,
 					size_t start,
-					size_t end) {
+					size_t end /*end указывает на элемент, который после последнего, так же как итератор*/) {
 		// если длина вектора равна одному символу, то ничего делать не надо
-		if (std::get<0>(alph_prob).size() == 1) return;
-		int size_of_right = 0;// длина правой стороны
-		double accumulate = .0;
-		double current_sum = sum(std::get<1>(alph_prob));
+		int break_condition = end - start;
+		if (break_condition == 1) return;
+
+		int size_of_right = 0; // длина правой стороны
+		double accumulate = .0;// сумма вероятностей правой стороны
+
+		// начало подсчета суммы участка, который надо разделить
+		std::vector<double>::iterator start_of_current = std::get<1>(alph_prob).begin() + start;
+		// конец подсчета суммы участка, который надо разделить
+		std::vector<double>::iterator end_of_current = std::get<1>(alph_prob).begin() + end;
+		double current_sum = sum(std::get<1>(alph_prob), start_of_current, end_of_current);
+
 		// если первый элемент больше половины общей суммы или размер подгруппы равен 2
-		if (std::get<1>(alph_prob).at(0) >= (current_sum / 2) || std::get<1>(alph_prob).size() == 2) {
-			size_of_right = std::get<1>(alph_prob).size() - 1;
+		if (*start_of_current >= (current_sum / 2) || std::distance(start_of_current, end_of_current) == 1) {
+			// Расстояние между елементом, после первого элемента участка, до его конца
+			size_of_right = std::distance(start_of_current + 1, end_of_current);
 			// для левой половины у всех добавляю единицу
-			std::get<1>(codes[0]) = "1" + std::get<1>(codes[0]);
+			std::get<1>(codes[start]) = "1" + std::get<1>(codes[start]);
 			// для правой части добавляю единицу
-			for (size_t i = 1; i < codes.size(); ++i) { // WARN поменять пределы циклов
+			for (size_t i = start + 1; i < end; ++i) {
 				std::get<1>(codes[i]) = "0" + std::get<1>(codes[i]);
 			}
-		} else {
-			for (size_t i = std::get<1>(alph_prob).size() - 1; i >= 0; --i) {
+		} else {// если левый участок больше единицы
+			// прохожусь по правой часте участка
+			for (size_t i = end - 1; i >= start; --i) {
 				accumulate += std::get<1>(alph_prob).at(i);
 				if (accumulate >= current_sum / 2) {
-					size_of_right = std::get<0>(alph_prob).size() - i;
+					size_of_right = end - i; // WARN неправильно расчитывается
 					std::get<1>(codes[i]) = "0" + std::get<1>(codes[i]);
 					break;
-				} else {
-					std::get<1>(codes[i]) = "0" + std::get<1>(codes[i]);
 				}
+				std::get<1>(codes[i]) = "0" + std::get<1>(codes[i]);
 			}
-			for (int i = 0; i < std::get<1>(alph_prob).size() - size_of_right; ++i) {
+			// WARN что-то не так
+			for (int i = start; i < end - size_of_right; ++i) {
 				std::get<1>(codes[i]) = "1" + std::get<1>(codes[i]);
 			}
 		}
-		// ERR работает только на первом цикле рекурсии так как основано не на ссылках
-		// левые и правые подструктуры
-		std::vector<std::tuple<char, std::string>> left(codes.begin(), codes.end() - size_of_right);
-		std::vector<std::tuple<char, std::string>> right(codes.end() - size_of_right, codes.end());
 
-		// новый алфавит, для новой подструктуры
-		std::tuple<std::vector<char>, std::vector<double>> left_alph_prob;
-		std::tuple<std::vector<char>, std::vector<double>> right_alph_prob;
+		size_t new_left_start = start;
+		size_t new_left_end = end - size_of_right;
+		find_codes(codes, alph_prob,
+				   new_left_start, new_left_end);// передаю на обработку правую часть
 
-		// подалфавит равен под массивам алфавила
-		std::get<0>(left_alph_prob) = std::vector<char>(std::get<0>(alph_prob).begin(), std::get<0>(alph_prob).end() - size_of_right);
-		std::get<1>(left_alph_prob) = std::vector<double>(std::get<1>(alph_prob).begin(), std::get<1>(alph_prob).end() - size_of_right);
-
-		std::get<0>(right_alph_prob) = std::vector<char>(std::get<0>(alph_prob).end() - size_of_right, std::get<0>(alph_prob).end());
-		std::get<1>(right_alph_prob) = std::vector<double>(std::get<1>(alph_prob).end() - size_of_right, std::get<1>(alph_prob).end());
-
-		find_codes(left, left_alph_prob);
-		find_codes(right, right_alph_prob);
+		size_t new_right_start = new_left_end;
+		size_t new_right_end = new_right_start + size_of_right;
+		find_codes(codes, alph_prob,
+				   new_right_start, new_right_end);// передаю на обработку левую часть
 	}
-}
+}// namespace util
 
 
 /*
@@ -109,17 +113,17 @@ int main() {
 								 "Пятерка, шестерка,\n"
 								 "утюг.";
 
-	//	std::string default_str_en = "Do not go gentle into that good night,\n"
-	//								 "Old age should burn and rave at close of day;\n"
-	//								 "Rage, rage against the dying of the light.\n"
-	//								 "Though wise men at their end know dark is right,\n"
-	//								 "Because their words had forked no lightning they\n"
-	//								 "Do not go gentle into that good night.\n"
-	//								 "Rage, rage against the dying of the light.";
+//		std::string default_str_en = "Do not go gentle into that good night,\n"
+//									 "Old age should burn and rave at close of day;\n"
+//									 "Rage, rage against the dying of the light.\n"
+//									 "Though wise men at their end know dark is right,\n"
+//									 "Because their words had forked no lightning they\n"
+//									 "Do not go gentle into that good night.\n"
+//									 "Rage, rage against the dying of the light.";
+//
+//	std::string default_str_en = "bbbbbbbbbbbbbbddddddddddddddddddddddddddddddddddddddeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeedddddddddddbbbbbbbbbbbbbbbbbbbbbbbbbaaaaaaaaaaaaaaaaaacccccccccccffffffffffffffffffffffffcccccccaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
 
-	std::string default_str_en = "bbbbbbbbbbbbbbddddddddddddddddddddddddddddddddddddddeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeedddddddddddbbbbbbbbbbbbbbbbbbbbbbbbbaaaaaaaaaaaaaaaaaacccccccccccffffffffffffffffffffffffcccccccaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
-
-	LENGTH = default_str_en.size();
+	std::string default_str_en = "aaaaabbbccccccccc";
 
 	shannon_fano(default_str_en);
 
