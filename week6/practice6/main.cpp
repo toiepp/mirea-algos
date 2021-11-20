@@ -113,17 +113,13 @@ int main() {
 								 "Пятерка, шестерка,\n"
 								 "утюг.";
 
-//		std::string default_str_en = "Do not go gentle into that good night,\n"
-//									 "Old age should burn and rave at close of day;\n"
-//									 "Rage, rage against the dying of the light.\n"
-//									 "Though wise men at their end know dark is right,\n"
-//									 "Because their words had forked no lightning they\n"
-//									 "Do not go gentle into that good night.\n"
-//									 "Rage, rage against the dying of the light.";
-//
-//	std::string default_str_en = "bbbbbbbbbbbbbbddddddddddddddddddddddddddddddddddddddeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeedddddddddddbbbbbbbbbbbbbbbbbbbbbbbbbaaaaaaaaaaaaaaaaaacccccccccccffffffffffffffffffffffffcccccccaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
-
-	std::string default_str_en = "aaaaabbbccccccccc";
+		std::string default_str_en = "Do not go gentle into that good night,\n"
+									 "Old age should burn and rave at close of day;\n"
+									 "Rage, rage against the dying of the light.\n"
+									 "Though wise men at their end know dark is right,\n"
+									 "Because their words had forked no lightning they\n"
+									 "Do not go gentle into that good night.\n"
+									 "Rage, rage against the dying of the light.";
 
 	shannon_fano(default_str_en);
 
@@ -167,8 +163,7 @@ void shannon_fano(std::string &s, bool flag) {
 	// передаю вектор функции, которая найдет коды
 	util::find_codes(codes, std::make_tuple(alphabet, probability), 0, alphabet.size());
 
-	return;
-	// Строю дерево
-	//	Tree *root = new Tree(std::make_tuple(alphabet, probability));
-	//	build_prefix_tree(root);
+	for (auto &t : codes) {
+		std::cout << std::get<0>(t) << " = " << std::get<1>(t) << std::endl;
+	}
 }
