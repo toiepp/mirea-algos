@@ -1,17 +1,9 @@
 #include <iomanip>
 #include <iostream>
 #include <map>
+#include <set>
 #include <numeric>
 #include <vector>
-
-//struct Tree {
-//	Tree *left = nullptr;
-//	Tree *right = nullptr;
-//	std::tuple<std::vector<char>, std::vector<double>> data;
-//
-//	Tree(std::tuple<std::vector<char>, std::vector<double>> data)
-//		: data(data) {}
-//};
 
 namespace util {
 	double sum(std::vector<double> &prob,
@@ -24,7 +16,7 @@ namespace util {
 	void find_codes(std::vector<std::tuple<char, std::string>> &codes,
 					std::tuple<std::vector<char>, std::vector<double>> alph_prob,
 					size_t start,
-					size_t end /*end указывает на элемент, который после последнего, так же как итератор*/) {
+					size_t end) {
 		// если длина вектора равна одному символу, то ничего делать не надо
 		int break_condition = end - start;
 		if (break_condition == 1) return;
@@ -80,22 +72,12 @@ namespace util {
 
 /*
  * LZ77, LZ78 https://neerc.ifmo.ru/wiki/index.php?title=%D0%90%D0%BB%D0%B3%D0%BE%D1%80%D0%B8%D1%82%D0%BC%D1%8B_LZ77_%D0%B8_LZ78
- * Код Шеннона https://neerc.ifmo.ru/wiki/index.php?title=%D0%9A%D0%BE%D0%B4_%D0%A8%D0%B5%D0%BD%D0%BD%D0%BE%D0%BD%D0%B0
  * */
 
 // flag = false -- decode
 // flag = true -- encode
 // Алгоритм Шеннона-Фано
-/*
- * Кодовый алфавит: B = {0, 1}
- * 1. Определить вероятности встречи символов в тексте;
- * 2. Упорядочить символы исходного алфавита по невозрастанию вероятности встрети;
- * 3. Разделить последовательность на две группы, чтобы суммы вероятностей в обеих были равны;
- * 	  WARN ??? Если равенство не выполняется: влево - туда, где сумма меньше, вправо - туда, где больше
- * 4. Формуруем дерево: группе слева - 0, справа - 1;
- * 5. Продолжаем с шага 3, пока в каждой группе не будет по 1 символу
- * */
-void shannon_fano(std::string &s, bool flag = false);
+void shannon_fano(std::string &s, bool flag = true);
 
 // Алгоритм Лемпеля-Зива-Уэлча
 void lz77();
@@ -127,43 +109,47 @@ int main() {
 }
 
 void shannon_fano(std::string &s, bool flag) {
-	std::map<char, double> p;// отображение символа, к его вероятности
-	for (size_t i = 0; i < s.size(); ++i) {
-		p[s[i]] += (1 / (double) s.size());
-	}
+	if (flag) { // если надо закодировать строку
+		std::map<char, double> p;// отображение символа, к его вероятности
+		for (size_t i = 0; i < s.size(); ++i) {
+			p[s[i]] += (1 / (double) s.size());
+		}
 
-	std::vector<char> alphabet;
-	std::vector<double> probability;
+		std::vector<char> alphabet;
+		std::vector<double> probability;
 
-	for (auto &e : p) {
-		alphabet.push_back(e.first);
-		probability.push_back(e.second);
-	}
+		for (auto &e : p) {
+			alphabet.push_back(e.first);
+			probability.push_back(e.second);
+		}
 
-	// сортирую массивы по невозрастанию вероятности
-	for (size_t i = 1; i < alphabet.size(); ++i) {
-		for (size_t j = 0; j < alphabet.size() - i; ++j) {
-			if (probability.at(j) < probability.at(j + 1)) {
-				double tmp = probability.at(j);
-				probability[j] = probability.at(j + 1);
-				probability[j + 1] = tmp;
-				char tmpc = alphabet.at(j);
-				alphabet[j] = alphabet.at(j + 1);
-				alphabet[j + 1] = tmpc;
+		// сортирую массивы по невозрастанию вероятности
+		for (size_t i = 1; i < alphabet.size(); ++i) {
+			for (size_t j = 0; j < alphabet.size() - i; ++j) {
+				if (probability.at(j) < probability.at(j + 1)) {
+					double tmp = probability.at(j);
+					probability[j] = probability.at(j + 1);
+					probability[j + 1] = tmp;
+					char tmpc = alphabet.at(j);
+					alphabet[j] = alphabet.at(j + 1);
+					alphabet[j + 1] = tmpc;
+				}
 			}
 		}
-	}
 
-	// вектор кодов симполов
-	std::vector<std::tuple<char, std::string>> codes(alphabet.size());
-	for (size_t i = 0; i < alphabet.size(); ++i) {
-		std::get<0>(codes.at(i)) = alphabet.at(i);
-		std::get<1>(codes.at(i)) = "";
-	}
-	// передаю вектор функции, которая найдет коды
-	util::find_codes(codes, std::make_tuple(alphabet, probability), 0, alphabet.size());
+		// вектор кодов симполов
+		std::vector<std::tuple<char, std::string>> codes(alphabet.size());
+		for (size_t i = 0; i < alphabet.size(); ++i) {
+			std::get<0>(codes.at(i)) = alphabet.at(i);
+			std::get<1>(codes.at(i)) = "";
+		}
+		// передаю вектор функции, которая найдет коды
+		util::find_codes(codes, std::make_tuple(alphabet, probability), 0, alphabet.size());
 
-	for (auto &t : codes) {
-		std::cout << std::get<0>(t) << " = " << std::get<1>(t) << std::endl;
+		// Таблица кодов построена
+		// Кодирование строки
+	}
+	else { // если надо расшифровать строку
+
 	}
 }
