@@ -5,18 +5,20 @@
 #include <set>
 #include <vector>
 
-std::vector<std::tuple<char, std::string>> CODES;
+std::vector<std::pair<char, std::string>> CODES;
 
 namespace util {
 	void print_codes() {
-		for (std::tuple<char, std::string> &t : CODES) {
-			std::cout << std::get<0>(t) << " = " << std::get<1>(t) << std::endl;
+		for (std::pair<char, std::string> &t : CODES) {
+			std::cout << t.first << " = " << t.second << std::endl;
 		}
 	}
 
 	std::string get_code(char symbol) {
-		for (std::tuple<char, std::string> &i : CODES) {
-			if (std::get<0>(i) == symbol) return std::get<1>(i);
+		for (std::pair<char, std::string> &i : CODES) {
+			if (i.first == symbol) {
+				return i.second;
+			}
 		}
 		return "";
 	}
@@ -28,8 +30,8 @@ namespace util {
 	}
 
 	// метод нахождения кодов символов
-	void find_codes(std::vector<std::tuple<char, std::string>> &codes,
-					std::tuple<std::vector<char>, std::vector<double>> alph_prob,
+	void find_codes(std::vector<std::pair<char, std::string>> &codes,
+					std::pair<std::vector<char>, std::vector<double>> alph_prob,
 					size_t start,
 					size_t end) {
 		// если длина вектора равна одному символу, то ничего делать не надо
@@ -40,34 +42,34 @@ namespace util {
 		double accumulate = .0;// сумма вероятностей правой стороны
 
 		// начало подсчета суммы участка, который надо разделить
-		std::vector<double>::iterator start_of_current = std::get<1>(alph_prob).begin() + start;
+		std::vector<double>::iterator start_of_current = alph_prob.second.begin() + start;
 		// конец подсчета суммы участка, который надо разделить
-		std::vector<double>::iterator end_of_current = std::get<1>(alph_prob).begin() + end;
-		double current_sum = sum(std::get<1>(alph_prob), start_of_current, end_of_current);
+		std::vector<double>::iterator end_of_current = alph_prob.second.begin() + end;
+		double current_sum = sum(alph_prob.second, start_of_current, end_of_current);
 
 		// если первый элемент больше половины общей суммы или размер подгруппы равен 2
 		if (*start_of_current >= (current_sum / 2) || std::distance(start_of_current, end_of_current) == 1) {
 			// Расстояние между елементом, после первого элемента участка, до его конца
 			size_of_right = static_cast<int>(std::distance(start_of_current + 1, end_of_current));
 			// для левой половины у всех добавляю единицу
-			std::get<1>(codes[start]) = "1" + std::get<1>(codes[start]);
+			codes[start].second = "1" + codes[start].second;
 			// для правой части добавляю единицу
 			for (size_t i = start + 1; i < end; ++i) {
-				std::get<1>(codes[i]) = "0" + std::get<1>(codes[i]);
+				codes[i].second = "0" + codes[i].second;
 			}
 		} else {// если левый участок больше единицы
 			// прохожусь по правой часте участка
 			for (size_t i = end - 1; i >= start; --i) {
 				accumulate += std::get<1>(alph_prob).at(i);
-				std::get<1>(codes[i]) = "0" + std::get<1>(codes[i]);
+				codes[i].second = "0" + codes[i].second;
 				if (accumulate >= current_sum / 2) {
 					size_of_right = end - i;
-//					std::get<1>(codes[i]) = "0" + std::get<1>(codes[i]);
+					//					std::get<1>(codes[i]) = "0" + std::get<1>(codes[i]);
 					break;
 				}
 			}
 			for (size_t i = start; i < end - size_of_right; ++i) {
-				std::get<1>(codes[i]) = "1" + std::get<1>(codes[i]);
+				codes[i].second = "1" + codes[i].second;
 			}
 		}
 
@@ -109,12 +111,12 @@ int main() {
 								 "утюг.";
 
 	std::string default_str_en_long = "Do not go gentle into that good night,\n"
-								 "Old age should burn and rave at close of day;\n"
-								 "Rage, rage against the dying of the light.\n"
-								 "Though wise men at their end know dark is right,\n"
-								 "Because their words had forked no lightning they\n"
-								 "Do not go gentle into that good night.\n"
-								 "Rage, rage against the dying of the light.";
+									  "Old age should burn and rave at close of day;\n"
+									  "Rage, rage against the dying of the light.\n"
+									  "Though wise men at their end know dark is right,\n"
+									  "Because their words had forked no lightning they\n"
+									  "Do not go gentle into that good night.\n"
+									  "Rage, rage against the dying of the light.";
 
 	std::string default_str_en_short = "accaabaabaacc";
 
@@ -164,13 +166,13 @@ void shannon_fano(std::string &string, bool flag) {
 		}
 
 		// вектор кодов симполов
-		CODES = std::vector<std::tuple<char, std::string>>(alphabet.size());
+		CODES = std::vector<std::pair<char, std::string>>(alphabet.size());
 		for (size_t i = 0; i < alphabet.size(); ++i) {
 			std::get<0>(CODES.at(i)) = alphabet.at(i);
 			std::get<1>(CODES.at(i)) = "";
 		}
 		// передаю вектор функции, которая найдет коды
-		util::find_codes(CODES, std::make_tuple(alphabet, probability), 0, alphabet.size());
+		util::find_codes(CODES, std::make_pair(alphabet, probability), 0, alphabet.size());
 
 		// Кодирование строки
 		std::string result;
