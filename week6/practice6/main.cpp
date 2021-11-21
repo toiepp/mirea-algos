@@ -1,3 +1,5 @@
+#include <bitset>
+#include <cmath>
 #include <iomanip>
 #include <iostream>
 #include <map>
@@ -8,6 +10,19 @@ std::vector<std::pair<char, std::string>> CODES;
 std::pair<std::vector<char>, std::vector<double>> AP;
 
 namespace util {
+	std::string str_to_bint(int n, size_t size) {
+		std::string result;
+
+		for (int i = size - 1; i >= 0; i--) {
+			int k = n >> i;
+			if (k & 1) result += "1";
+			else
+				result += "0";
+		}
+
+		return result;
+	}
+
 	void test(std::string &s, void (*func)(std::string &, bool)) {
 		std::cout << "Изначально:\n"
 				  << s << std::endl;
@@ -54,9 +69,7 @@ namespace util {
 	}
 
 	// метод нахождения кодов символов
-	void find_codes_shannon_fano_method(std::pair<std::vector<char>, std::vector<double>> alph_prob,
-										size_t start,
-										size_t end) {
+	void find_codes_shannon_fano_method(size_t start, size_t end) {
 		// если длина вектора равна одному символу, то ничего делать не надо
 		int break_condition = end - start;
 		if (break_condition == 1) return;
@@ -64,9 +77,9 @@ namespace util {
 		int size_of_right = 0;// длина правой стороны
 
 		// начало подсчета суммы участка, который надо разделить
-		std::vector<double>::iterator start_of_current = alph_prob.second.begin() + start;
+		std::vector<double>::iterator start_of_current = AP.second.begin() + start;
 		// конец подсчета суммы участка, который надо разделить
-		std::vector<double>::iterator end_of_current = alph_prob.second.begin() + end;
+		std::vector<double>::iterator end_of_current = AP.second.begin() + end;
 		double current_sum = sum(start_of_current, end_of_current);
 
 		// если первый элемент больше половины общей суммы или размер подгруппы равен 2
@@ -83,7 +96,7 @@ namespace util {
 			// прохожусь по правой часте участка
 			double accumulate = .0;// сумма вероятностей правой стороны
 			for (size_t i = end - 1; i >= start; --i) {
-				accumulate += alph_prob.second.at(i);// текущая сумма правой части
+				accumulate += AP.second.at(i);// текущая сумма правой части
 				if (accumulate >= current_sum / 2) {
 					// если разница между частями после прибавления последнего элемента больше чем до
 					size_of_right = end - i - 1;
@@ -106,19 +119,38 @@ namespace util {
 
 		size_t new_left_start = start;
 		size_t new_left_end = end - size_of_right;
-		find_codes_shannon_fano_method(alph_prob,
-									   new_left_start, new_left_end);// передаю на обработку правую часть
+		find_codes_shannon_fano_method(new_left_start, new_left_end);// передаю на обработку правую часть
 
 		size_t new_right_start = new_left_end;
 		size_t new_right_end = new_right_start + size_of_right;
-		find_codes_shannon_fano_method(alph_prob,
-									   new_right_start, new_right_end);// передаю на обработку левую часть
+		find_codes_shannon_fano_method(new_right_start, new_right_end);// передаю на обработку левую часть
 	}
 
-	void find_codes_huffman_method(std::pair<std::vector<char>, std::vector<double>> alph_prob,
-								   size_t start,
-								   size_t end) {
+	void find_codes_huffman_method() {
+		auto codes = &CODES;
+		// Если кол-во оставшихся символов будет нечетно,
+		// то обрываю обход, и увеличиваю шаг обхода
+		int max_code_size = 1;
+		while (std::pow(2, max_code_size) < CODES.size()) {
+			max_code_size++;
+		}
 
+		size_t full_part_size = std::pow(2, max_code_size - 1);
+		std::vector<unsigned int> possible(full_part_size);
+		for (size_t i = 0; i < possible.size(); ++i) {
+			possible[i] = full_part_size + i;
+		}
+
+		size_t begin = CODES.size() - full_part_size;
+		for (size_t i = begin; i < CODES.size(); ++i) {
+			int p = possible.at(i - begin);
+			std::string code = util::str_to_bint(p, max_code_size);// положить этот код
+			CODES.at(i).second = code;
+		}
+
+		CODES.at(0).second = "0";
+
+		return;
 	}
 }// namespace util
 
@@ -164,9 +196,14 @@ int main() {
 									   "eeeeeeeee"
 									   "fffffff";
 
-	util::test(default_str_ru, shannon_fano);
-	util::test(default_str_en_long, shannon_fano);
-	util::test(default_str_en_short, shannon_fano);
+	//		util::test(default_str_ru, shannon_fano);
+	//		util::test(default_str_en_long, shannon_fano);
+	//		util::test(default_str_en_short, shannon_fano);
+
+	//	util::test(default_str_ru, huffman);
+//		util::test(default_str_en_long, huffman);
+	default_str_en_short = "абвгдеёжзийклмнопрстуфхцчшщъыьэюя";
+	util::test(default_str_en_short, huffman);
 
 	return 0;
 }
@@ -208,7 +245,7 @@ void shannon_fano(std::string &string, bool flag) {
 		}
 		// передаю вектор функции, которая найдет коды
 		AP = std::make_pair(alphabet, probability);
-		util::find_codes_shannon_fano_method(std::make_pair(alphabet, probability), 0, alphabet.size());
+		util::find_codes_shannon_fano_method(0, alphabet.size());
 
 		// Кодирование строки
 		std::string result;
@@ -278,7 +315,7 @@ void huffman(std::string &string, bool flag) {
 			std::get<1>(CODES.at(i)) = "";
 		}
 
-		util::find_codes_huffman_method(std::make_pair(alphabet, probability), 0, alphabet.size());
+		util::find_codes_huffman_method();
 		std::string result;
 		for (const char &c : string) {
 			result += util::get_code(c);
