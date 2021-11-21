@@ -2,13 +2,25 @@
 #include <iostream>
 #include <map>
 #include <numeric>
-#include <set>
 #include <vector>
 
 std::vector<std::pair<char, std::string>> CODES;
 std::pair<std::vector<char>, std::vector<double>> AP;
 
 namespace util {
+	void test(std::string &s, void (*func)(std::string &, bool)) {
+		std::cout << "Изначально:\n"
+				  << s << std::endl;
+		func(s, true);
+		std::cout << "Закодировано:\n"
+				  << s << std::endl;
+		func(s, false);
+		std::cout << "Раскодировано:\n"
+				  << s << std::endl
+				  << std::endl;
+		CODES.clear();
+	}
+
 	void print_codes() {
 		std::for_each(CODES.begin(), CODES.end(), [](const auto &t) {
 			std::cout << ((t.first == '\n') ? '@' : t.first) << " = " << std::setw(10) << std::right << t.second << std::endl;
@@ -42,10 +54,9 @@ namespace util {
 	}
 
 	// метод нахождения кодов символов
-	void find_codes(std::vector<std::pair<char, std::string>> &codes,
-					std::pair<std::vector<char>, std::vector<double>> alph_prob,
-					size_t start,
-					size_t end) {
+	void find_codes_shannon_fano_method(std::pair<std::vector<char>, std::vector<double>> alph_prob,
+										size_t start,
+										size_t end) {
 		// если длина вектора равна одному символу, то ничего делать не надо
 		int break_condition = end - start;
 		if (break_condition == 1) return;
@@ -63,10 +74,10 @@ namespace util {
 			// Расстояние между елементом, после первого элемента участка, до его конца
 			size_of_right = static_cast<int>(std::distance(start_of_current + 1, end_of_current));
 			// для левой половины у всех добавляю единицу
-			codes[start].second = codes[start].second.append("0");
+			CODES[start].second = CODES[start].second.append("0");
 			// для правой части добавляю единицу
 			for (size_t i = start + 1; i < end; ++i) {
-				codes[i].second = codes[i].second.append("1");
+				CODES[i].second = CODES[i].second.append("1");
 			}
 		} else {// если левый участок больше единицы
 			// прохожусь по правой часте участка
@@ -81,27 +92,33 @@ namespace util {
 					// сумма правой части после прибавления
 					double after = accumulate;
 					if (std::abs(current_sum / 2 - before) >= std::abs(current_sum / 2 - after)) {
-						codes.at(i).second = codes.at(i).second.append("1");
+						CODES.at(i).second = CODES.at(i).second.append("1");
 						size_of_right++;
 					}
 					break;
 				}
-				codes[i].second = codes[i].second.append("1");
+				CODES[i].second = CODES[i].second.append("1");
 			}
 			for (size_t i = start; i < end - size_of_right; ++i) {
-				codes[i].second = codes[i].second.append("0");
+				CODES[i].second = CODES[i].second.append("0");
 			}
 		}
 
 		size_t new_left_start = start;
 		size_t new_left_end = end - size_of_right;
-		find_codes(codes, alph_prob,
-				   new_left_start, new_left_end);// передаю на обработку правую часть
+		find_codes_shannon_fano_method(alph_prob,
+									   new_left_start, new_left_end);// передаю на обработку правую часть
 
 		size_t new_right_start = new_left_end;
 		size_t new_right_end = new_right_start + size_of_right;
-		find_codes(codes, alph_prob,
-				   new_right_start, new_right_end);// передаю на обработку левую часть
+		find_codes_shannon_fano_method(alph_prob,
+									   new_right_start, new_right_end);// передаю на обработку левую часть
+	}
+
+	void find_codes_huffman_method(std::pair<std::vector<char>, std::vector<double>> alph_prob,
+								   size_t start,
+								   size_t end) {
+
 	}
 }// namespace util
 
@@ -113,7 +130,9 @@ namespace util {
 // flag = false -- decode
 // flag = true -- encode
 // Алгоритм Шеннона-Фано
-void shannon_fano(std::string &s, bool flag = true);
+void shannon_fano(std::string &, bool flag = true);
+
+void huffman(std::string &, bool flag = true);
 
 // Алгоритм Лемпеля-Зива-Уэлча
 void lz77();
@@ -145,27 +164,9 @@ int main() {
 									   "eeeeeeeee"
 									   "fffffff";
 
-	default_str_en_short = "aaabbc";
-
-	std::cout << "Изначально: " << default_str_en_long << std::endl;
-	shannon_fano(default_str_en_long);
-	util::print_codes();
-	util::print_AP();
-	std::cout << "Закодировано:\t" << default_str_en_long << std::endl;
-	shannon_fano(default_str_en_long, false);
-	std::cout << "Раскодировано:\t" << default_str_en_long << std::endl
-			  << std::endl;
-	CODES.clear();
-
-	std::cout << "Изначально: " << default_str_en_short << std::endl;
-	shannon_fano(default_str_en_short);
-	util::print_codes();
-	util::print_AP();
-	std::cout << "Закодировано:\t" << default_str_en_short << std::endl;
-	shannon_fano(default_str_en_short, false);
-	std::cout << "Раскодировано:\t" << default_str_en_short << std::endl
-			  << std::endl;
-	CODES.clear();
+	util::test(default_str_ru, shannon_fano);
+	util::test(default_str_en_long, shannon_fano);
+	util::test(default_str_en_short, shannon_fano);
 
 	return 0;
 }
@@ -207,7 +208,7 @@ void shannon_fano(std::string &string, bool flag) {
 		}
 		// передаю вектор функции, которая найдет коды
 		AP = std::make_pair(alphabet, probability);
-		util::find_codes(CODES, std::make_pair(alphabet, probability), 0, alphabet.size());
+		util::find_codes_shannon_fano_method(std::make_pair(alphabet, probability), 0, alphabet.size());
 
 		// Кодирование строки
 		std::string result;
@@ -217,17 +218,77 @@ void shannon_fano(std::string &string, bool flag) {
 		string = result;
 	} else {
 		// размер минимально возможного кода
-		/* 1. Получить первый код последовательности,
-		 * 	  равный минимально возможному коду
-		 * 2. Проверить, есть ли он в таблице кодов
-		 * 	  1. Если есть, то заменить код на символ
-		 * 	  2. Если нет, добавить к коду следующий символ строки*/
 		// результат декодирования строки
 		std::string result;
 		// длина минимально возможного кода
 		size_t min = CODES.at(0).second.length();
-		// 111101101000010000100010
-		for (int i = 0; i < string.size(); ) {
+		for (int i = 0; i < string.size();) {
+			// получаю минимально возможный код
+			std::string code = string.substr(i, min);
+			// получаю символ по его коду или итератор end(), если такого кода нет
+			std::vector<std::pair<char, std::string>>::iterator symbol = util::get_symbol(code);
+			// пока соотв. код не нашелся
+			while (symbol == CODES.end()) {
+				// добавляю к код следующий символ
+				code += string.substr(i + min, 1);
+				min += 1;
+				// получаю символ по коду
+				symbol = util::get_symbol(code);
+			}
+			result += symbol->first;
+			min = CODES.at(0).second.length();
+			i += code.length();
+		}
+		string = result;
+	}
+}
+
+void huffman(std::string &string, bool flag) {
+	if (flag) {
+		std::map<char, double> p;// отображение символа, к его вероятности
+		for (size_t i = 0; i < string.size(); ++i) {
+			p[string[i]] += (1 / (double) string.size());
+		}
+
+		std::vector<char> alphabet;
+		std::vector<double> probability;
+
+		for (auto &e : p) {
+			alphabet.push_back(e.first);
+			probability.push_back(e.second);
+		}
+
+		//		 сортирую массивы по невозрастанию вероятности
+		for (size_t i = 1; i < alphabet.size(); ++i) {
+			for (size_t j = 0; j < alphabet.size() - i; ++j) {
+				if (probability.at(j) < probability.at(j + 1)) {
+					double tmp = probability.at(j);
+					probability[j] = probability.at(j + 1);
+					probability[j + 1] = tmp;
+					char tmpc = alphabet.at(j);
+					alphabet[j] = alphabet.at(j + 1);
+					alphabet[j + 1] = tmpc;
+				}
+			}
+		}
+
+		CODES = std::vector<std::pair<char, std::string>>(alphabet.size());
+		for (size_t i = 0; i < alphabet.size(); ++i) {
+			std::get<0>(CODES.at(i)) = alphabet.at(i);
+			std::get<1>(CODES.at(i)) = "";
+		}
+
+		util::find_codes_huffman_method(std::make_pair(alphabet, probability), 0, alphabet.size());
+		std::string result;
+		for (const char &c : string) {
+			result += util::get_code(c);
+		}
+		string = result;
+	} else {
+		std::string result;
+		// длина минимально возможного кода
+		size_t min = CODES.at(0).second.length();
+		for (int i = 0; i < string.size();) {
 			// получаю минимально возможный код
 			std::string code = string.substr(i, min);
 			// получаю символ по его коду или итератор end(), если такого кода нет
