@@ -53,14 +53,13 @@ namespace util {
 			// прохожусь по правой часте участка
 			for (size_t i = end - 1; i >= start; --i) {
 				accumulate += std::get<1>(alph_prob).at(i);
+				std::get<1>(codes[i]) = "0" + std::get<1>(codes[i]);
 				if (accumulate >= current_sum / 2) {
-					size_of_right = end - i;// WARN неправильно расчитывается
-					std::get<1>(codes[i]) = "0" + std::get<1>(codes[i]);
+					size_of_right = end - i;
+//					std::get<1>(codes[i]) = "0" + std::get<1>(codes[i]);
 					break;
 				}
-				std::get<1>(codes[i]) = "0" + std::get<1>(codes[i]);
 			}
-			// WARN что-то не так
 			for (int i = start; i < end - size_of_right; ++i) {
 				std::get<1>(codes[i]) = "1" + std::get<1>(codes[i]);
 			}
@@ -111,9 +110,11 @@ int main() {
 								 "Do not go gentle into that good night.\n"
 								 "Rage, rage against the dying of the light.";
 
-//	default_str_en = "accaabaabaacc";
-	std::cout << default_str_en.size() << std::endl;
+	default_str_en = "accaabaabaacc";
+	std::cout <<default_str_en << std::endl;
 	shannon_fano(default_str_en);
+	std::cout << default_str_en << std::endl;
+	shannon_fano(default_str_en, false);
 	std::cout << default_str_en << std::endl;
 
 	return 0;
