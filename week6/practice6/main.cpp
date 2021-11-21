@@ -21,7 +21,7 @@ namespace util {
 		}
 	}
 
-	std::string get_code(char &symbol) {
+	std::string get_code(const char &symbol) {
 		return std::find_if(CODES.begin(), CODES.end(),
 							[&symbol](const std::pair<char, std::string> &pair) {
 								return symbol == pair.first;
@@ -29,16 +29,15 @@ namespace util {
 				->second;
 	}
 
-	char get_symbol(std::string &code) {
+	std::vector<std::pair<char, std::string>>::iterator get_symbol(const std::string &code) {
 		return std::find_if(CODES.begin(), CODES.end(),
 							[&code](const std::pair<char, std::string> &pair) {
 								return code == pair.second;
-							})
-				->first;
+							});
 	}
 
-	double sum(std::vector<double>::iterator begin,
-			   std::vector<double>::iterator end) {
+	double sum(const std::vector<double>::iterator begin,
+			   const std::vector<double>::iterator end) {
 		return static_cast<double>(std::accumulate(begin, end, .0));
 	}
 
@@ -146,6 +145,8 @@ int main() {
 									   "eeeeeeeee"
 									   "fffffff";
 
+	default_str_en_short = "aaabbc";
+
 	std::cout << "Изначально: " << default_str_en_long << std::endl;
 	shannon_fano(default_str_en_long);
 	util::print_codes();
@@ -210,10 +211,39 @@ void shannon_fano(std::string &string, bool flag) {
 
 		// Кодирование строки
 		std::string result;
-		for (char i : string) {
-			result += util::get_code(i);
+		for (const char &c : string) {
+			result += util::get_code(c);
 		}
 		string = result;
 	} else {
+		// размер минимально возможного кода
+		/* 1. Получить первый код последовательности,
+		 * 	  равный минимально возможному коду
+		 * 2. Проверить, есть ли он в таблице кодов
+		 * 	  1. Если есть, то заменить код на символ
+		 * 	  2. Если нет, добавить к коду следующий символ строки*/
+		// результат декодирования строки
+		std::string result;
+		// длина минимально возможного кода
+		size_t min = CODES.at(0).second.length();
+		// 111101101000010000100010
+		for (int i = 0; i < string.size(); ) {
+			// получаю минимально возможный код
+			std::string code = string.substr(i, min);
+			// получаю символ по его коду или итератор end(), если такого кода нет
+			std::vector<std::pair<char, std::string>>::iterator symbol = util::get_symbol(code);
+			// пока соотв. код не нашелся
+			while (symbol == CODES.end()) {
+				// добавляю к код следующий символ
+				code += string.substr(i + min, 1);
+				min += 1;
+				// получаю символ по коду
+				symbol = util::get_symbol(code);
+			}
+			result += symbol->first;
+			min = CODES.at(0).second.length();
+			i += code.length();
+		}
+		string = result;
 	}
 }
