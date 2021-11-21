@@ -59,16 +59,16 @@ namespace util {
 			// Расстояние между елементом, после первого элемента участка, до его конца
 			size_of_right = static_cast<int>(std::distance(start_of_current + 1, end_of_current));
 			// для левой половины у всех добавляю единицу
-			codes[start].second = "1" + codes[start].second;
+			codes[start].second = "0" + codes[start].second;
 			// для правой части добавляю единицу
 			for (size_t i = start + 1; i < end; ++i) {
-				codes[i].second = "0" + codes[i].second;
+				codes[i].second = "1" + codes[i].second;
 			}
 		} else {// если левый участок больше единицы
 			// прохожусь по правой часте участка
 			for (size_t i = end - 1; i >= start; --i) {
 				accumulate += std::get<1>(alph_prob).at(i);
-				codes[i].second = "0" + codes[i].second;
+				codes[i].second = "1" + codes[i].second;
 				if (accumulate >= current_sum / 2) {
 					size_of_right = end - i;
 					//					std::get<1>(codes[i]) = "0" + std::get<1>(codes[i]);
@@ -76,7 +76,7 @@ namespace util {
 				}
 			}
 			for (size_t i = start; i < end - size_of_right; ++i) {
-				codes[i].second = "1" + codes[i].second;
+				codes[i].second = "0" + codes[i].second;
 			}
 		}
 
@@ -126,16 +126,16 @@ int main() {
 									  "Do not go gentle into that good night.\n"
 									  "Rage, rage against the dying of the light.";
 
-	std::string default_str_en_short = "The Shannon codes are considered accurate if the code of each symbol is unique.";
+	std::string default_str_en_short = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaabbbbbbbbbbbbbbbbbbccccccccccccccccccddddddddddddeeeeeeeeefffffff";
 
-	std::cout << "Изначально: " << default_str_en_long << std::endl;
-	shannon_fano(default_str_en_long);
-	util::print_codes();
-	std::cout << "Закодировано:\t" << default_str_en_long << std::endl;
-	shannon_fano(default_str_en_long, false);
-	std::cout << "Раскодированр:\t" << default_str_en_long << std::endl
-			  << std::endl;
-	CODES.clear();
+//	std::cout << "Изначально: " << default_str_en_long << std::endl;
+//	shannon_fano(default_str_en_long);
+//	util::print_codes();
+//	std::cout << "Закодировано:\t" << default_str_en_long << std::endl;
+//	shannon_fano(default_str_en_long, false);
+//	std::cout << "Раскодированр:\t" << default_str_en_long << std::endl
+//			  << std::endl;
+//	CODES.clear();
 
 	std::cout << "Изначально: " << default_str_en_short << std::endl;
 	shannon_fano(default_str_en_short);
