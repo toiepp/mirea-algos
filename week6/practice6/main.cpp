@@ -6,12 +6,19 @@
 #include <vector>
 
 std::vector<std::pair<char, std::string>> CODES;
+std::pair<std::vector<char>, std::vector<double>> AP;
 
 namespace util {
 	void print_codes() {
 		std::for_each(CODES.begin(), CODES.end(), [](const auto &t) {
-			std::cout << t.first << " = " << t.second << std::endl;
+			std::cout << ((t.first == '\n') ? '@' : t.first) << " = " << std::setw(10) << std::right << t.second << std::endl;
 		});
+	}
+
+	void print_AP() {
+		for (int i = 0; i < AP.first.size(); ++i) {
+			std::cout << AP.first.at(i) << " ~ " << AP.second.at(i) << std::endl;
+		}
 	}
 
 	std::string get_code(char &symbol) {
@@ -30,8 +37,8 @@ namespace util {
 				->first;
 	}
 
-	double sum(std::vector<double>::iterator &begin,
-			   std::vector<double>::iterator &end) {
+	double sum(std::vector<double>::iterator begin,
+			   std::vector<double>::iterator end) {
 		return static_cast<double>(std::accumulate(begin, end, .0));
 	}
 
@@ -57,19 +64,13 @@ namespace util {
 			// Расстояние между елементом, после первого элемента участка, до его конца
 			size_of_right = static_cast<int>(std::distance(start_of_current + 1, end_of_current));
 			// для левой половины у всех добавляю единицу
-			codes[start].second = "0" + codes[start].second;
+			codes[start].second = codes[start].second.append("0");
 			// для правой части добавляю единицу
 			for (size_t i = start + 1; i < end; ++i) {
-				codes[i].second = "1" + codes[i].second;
+				codes[i].second = codes[i].second.append("1");
 			}
 		} else {// если левый участок больше единицы
-			// WARN Нужно учесть разницу между половинами до и после прибавления элемента
 			// прохожусь по правой часте участка
-			/* 1. Взять большую из двух сумм до прибавления
-			 * 2. Взять большую из двух сумм после прибавления
-			 * 3. Выбрать ту сумму, при которой разница между половины
-			 * 		от общей суммы и суммы этой половины будет меньше
-			 * */
 			double accumulate = .0;// сумма вероятностей правой стороны
 			for (size_t i = end - 1; i >= start; --i) {
 				accumulate += alph_prob.second.at(i);// текущая сумма правой части
@@ -78,22 +79,18 @@ namespace util {
 					size_of_right = end - i - 1;
 					// сумма правой части до прибавления
 					double before = std::accumulate(end_of_current - size_of_right, end_of_current, 0.0);
-					//					double before = 0;
-					//					for (int j = end - size_of_right; j < end; ++j) {
-					//						before += alph_prob.second.at(j);
-					//					}
 					// сумма правой части после прибавления
 					double after = accumulate;
-					if (std::abs(current_sum / 2 - before) > std::abs(current_sum / 2 - after)) {
-						codes.at(i).second = "1" + codes.at(i).second;
+					if (std::abs(current_sum / 2 - before) >= std::abs(current_sum / 2 - after)) {
+						codes.at(i).second = codes.at(i).second.append("1");
 						size_of_right++;
 					}
 					break;
 				}
-				codes[i].second = "1" + codes[i].second;
+				codes[i].second = codes[i].second.append("1");
 			}
 			for (size_t i = start; i < end - size_of_right; ++i) {
-				codes[i].second = "0" + codes[i].second;
+				codes[i].second = codes[i].second.append("0");
 			}
 		}
 
@@ -137,23 +134,32 @@ int main() {
 
 	std::string default_str_en_long = "Do not go gentle into that good night,\n"
 									  "Old age should burn and rave at close of day;\n"
-									  "Rage, rage against the dying of the light.\n";
+									  "Rage, rage against the dying of the light.\n"
+									  "Though wise men at their end know dark is right,\n"
+									  "Because their words had forked no lightning they\n"
+									  "Do not go gentle into that good night.";
 
-	//	std::string default_str_en_short = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaabbbbbbbbbbbbbbbbbbccccccccccccccccccddddddddddddeeeeeeeeefffffff";
-	std::string default_str_en_short = "ddddd cccc bbb aa";
+	std::string default_str_en_short = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+									   "bbbbbbbbbbbbbbbbbb"
+									   "cccccccccccccccccc"
+									   "dddddddddddd"
+									   "eeeeeeeee"
+									   "fffffff";
 
 	std::cout << "Изначально: " << default_str_en_long << std::endl;
 	shannon_fano(default_str_en_long);
 	util::print_codes();
+	util::print_AP();
 	std::cout << "Закодировано:\t" << default_str_en_long << std::endl;
 	shannon_fano(default_str_en_long, false);
-	std::cout << "Раскодированр:\t" << default_str_en_long << std::endl
+	std::cout << "Раскодировано:\t" << default_str_en_long << std::endl
 			  << std::endl;
 	CODES.clear();
 
 	std::cout << "Изначально: " << default_str_en_short << std::endl;
 	shannon_fano(default_str_en_short);
 	util::print_codes();
+	util::print_AP();
 	std::cout << "Закодировано:\t" << default_str_en_short << std::endl;
 	shannon_fano(default_str_en_short, false);
 	std::cout << "Раскодировано:\t" << default_str_en_short << std::endl
@@ -199,6 +205,7 @@ void shannon_fano(std::string &string, bool flag) {
 			std::get<1>(CODES.at(i)) = "";
 		}
 		// передаю вектор функции, которая найдет коды
+		AP = std::make_pair(alphabet, probability);
 		util::find_codes(CODES, std::make_pair(alphabet, probability), 0, alphabet.size());
 
 		// Кодирование строки
