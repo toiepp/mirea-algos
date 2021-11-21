@@ -1,0 +1,1 @@
+/usr/bin/c++ CMakeFiles/mirea_algos.dir/week6/practice6/main.cpp.o -o mirea_algos 

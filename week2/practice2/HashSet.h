@@ -8,10 +8,11 @@
 
 class HashSet {
 private:
-	struct Node {
+	struct {
 		Account* data = nullptr;
 		bool collision = false;
-	};
+	} typedef Node;
+
 	int init = 6;
 	int capacity = 13;
 	int load = 0; // кол-во элементов в массиве.
