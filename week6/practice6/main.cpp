@@ -9,18 +9,25 @@ std::vector<std::pair<char, std::string>> CODES;
 
 namespace util {
 	void print_codes() {
-		for (std::pair<char, std::string> &t : CODES) {
+		std::for_each(CODES.begin(), CODES.end(), [](const auto &t) {
 			std::cout << t.first << " = " << t.second << std::endl;
-		}
+		});
 	}
 
-	std::string get_code(char symbol) {
-		for (std::pair<char, std::string> &i : CODES) {
-			if (i.first == symbol) {
-				return i.second;
-			}
-		}
-		return "";
+	std::string get_code(char &symbol) {
+		return std::find_if(CODES.begin(), CODES.end(),
+							[&symbol](const std::pair<char, std::string> &pair) {
+								return symbol == pair.first;
+							})
+				->second;
+	}
+
+	char get_symbol(std::string &code) {
+		return std::find_if(CODES.begin(), CODES.end(),
+							[&code](const std::pair<char, std::string> &pair) {
+								return code == pair.second;
+							})
+				->first;
 	}
 
 	double sum(std::vector<double> &prob,
@@ -103,6 +110,7 @@ void lz87();
 int main() {
 	std::cout << "=== Практическая работа №6 ===" << std::endl;
 	std::cout << "===       Вариант 19       ===" << std::endl;
+	std::cout << std::endl;
 
 	std::string default_str_ru = "Перводан, другодан,\n"
 								 "На колоде барабан;\n"
@@ -118,20 +126,25 @@ int main() {
 									  "Do not go gentle into that good night.\n"
 									  "Rage, rage against the dying of the light.";
 
-	std::string default_str_en_short = "accaabaabaacc";
+	std::string default_str_en_short = "The Shannon codes are considered accurate if the code of each symbol is unique.";
 
-	std::cout << default_str_en_long << std::endl;
+	std::cout << "Изначально: " << default_str_en_long << std::endl;
 	shannon_fano(default_str_en_long);
 	util::print_codes();
-	std::cout << default_str_en_long << std::endl;
-	std::cout << std::endl;
+	std::cout << "Закодировано:\t" << default_str_en_long << std::endl;
+	shannon_fano(default_str_en_long, false);
+	std::cout << "Раскодированр:\t" << default_str_en_long << std::endl
+			  << std::endl;
 	CODES.clear();
 
-	std::cout << default_str_en_short << std::endl;
+	std::cout << "Изначально: " << default_str_en_short << std::endl;
 	shannon_fano(default_str_en_short);
 	util::print_codes();
-	std::cout << default_str_en_short << std::endl;
-	std::cout << std::endl;
+	std::cout << "Закодировано:\t" << default_str_en_short << std::endl;
+	shannon_fano(default_str_en_short, false);
+	std::cout << "Раскодировано:\t" << default_str_en_short << std::endl
+			  << std::endl;
+	CODES.clear();
 
 	return 0;
 }
@@ -180,6 +193,6 @@ void shannon_fano(std::string &string, bool flag) {
 			result += util::get_code(i);
 		}
 		string = result;
-	} else {// если надо расшифровать строку
+	} else {
 	}
 }
