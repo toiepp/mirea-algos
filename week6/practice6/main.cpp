@@ -8,9 +8,15 @@
 std::vector<std::tuple<char, std::string>> CODES;
 
 namespace util {
+	void print_codes() {
+		for (std::tuple<char, std::string> &t : CODES) {
+			std::cout << std::get<0>(t) << " = " << std::get<1>(t) << std::endl;
+		}
+	}
+
 	std::string get_code(char symbol) {
-		for (int i = 0; i < CODES.size(); ++i) {
-			if (std::get<0>(CODES.at(i)) == symbol) return std::get<1>(CODES.at(i));
+		for (std::tuple<char, std::string> &i : CODES) {
+			if (std::get<0>(i) == symbol) return std::get<1>(i);
 		}
 		return "";
 	}
@@ -42,7 +48,7 @@ namespace util {
 		// если первый элемент больше половины общей суммы или размер подгруппы равен 2
 		if (*start_of_current >= (current_sum / 2) || std::distance(start_of_current, end_of_current) == 1) {
 			// Расстояние между елементом, после первого элемента участка, до его конца
-			size_of_right = std::distance(start_of_current + 1, end_of_current);
+			size_of_right = static_cast<int>(std::distance(start_of_current + 1, end_of_current));
 			// для левой половины у всех добавляю единицу
 			std::get<1>(codes[start]) = "1" + std::get<1>(codes[start]);
 			// для правой части добавляю единицу
@@ -60,7 +66,7 @@ namespace util {
 					break;
 				}
 			}
-			for (int i = start; i < end - size_of_right; ++i) {
+			for (size_t i = start; i < end - size_of_right; ++i) {
 				std::get<1>(codes[i]) = "1" + std::get<1>(codes[i]);
 			}
 		}
@@ -102,7 +108,7 @@ int main() {
 								 "Пятерка, шестерка,\n"
 								 "утюг.";
 
-	std::string default_str_en = "Do not go gentle into that good night,\n"
+	std::string default_str_en_long = "Do not go gentle into that good night,\n"
 								 "Old age should burn and rave at close of day;\n"
 								 "Rage, rage against the dying of the light.\n"
 								 "Though wise men at their end know dark is right,\n"
@@ -110,12 +116,20 @@ int main() {
 								 "Do not go gentle into that good night.\n"
 								 "Rage, rage against the dying of the light.";
 
-	default_str_en = "accaabaabaacc";
-	std::cout <<default_str_en << std::endl;
-	shannon_fano(default_str_en);
-	std::cout << default_str_en << std::endl;
-	shannon_fano(default_str_en, false);
-	std::cout << default_str_en << std::endl;
+	std::string default_str_en_short = "accaabaabaacc";
+
+	std::cout << default_str_en_long << std::endl;
+	shannon_fano(default_str_en_long);
+	util::print_codes();
+	std::cout << default_str_en_long << std::endl;
+	std::cout << std::endl;
+	CODES.clear();
+
+	std::cout << default_str_en_short << std::endl;
+	shannon_fano(default_str_en_short);
+	util::print_codes();
+	std::cout << default_str_en_short << std::endl;
+	std::cout << std::endl;
 
 	return 0;
 }
@@ -160,8 +174,8 @@ void shannon_fano(std::string &string, bool flag) {
 
 		// Кодирование строки
 		std::string result;
-		for (size_t i = 0; i < string.size(); ++i) {
-			result += util::get_code(string.at(i));
+		for (char i : string) {
+			result += util::get_code(i);
 		}
 		string = result;
 	} else {// если надо расшифровать строку
