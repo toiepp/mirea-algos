@@ -1,3 +1,4 @@
+#include <cmath>
 #include <iostream>
 #include <numeric>
 #include <vector>
@@ -33,7 +34,7 @@ public:
 		}
 	}
 
-	std::vector<std::vector<Symbol *>> two_vector(std::vector<Symbol *> vec, int count) {
+	std::vector<std::vector<Symbol *>> two_vector(std::vector<Symbol *> vec, int counted) {
 		int c = 0;
 		int before;
 		bool f = true;
@@ -43,7 +44,7 @@ public:
 		for (size_t i = 0; i < vec.size(); ++i) {
 			before = c;
 			c += vec.at(i)->count;
-			if (std::abs(count - before * 2) > std::abs(count - c * 2)) {
+			if (std::abs(counted - before * 2) > std::abs(counted - c * 2)) {
 				first.push_back(vec.at(i));
 			} else {
 				second.push_back(vec.at(i));
@@ -55,20 +56,20 @@ public:
 	}
 
 	int counts(std::vector<Symbol *> vec) {
-		int count = 0;
-		std::for_each(vec.begin(), vec.end(), [&count](const Symbol *s) {
-			count += s->symbol;
+		int counted = 0;
+		std::for_each(vec.begin(), vec.end(), [&counted](const Symbol *s) {
+			counted += s->symbol;
 		});
 		return count;
 	}
 
-	void huffman(std::string before, Tree *tree) {
-		std::string right, left;
-		left = before + "0";
-		right = before + "1";
+	void huffman(Tree *tree, std::string before = "") {
+		std::string r, l;
+		l = before + "0";
+		r = before + "1";
 		if (tree->symbol) tree->symbol->code = before;
-		if (tree->left) huffman(left, tree->left);
-		if (tree->right) huffman(right, tree->right);
+		if (tree->left) huffman(tree->left, l);
+		if (tree->right) huffman(tree->right, r);
 	}
 };
 
@@ -78,12 +79,22 @@ public:
 	std::string code;
 	std::vector<Symbol *> table;
 
-	Huffman(std::string str) {
+	Huffman(std::string s) : code(s) {
+		add_table(code);
+		build_tree();
+		root->huffman(root);
+		for (auto t : table) {
+			std::cout << t->symbol << " " << t->count << " " << t->probability << " " << t->code << std::endl;
+		}
+		encode();
+	}
+
+	void add_table(std::string str) {
 		bool first;
 		double count = str.length();
 		for (size_t i = 0; i < count; ++i) {
 			first = true;
-			char symbol = str[i];
+			char symbol = str.at(i);
 			for (size_t j = 0; j < table.size(); j++) {
 				if (table.at(j)->symbol == symbol) {
 					first = false;
@@ -103,7 +114,7 @@ public:
 	void sort() {
 		for (size_t i = 0; i < table.size(); ++i) {
 			for (size_t j = i + 1; j < table.size(); ++j) {
-				if (table.at(i)->probability == table.at(j)->probability) {
+				if (table.at(i)->probability > table.at(j)->probability) {
 					std::swap(table.at(i), table.at(j));
 				}
 			}
@@ -111,15 +122,15 @@ public:
 	}
 
 	std::vector<Tree *> sort_tree(std::vector<Tree *> tree) {
-		std::vector<Tree *> t = tree;
-		for (size_t i = 0; i < t.size(); ++i) {
-			for (size_t j = i + 1; j < t.size(); ++j) {
-				if (t.at(i)->probability > tree.at(j)->probability) {
-					std::swap(t.at(i), t.at(j));
+		std::vector<Tree *> sorted = tree;
+		for (size_t i = 0; i < sorted.size(); ++i) {
+			for (size_t j = i + 1; j < sorted.size(); ++j) {
+				if (sorted.at(i)->probability > tree.at(j)->probability) {
+					std::swap(sorted.at(i), sorted.at(j));
 				}
 			}
 		}
-		return t;
+		return sorted;
 	}
 
 	void build_tree() {
@@ -139,11 +150,10 @@ public:
 		root = tree.front();
 	}
 
-	void encode (){
+	void encode() {
 		std::string c;
 		for (size_t i = 0; i < code.length(); ++i) {
-			char x = code.at(i);
-			c += find_code(x, root);
+			c += find_code(code.at(i), root);
 		}
 	}
 
@@ -154,7 +164,8 @@ public:
 		for (size_t i = 0; i < code.length(); ++i) {
 			x = code.at(i);
 			if (x == '0') node = node->left;
-			else node = node->right;
+			else
+				node = node->right;
 			if (node->symbol) {
 				c += node->symbol->symbol;
 				node = root;
@@ -176,9 +187,38 @@ public:
 		}
 		return to_find;
 	}
+
+	void compression() {
+		double before_size = code.length() * 8;
+		encode();
+		double after_size = code.length();
+		decode();
+		std::cout << "Коэффциент сжатия " << after_size * 100 / before_size << "%" << std::endl;
+	}
+
+	void despertion() {
+		double a = average();
+		std::cout << "Дисперсия: "
+				  << std::pow(a, 2) / (double(table.size())) - std::pow((a / (double) table.size()), 2) << std::endl;
+	}
+
+	int average() {
+		double c = 0;
+		for (size_t i = 0; i < table.size(); ++i) {
+			c += table.at(i)->code.length();
+		}
+		return c / ((double) table.size());
+	}
 };
 
 int main() {
-
+	std::string str = "aaabbc";
+	Huffman huffman(str);
+	std::cout << huffman.code << std::endl;
+	huffman.encode();
+	std::cout << huffman.code << std::endl;
+	huffman.compression();
+	std::cout << huffman.average() << std::endl;
+	huffman.despertion();
 	return 0;
 }
