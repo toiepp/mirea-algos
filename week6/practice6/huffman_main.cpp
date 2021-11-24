@@ -56,6 +56,11 @@ size_t total_sum_of_seq(Sequence sequence) {
 	return total;
 }
 
+Sequence::iterator get_by_code(std::vector<bool> &code) {
+	return std::find_if(ALPHABET.front().begin(), ALPHABET.front().end(),
+						[&code](const Symbol &symbol) { return code == symbol.code; });
+}
+
 std::vector<bool> huffman_encode(std::string &);
 
 std::string huffman_decode(std::vector<bool> &);
@@ -85,11 +90,18 @@ int main() {
 									   "ccccccccc"
 									   "fffff";
 
+//	default_str_en_short = "aaabbc";
+
 	std::vector<bool> encoded = huffman_encode(default_str_en_short);
+
+	for (Sequence s : ALPHABET) {
+		std::cout << s << std::endl;
+	}
 
 	for (bool b : encoded) {
 		std::cout << b;
 	}
+	std::cout << std::endl;
 
 	std::cout << huffman_decode(encoded) << std::endl;
 
@@ -102,7 +114,6 @@ std::vector<bool> huffman_encode(std::string &text) {
 	while (alphabet.size() != 1) {
 		Alphabet new_alphabet;
 		while ((alphabet.size() != 1 && alphabet.size() % 2 != 0) || (alphabet.size() != 0 && alphabet.size() % 2 == 0)) {
-			// Беру пару самых младших по весу элементов
 			auto p = get_two_min_and_delete(alphabet);
 			Sequence new_sequence;
 			std::for_each(p.first.begin(), p.first.end(),
@@ -134,7 +145,25 @@ std::vector<bool> huffman_encode(std::string &text) {
 }
 
 std::string huffman_decode(std::vector<bool> &encoded) {
-	return "";
+	std::string result;
+	std::vector<bool> buffer;
+
+	size_t skip_count = 0;
+	for (size_t i = 0; i < encoded.size();) {
+		buffer.push_back(encoded.at(i));
+		Sequence::iterator seq_iter = get_by_code(buffer);
+		if (seq_iter != ALPHABET.front().end()) {
+			result += seq_iter->symbol;
+			i += buffer.size() - skip_count;
+			buffer.clear();
+			skip_count = 0;
+		} else {
+			skip_count++;
+			i += 1;
+		}
+	}
+
+	return result;
 }
 
 Alphabet create_alphabet(std::string &text) {
