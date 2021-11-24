@@ -4,40 +4,61 @@
 #include <set>
 #include <vector>
 
+struct Symbol;
+
+typedef std::vector<Symbol> Sequence;
+
+typedef std::vector<Sequence> Alphabet;
+
+Alphabet ALPHABET;
+
 struct Symbol {
+	char symbol;
 	size_t amount;
-	std::string content;
 	std::vector<bool> code;
 
-	Symbol(size_t amount, std::string content, std::vector<bool> code)
-		: amount(amount), content(content), code(code) {}
-
-	Symbol(std::pair<char, size_t> s_to_a) : amount(s_to_a.second) {
-		content = std::string(1, s_to_a.first);
-	}
+	Symbol(std::pair<char, size_t> pair) : symbol(pair.first), amount(pair.second) {}
 };
 
 std::ostream &operator<<(std::ostream &out, const Symbol &symbol) {
-	out << symbol.content << "(" << symbol.amount << ")\t=";
+	out << symbol.symbol << "(" << symbol.amount << ")=";
 	for (size_t i = 0; i < symbol.code.size(); ++i) {
-		out << std::setw(10)
-			<< std::right << symbol.code.at(i);
+		out << symbol.code.at(i);
 	}
 	return out;
 }
 
-Symbol operator+(Symbol &left, Symbol &right) {
-	Symbol new_symbol(left.amount, left.content, left.code);
-	new_symbol.amount += right.amount;
-	new_symbol.content += right.content;
-	return new_symbol;
+std::ostream &operator<<(std::ostream &out, const Sequence &sequence) {
+	out << "{ ";
+	for (size_t i = 0; i < sequence.size() - 1; ++i) {
+		out << sequence.at(i) << ", ";
+	}
+	out << sequence.back() << " }";
+	return out;
 }
 
-std::vector<Symbol> create_alphabet(std::string &);
+bool operator==(const Sequence &left, const Sequence &right) {
+	return std::equal(left.begin(), left.end(), right.begin(),
+					  [](const Symbol &left, const Symbol &right) {
+						  return left.symbol == right.symbol;
+					  });
+}
 
-std::pair<Symbol, Symbol> get_two_min(std::vector<Symbol> &symbols);
+Alphabet create_alphabet(std::string &);
 
-void huffman(std::string &text, bool encode = true);
+std::pair<Sequence, Sequence> get_two_min_and_delete(Alphabet &);
+
+size_t total_sum_of_seq(Sequence sequence) {
+	size_t total = 0;
+	for (Symbol s : sequence) {
+		total += s.amount;
+	}
+	return total;
+}
+
+std::vector<bool> huffman_encode(std::string &);
+
+std::string huffman_decode(std::vector<bool> &);
 
 int main() {
 	std::cout << "=== Практическая работа №6 ===" << std::endl;
@@ -61,60 +82,93 @@ int main() {
 									   "ddddddddddddddddddddddddddddddddddddddd"
 									   "aaaaaaaaaaaaaaaaaaaaaaaaaaa"
 									   "eeeeeeeeeeee"
-									   "ccccccccc";
-	huffman(default_str_en_short);
+									   "ccccccccc"
+									   "fffff";
+
+	std::vector<bool> encoded = huffman_encode(default_str_en_short);
+
+	for (bool b : encoded) {
+		std::cout << b;
+	}
+
+	std::cout << huffman_decode(encoded) << std::endl;
+
 	return 0;
 }
 
-void huffman(std::string &text, bool encode) {
-	if (encode) {
-		// получаю алфавит
-		std::vector<Symbol> alphabet = create_alphabet(text);
-		// Пока в алфавите не останется символ без пары
-		// либо вообще не останется символов
-		std::vector<Symbol> new_alphabet;
-		while (alphabet.size() != 0 || alphabet.size() != 1) {
-			std::pair<Symbol, Symbol> mins = get_two_min(alphabet);
-			mins.second.code.push_back(1);
-			mins.first.code.push_back(0);
-			new_alphabet.push_back(mins.second + mins.first);
+std::vector<bool> huffman_encode(std::string &text) {
+	Alphabet alphabet = create_alphabet(text);
+
+	while (alphabet.size() != 1) {
+		Alphabet new_alphabet;
+		while ((alphabet.size() != 1 && alphabet.size() % 2 != 0) || (alphabet.size() != 0 && alphabet.size() % 2 == 0)) {
+			// Беру пару самых младших по весу элементов
+			auto p = get_two_min_and_delete(alphabet);
+			Sequence new_sequence;
+			std::for_each(p.first.begin(), p.first.end(),
+						  [&new_sequence](Symbol &s) {
+							  s.code.insert(s.code.begin(), 1, 0);
+							  new_sequence.push_back(s);
+						  });
+			std::for_each(p.second.begin(), p.second.end(),
+						  [&new_sequence](Symbol &s) {
+							  s.code.insert(s.code.begin(), 1, 1);
+							  new_sequence.push_back(s);
+						  });
+
+			new_alphabet.push_back(new_sequence);
 		}
-	} else {
+		alphabet.insert(alphabet.end(), new_alphabet.begin(), new_alphabet.end());
 	}
+	std::vector<bool> encoded;
+	for (char c : text) {
+		std::vector<bool> code = std::find_if(alphabet.front().begin(), alphabet.front().end(),
+											  [&c](const Symbol &s) {
+												  return s.symbol == c;
+											  })
+										 ->code;
+		encoded.insert(encoded.end(), code.begin(), code.end());
+	}
+	ALPHABET = alphabet;
+	return encoded;
 }
 
-std::vector<Symbol> create_alphabet(std::string &text) {
-	std::map<char, size_t> symbol_to_amount;
-	std::vector<Symbol> result;
-	std::for_each(text.begin(), text.end(),
-				  [&symbol_to_amount](const char &c) {
-					  symbol_to_amount[c] += 1;
-				  });
-	std::for_each(symbol_to_amount.begin(), symbol_to_amount.end(),
-				  [&result](const auto &p) {
-					  Symbol symbol(p);
-					  result.push_back(symbol);
-				  });
-	// сортирую алфавит по невозрастанию на основе кол-ва символов в алфавите
-	std::sort(result.begin(), result.end(),
-			  [&](Symbol const &left, Symbol const &right) {
-				  return left.amount > right.amount;
-			  });
+std::string huffman_decode(std::vector<bool> &encoded) {
+	return "";
+}
+
+Alphabet create_alphabet(std::string &text) {
+	std::map<char, size_t> alphabet;
+
+	std::for_each(text.begin(), text.end(), [&alphabet](const char &c) {
+		alphabet[c] += 1;
+	});
+
+	Alphabet result;
+
+	std::for_each(alphabet.begin(), alphabet.end(), [&result](const std::pair<char, size_t> &p) {
+		Sequence sequence;
+		sequence.push_back(Symbol(p));
+		result.push_back(sequence);
+	});
+
+	std::sort(result.begin(), result.end(), [](Sequence const &left, Sequence const &right) {
+		return left.front().amount >= right.front().amount;
+	});
+
 	return result;
 }
 
-std::pair<Symbol, Symbol> get_two_min(std::vector<Symbol> &symbols) {
-	std::vector<Symbol>::iterator min1 =
-			std::min_element(symbols.begin(), symbols.end(),
-							 [](const Symbol &s1, const Symbol &s2) {
-								 return s1.amount < s2.amount;
-							 });
-	symbols.erase(min1, min1 + 1);
-	std::vector<Symbol>::iterator min2 =
-			std::min_element(symbols.begin(), symbols.end(),
-							 [](Symbol &s1, Symbol &s2) {
-								 return s1.amount < s2.amount;
-							 });
-	symbols.erase(min2, min2 + 1);
-	return std::make_pair(*min2, *min1);
+std::pair<Sequence, Sequence> get_two_min_and_delete(Alphabet &alphabet) {
+	auto comp = [](Sequence const &left, Sequence const &right) {
+		return total_sum_of_seq(left) < total_sum_of_seq(right);
+	};
+
+	Sequence min1 = *std::min_element(alphabet.begin(), alphabet.end(), comp);
+	std::erase(alphabet, min1);
+
+	Sequence min2 = *std::min_element(alphabet.begin(), alphabet.end(), comp);
+	std::erase(alphabet, min2);
+
+	return std::make_pair(min2, min1);
 }
