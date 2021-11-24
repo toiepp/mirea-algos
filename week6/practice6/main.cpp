@@ -1,5 +1,4 @@
 #include <bitset>
-#include <cmath>
 #include <iomanip>
 #include <iostream>
 #include <map>
@@ -9,8 +8,10 @@
 std::vector<std::pair<char, std::string>> CODES;
 std::pair<std::vector<char>, std::vector<double>> AP;
 
+
+
 namespace util {
-	std::string str_to_bint(int n, size_t size) {
+	std::string str_to_binary(int n, size_t size) {
 		std::string result;
 
 		for (int i = size - 1; i >= 0; i--) {
@@ -128,27 +129,6 @@ namespace util {
 
 	void find_codes_huffman_method() {
 		auto codes = &CODES;
-		// Если кол-во оставшихся символов будет нечетно,
-		// то обрываю обход, и увеличиваю шаг обхода
-		int max_code_size = 1;
-		while (std::pow(2, max_code_size) < CODES.size()) {
-			max_code_size++;
-		}
-
-		size_t full_part_size = std::pow(2, max_code_size - 1);
-		std::vector<unsigned int> possible(full_part_size);
-		for (size_t i = 0; i < possible.size(); ++i) {
-			possible[i] = full_part_size + i;
-		}
-
-		size_t begin = CODES.size() - full_part_size;
-		for (size_t i = begin; i < CODES.size(); ++i) {
-			int p = possible.at(i - begin);
-			std::string code = util::str_to_bint(p, max_code_size);// положить этот код
-			CODES.at(i).second = code;
-		}
-
-		CODES.at(0).second = "0";
 
 		return;
 	}
@@ -159,17 +139,12 @@ namespace util {
  * LZ77, LZ78 https://neerc.ifmo.ru/wiki/index.php?title=%D0%90%D0%BB%D0%B3%D0%BE%D1%80%D0%B8%D1%82%D0%BC%D1%8B_LZ77_%D0%B8_LZ78
  * */
 
-// flag = false -- decode
 // flag = true -- encode
+// flag = false -- decode
 // Алгоритм Шеннона-Фано
 void shannon_fano(std::string &, bool flag = true);
 
 void huffman(std::string &, bool flag = true);
-
-// Алгоритм Лемпеля-Зива-Уэлча
-void lz77();
-
-void lz87();
 
 int main() {
 	std::cout << "=== Практическая работа №6 ===" << std::endl;
@@ -201,7 +176,7 @@ int main() {
 	//		util::test(default_str_en_short, shannon_fano);
 
 	//	util::test(default_str_ru, huffman);
-//		util::test(default_str_en_long, huffman);
+	//	util::test(default_str_en_long, huffman);
 	default_str_en_short = "абвгдеёжзийклмнопрстуфхцчшщъыьэюя";
 	util::test(default_str_en_short, huffman);
 
