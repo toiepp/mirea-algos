@@ -14,6 +14,31 @@ void print_codes() {
 		std::cout << ((t.first == '\n') ? '@' : t.first) << " = " << std::setw(10) << std::right << t.second << std::endl;
 	});
 }
+std::string str_to_binary(int n, size_t size) {
+	std::string result;
+
+	for (int i = size - 1; i >= 0; i--) {
+		int k = n >> i;
+		if (k & 1) result += "1";
+		else
+			result += "0";
+	}
+
+	return result;
+}
+
+void test(std::string &s, void (*func)(std::string &, bool)) {
+	std::cout << "Изначально:\n"
+			  << s << std::endl;
+	func(s, true);
+	std::cout << "Закодировано:\n"
+			  << s << std::endl;
+	func(s, false);
+	std::cout << "Раскодировано:\n"
+			  << s << std::endl
+			  << std::endl;
+	CODES.clear();
+}
 
 void print_AP() {
 	for (int i = 0; i < AP.first.size(); ++i) {
@@ -84,8 +109,9 @@ void find_codes(std::pair<std::vector<char>, std::vector<double>> alph_prob,
 	double current_sum = sum(start_of_current, end_of_current);
 
 	// если первый элемент больше половины общей суммы или размер подгруппы равен 2
-	if (*start_of_current >= (current_sum / 2) || std::distance(start_of_current, end_of_current) == 1) {
-		// Расстояние между елементом, после первого элемента участка, до его конца
+	if (*start_of_current >= (current_sum / 2) ||
+		std::distance(start_of_current, end_of_current) == 1) {
+		// Расстояние между элементом, после первого элемента участка, до его конца
 		size_of_right = std::distance(start_of_current + 1, end_of_current);
 		// для левой половины у всех добавляю единицу
 		CODES[start].second = CODES[start].second.append("0");
@@ -94,7 +120,7 @@ void find_codes(std::pair<std::vector<char>, std::vector<double>> alph_prob,
 			CODES[i].second = CODES[i].second.append("1");
 		}
 	} else {// если левый участок больше единицы
-		// прохожусь по правой часте участка
+		// прохожусь по правой участке участка
 		double accumulate = .0;// сумма вероятностей правой стороны
 		for (size_t i = end - 1; i >= start; --i) {
 			accumulate += alph_prob.second.at(i);// текущая сумма правой части
@@ -127,11 +153,70 @@ void find_codes(std::pair<std::vector<char>, std::vector<double>> alph_prob,
 	size_t new_right_end = new_right_start + size_of_right;
 	find_codes(alph_prob,
 			   new_right_start, new_right_end);// передаю на обработку левую часть
+
 }
 
-void shannon_fano(std::string &, bool flag = true);
+// метод нахождения кодов символов
+void find_codes(size_t start, size_t end) {
+	// если длина вектора равна одному символу, то ничего делать не надо
+	int break_condition = end - start;
+	if (break_condition == 1) return;
 
-void huffman(std::string &, bool flag = true);
+	int size_of_right = 0;// длина правой стороны
+
+	// начало подсчета суммы участка, который надо разделить
+	std::vector<double>::iterator start_of_current = AP.second.begin() + start;
+	// конец подсчета суммы участка, который надо разделить
+	std::vector<double>::iterator end_of_current = AP.second.begin() + end;
+	double current_sum = sum(start_of_current, end_of_current);
+
+	// если первый элемент больше половины общей суммы или размер подгруппы равен 2
+	if (*start_of_current >= (current_sum / 2) || std::distance(start_of_current, end_of_current) == 1) {
+		// Расстояние между елементом, после первого элемента участка, до его конца
+		size_of_right = static_cast<int>(std::distance(start_of_current + 1, end_of_current));
+		// для левой половины у всех добавляю единицу
+		CODES[start].second = CODES[start].second.append("0");
+		// для правой части добавляю единицу
+		for (size_t i = start + 1; i < end; ++i) {
+			CODES[i].second = CODES[i].second.append("1");
+		}
+	} else {// если левый участок больше единицы
+		// прохожусь по правой часте участка
+		double accumulate = .0;// сумма вероятностей правой стороны
+		for (size_t i = end - 1; i >= start; --i) {
+			accumulate += AP.second.at(i);// текущая сумма правой части
+			if (accumulate >= current_sum / 2) {
+				// если разница между частями после прибавления последнего элемента больше чем до
+				size_of_right = end - i - 1;
+				// сумма правой части до прибавления
+				double before = std::accumulate(end_of_current - size_of_right, end_of_current, 0.0);
+				// сумма правой части после прибавления
+				double after = accumulate;
+				if (std::abs(current_sum / 2 - before) >= std::abs(current_sum / 2 - after)) {
+					CODES.at(i).second = CODES.at(i).second.append("1");
+					size_of_right++;
+				}
+				break;
+			}
+			CODES[i].second = CODES[i].second.append("1");
+		}
+	}
+	for (size_t i = start; i < end - size_of_right; ++i) {
+		CODES[i].second = CODES[i].second.append("0");
+	}
+
+	size_t new_left_start = start;
+	size_t new_left_end = end - size_of_right;
+	find_codes(new_left_start, new_left_end);// передаю на обработку правую часть
+
+	size_t new_right_start = new_left_end;
+	size_t new_right_end = new_right_start + size_of_right;
+	find_codes(new_right_start, new_right_end);// передаю на обработку левую часть
+}
+
+// flag = true -- encode
+// flag = false -- decode
+void shannon_fano(std::string &, bool flag = true);
 
 int main() {
 	std::cout << "=== Практическая работа №6 ===" << std::endl;
@@ -162,7 +247,7 @@ void shannon_fano(std::string &string, bool flag) {
 			probability.push_back(e.second);
 		}
 
-		//		 сортирую массивы по невозрастанию вероятности
+		//     сортирую массивы по невозрастанию вероятности
 		for (size_t i = 1; i < alphabet.size(); ++i) {
 			for (size_t j = 0; j < alphabet.size() - i; ++j) {
 				if (probability.at(j) < probability.at(j + 1)) {
@@ -176,7 +261,7 @@ void shannon_fano(std::string &string, bool flag) {
 			}
 		}
 
-		// вектор кодов симполов
+		// вектор кодов символов
 		CODES = std::vector<std::pair<char, std::string>>(alphabet.size());
 		for (size_t i = 0; i < alphabet.size(); ++i) {
 			std::get<0>(CODES.at(i)) = alphabet.at(i);
@@ -184,81 +269,13 @@ void shannon_fano(std::string &string, bool flag) {
 		}
 		find_codes(std::make_pair(alphabet, probability), 0, alphabet.size());
 
-		AP = std::make_pair(alphabet, probability);
-
 		// Кодирование строки
 		std::string result;
 		for (const char &c : string) {
 			result += get_code(c);
 		}
 		string = result;
-	} else {
-		// размер минимально возможного кода
-		// результат декодирования строки
-		std::string result;
-		// длина минимально возможного кода
-		size_t min = CODES.at(0).second.length();
-		for (int i = 0; i < string.size();) {
-			// получаю минимально возможный код
-			std::string code = string.substr(i, min);
-			// получаю символ по его коду или итератор end(), если такого кода нет
-			std::vector<std::pair<char, std::string>>::iterator symbol = get_symbol(code);
-			// пока соотв. код не нашелся
-			while (symbol == CODES.end()) {
-				// добавляю к код следующий символ
-				code += string.substr(i + min, 1);
-				min += 1;
-				// получаю символ по коду
-				symbol = get_symbol(code);
-			}
-			result += symbol->first;
-			min = CODES.at(0).second.length();
-			i += code.length();
-		}
-		string = result;
-	}
-}
 
-void huffman(std::string &string, bool flag) {
-	if (flag) {
-		std::map<char, double> p;// отображение символа, к его вероятности
-		for (size_t i = 0; i < string.size(); ++i) {
-			p[string[i]] += (1 / (double) string.size());
-		}
-
-		std::vector<char> alphabet;
-		std::vector<double> probability;
-
-		for (auto &e : p) {
-			alphabet.push_back(e.first);
-			probability.push_back(e.second);
-		}
-
-		//		 сортирую массивы по невозрастанию вероятности
-		for (size_t i = 1; i < alphabet.size(); ++i) {
-			for (size_t j = 0; j < alphabet.size() - i; ++j) {
-				if (probability.at(j) < probability.at(j + 1)) {
-					double tmp = probability.at(j);
-					probability[j] = probability.at(j + 1);
-					probability[j + 1] = tmp;
-					char tmpc = alphabet.at(j);
-					alphabet[j] = alphabet.at(j + 1);
-					alphabet[j + 1] = tmpc;
-				}
-			}
-		}
-
-		CODES = std::vector<std::pair<char, std::string>>(alphabet.size());
-		for (size_t i = 0; i < alphabet.size(); ++i) {
-			std::get<0>(CODES.at(i)) = alphabet.at(i);
-			std::get<1>(CODES.at(i)) = "";
-		}
-
-		std::string result;
-		for (const char &c : string) {
-			result += get_code(c);
-		}
-		string = result;
 	} else {
 		std::string result;
 		// длина минимально возможного кода
