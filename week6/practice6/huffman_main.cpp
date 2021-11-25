@@ -122,35 +122,18 @@ int main() {
 	std::cout << "===       Вариант 19       ===" << std::endl;
 	std::cout << std::endl;
 
-	std::string default_str_ru = "Перводан, другодан,\n"
-								 "На колоде барабан;\n"
-								 "Свинистель, коростель,\n"
-								 "Пятерка, шестерка,\n"
-								 "утюг.";
+	std::string fio_ru = "Михольский Иван Олегович";
+	std::string fio_en = "Mikholskiy Ivan Olegovich";
 
-	std::string default_str_en_long = "Do not go gentle into that good night,\n"
-									  "Old age should burn and rave at close of day;\n"
-									  "Rage, rage against the dying of the light.\n"
-									  "Though wise men at their end know dark is right,\n"
-									  "Because their words had forked no lightning they\n"
-									  "Do not go gentle into that good night.";
-
-	std::string default_str_en_short = "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
-									   "ddddddddddddddddddddddddddddddddddddddd"
-									   "aaaaaaaaaaaaaaaaaaaaaaaaaaa"
-									   "eeeeeeeeeeee"
-									   "ccccccccc"
-									   "fffff";
-
-	std::string to_process = default_str_en_long;
+	std::string to_process = fio_en;
 
 	std::cout << to_process << std::endl
 			  << std::endl;
 
 	std::vector<bool> encoded = huffman_encode(to_process);
 
-//	print_alphabet();
-//	std::cout << std::endl;
+	print_alphabet();
+	std::cout << std::endl;
 
 	std::cout << "Коэффициент сжатия: " << compression(to_process, encoded) << std::endl;
 	std::cout << "Среднее:\t\t\t" << average() << " бит/символ" << std::endl;
@@ -243,8 +226,8 @@ Alphabet create_alphabet(std::string &text) {
 		result.push_back(sequence);
 	});
 
-	std::sort(result.begin(), result.end(), [](Sequence const &left, Sequence const &right) {
-		return left.front().amount >= right.front().amount;
+	std::sort(result.begin(), result.end(), [&](Sequence const &left, Sequence const &right) {
+		return left.front().amount > right.front().amount;
 	});
 
 	return result;
