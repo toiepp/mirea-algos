@@ -18,7 +18,8 @@ struct Symbol {
 	size_t amount;
 	std::vector<bool> code;
 
-	Symbol(std::pair<char, size_t> pair) : symbol(pair.first), amount(pair.second) {}
+	Symbol(std::pair<char, size_t> pair)
+		: symbol(pair.first), amount(pair.second) {}
 };
 
 std::ostream &operator<<(std::ostream &out, const Symbol &symbol) {
@@ -49,7 +50,7 @@ Alphabet create_alphabet(std::string &);
 
 std::pair<Sequence, Sequence> get_two_min_and_delete(Alphabet &);
 
-size_t total_sum_of_seq(Sequence sequence) {
+size_t total_amount(Sequence sequence) {
 	size_t total = 0;
 	for (Symbol s : sequence) {
 		total += s.amount;
@@ -162,11 +163,13 @@ std::vector<bool> huffman_encode(std::string &text) {
 			Sequence new_sequence;
 			std::for_each(p.first.begin(), p.first.end(),
 						  [&new_sequence](Symbol &s) {
+							  // WARN Awful performance
 							  s.code.insert(s.code.begin(), 1, 0);
 							  new_sequence.push_back(s);
 						  });
 			std::for_each(p.second.begin(), p.second.end(),
 						  [&new_sequence](Symbol &s) {
+							  // WARN Awful performance
 							  s.code.insert(s.code.begin(), 1, 1);
 							  new_sequence.push_back(s);
 						  });
@@ -177,11 +180,14 @@ std::vector<bool> huffman_encode(std::string &text) {
 	}
 	std::vector<bool> encoded;
 	for (char c : text) {
-		std::vector<bool> code = std::find_if(alphabet.front().begin(), alphabet.front().end(),
-											  [&c](const Symbol &s) {
-												  return s.symbol == c;
-											  })
-										 ->code;
+		std::vector<bool> code =
+				std::find_if(alphabet.front().begin(),
+							 alphabet.front().end(),
+
+							 [&c](const Symbol &s) {
+								 return s.symbol == c;
+							 })
+						->code;
 		encoded.insert(encoded.end(), code.begin(), code.end());
 	}
 	ALPHABET = alphabet;
@@ -213,28 +219,31 @@ std::string huffman_decode(std::vector<bool> &encoded) {
 Alphabet create_alphabet(std::string &text) {
 	std::map<char, size_t> alphabet;
 
-	std::for_each(text.begin(), text.end(), [&alphabet](const char &c) {
-		alphabet[c] += 1;
-	});
+	std::for_each(text.begin(), text.end(),
+				  [&alphabet](const char &c) {
+					  alphabet[c] += 1;
+				  });
 
 	Alphabet result;
 
-	std::for_each(alphabet.begin(), alphabet.end(), [&result](const std::pair<char, size_t> &p) {
-		Sequence sequence;
-		sequence.push_back(Symbol(p));
-		result.push_back(sequence);
-	});
+	std::for_each(alphabet.begin(), alphabet.end(),
+				  [&result](const std::pair<char, size_t> &p) {
+					  Sequence sequence;
+					  sequence.push_back(Symbol(p));
+					  result.push_back(sequence);
+				  });
 
-	std::sort(result.begin(), result.end(), [&](Sequence const &left, Sequence const &right) {
-		return left.front().amount > right.front().amount;
-	});
+	std::sort(result.begin(), result.end(),
+			  [](Sequence const &left, Sequence const &right) {
+				  return left.front().amount > right.front().amount;
+			  });
 
 	return result;
 }
 
 std::pair<Sequence, Sequence> get_two_min_and_delete(Alphabet &alphabet) {
 	auto comp = [](Sequence const &left, Sequence const &right) {
-		return total_sum_of_seq(left) < total_sum_of_seq(right);
+		return total_amount(left) < total_amount(right);
 	};
 
 	Sequence min1 = *std::min_element(alphabet.begin(), alphabet.end(), comp);
