@@ -56,6 +56,21 @@ size_t total_sum_of_seq(Sequence sequence) {
 	return total;
 }
 
+void print_alphabet() {
+	std::vector<Symbol> alphabet = ALPHABET.front();
+	std::sort(alphabet.begin(), alphabet.end(), [](Symbol const &left, Symbol const &right) {
+		return left.amount > right.amount;
+	});
+	std::for_each(alphabet.begin(), alphabet.end(), [](const Symbol &symbol) {
+		std::cout << symbol.symbol << "(" << symbol.amount << ")[";
+		for (size_t i = 0; i < symbol.code.size(); ++i) {
+			std::cout << symbol.code.at(i);
+		}
+		std::cout << "]" << std::endl;
+	});
+	std::cout << std::endl;
+}
+
 Sequence::iterator get_by_code(std::vector<bool> &code) {
 	return std::find_if(ALPHABET.front().begin(), ALPHABET.front().end(),
 						[&code](const Symbol &symbol) { return code == symbol.code; });
@@ -92,11 +107,11 @@ int main() {
 
 //	default_str_en_short = "aaabbc";
 
-	std::vector<bool> encoded = huffman_encode(default_str_en_short);
+	std::cout << default_str_en_long << std::endl;
 
-	for (Sequence s : ALPHABET) {
-		std::cout << s << std::endl;
-	}
+	std::vector<bool> encoded = huffman_encode(default_str_en_long);
+
+	print_alphabet();
 
 	for (bool b : encoded) {
 		std::cout << b;
