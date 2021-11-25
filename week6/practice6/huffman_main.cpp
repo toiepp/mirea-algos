@@ -82,7 +82,7 @@ Sequence::iterator get_by_code(std::vector<bool> &code) {
 }
 
 double compression(std::string &text, std::vector<bool> &encoded) {
-	return ((double) encoded.size() / (double) (text.size() * 8));
+	return ((double) (text.size() * 8)) / ((double) encoded.size());
 }
 
 double average() {
@@ -97,7 +97,7 @@ double average() {
 }
 
 double dispersion() {
-	double d = 0.0;
+	double dispersion = 0.0;
 	double total_amount = 0;
 	double l_avg = average();
 	std::for_each(ALPHABET.front().begin(), ALPHABET.front().end(),
@@ -105,11 +105,11 @@ double dispersion() {
 					  total_amount += symbol.amount;
 				  });
 	for (size_t i = 0; i < ALPHABET.front().size(); ++i) {
-		double p_s = total_amount / (double) ALPHABET.front().at(i).amount;
+		double p_s = ALPHABET.front().at(i).amount / total_amount;
 		double l_s = ALPHABET.front().at(i).code.size();
-		d += p_s * std::pow(l_s - l_avg, 2);
+		dispersion += p_s * std::pow(l_s - l_avg, 2);
 	}
-	return d;
+	return dispersion;
 }
 
 std::vector<bool> huffman_encode(std::string &);
@@ -123,6 +123,7 @@ int main() {
 	std::cout << std::endl;
 
 	std::string fio = "Mikholskiy Ivan Olegovich";
+	fio = "Михольский Иван Олегович";
 	std::cout << fio << std::endl
 			  << std::endl;
 
