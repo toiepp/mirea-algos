@@ -1,6 +1,8 @@
+#include <cmath>
 #include <iomanip>
 #include <iostream>
 #include <map>
+#include <numeric>
 #include <set>
 #include <vector>
 
@@ -76,9 +78,44 @@ Sequence::iterator get_by_code(std::vector<bool> &code) {
 						[&code](const Symbol &symbol) { return code == symbol.code; });
 }
 
+double compression(std::string &text, std::vector<bool> &encoded) {
+	return ((double) encoded.size() / (double) (text.size() * 8));
+}
+
+double average() {
+	double S = 0;
+	double total_amount = 0;
+	std::for_each(ALPHABET.front().begin(), ALPHABET.front().end(),
+				  [&total_amount](const Symbol &symbol) {
+					  total_amount += symbol.amount;
+				  });
+	std::for_each(ALPHABET.front().begin(), ALPHABET.front().end(),
+				  [&S, &total_amount](const Symbol &symbol) {
+					  S += ((double) symbol.amount / total_amount) * (double) symbol.code.size();
+				  });
+	return S;
+}
+
+double dispertion() {
+	double d = 0.0;
+	double total_amount = 0;
+	double l_avg = average();
+	std::for_each(ALPHABET.front().begin(), ALPHABET.front().end(),
+				  [&total_amount](const Symbol &symbol) {
+					  total_amount += symbol.amount;
+				  });
+	for (size_t i = 0; i < ALPHABET.front().size(); ++i) {
+		double p_s = total_amount / (double) ALPHABET.front().at(i).amount;
+		double l_s = ALPHABET.front().at(i).code.size();
+		d += p_s * std::pow(l_s - l_avg, 2);
+	}
+	return d;
+}
+
 std::vector<bool> huffman_encode(std::string &);
 
 std::string huffman_decode(std::vector<bool> &);
+
 
 int main() {
 	std::cout << "=== Практическая работа №6 ===" << std::endl;
@@ -105,23 +142,33 @@ int main() {
 									   "ccccccccc"
 									   "fffff";
 
-//	default_str_en_short = "aaabbc";
+	std::string to_process = default_str_en_long;
 
-	std::cout << default_str_en_long << std::endl;
+	std::cout << to_process << std::endl
+			  << std::endl;
 
-	std::vector<bool> encoded = huffman_encode(default_str_en_long);
+	std::vector<bool> encoded = huffman_encode(to_process);
 
-	print_alphabet();
+//	print_alphabet();
+//	std::cout << std::endl;
+
+	std::cout << "Коэффициент сжатия: " << compression(to_process, encoded) << std::endl;
+	std::cout << "Среднее:\t\t\t" << average() << " бит/символ" << std::endl;
+	std::cout << "Дисперсия:\t\t\t" << dispertion() << std::endl;
+
+	std::cout << std::endl;
 
 	for (bool b : encoded) {
 		std::cout << b;
 	}
-	std::cout << std::endl;
+	std::cout << std::endl
+			  << std::endl;
 
 	std::cout << huffman_decode(encoded) << std::endl;
 
 	return 0;
 }
+
 
 std::vector<bool> huffman_encode(std::string &text) {
 	Alphabet alphabet = create_alphabet(text);
