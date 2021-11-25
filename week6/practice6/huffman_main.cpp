@@ -2,7 +2,6 @@
 #include <iomanip>
 #include <iostream>
 #include <map>
-#include <numeric>
 #include <set>
 #include <vector>
 
@@ -96,7 +95,7 @@ double average() {
 	return S;
 }
 
-double dispertion() {
+double dispersion() {
 	double d = 0.0;
 	double total_amount = 0;
 	double l_avg = average();
@@ -137,7 +136,7 @@ int main() {
 
 	std::cout << "Коэффициент сжатия: " << compression(to_process, encoded) << std::endl;
 	std::cout << "Среднее:\t\t\t" << average() << " бит/символ" << std::endl;
-	std::cout << "Дисперсия:\t\t\t" << dispertion() << std::endl;
+	std::cout << "Дисперсия:\t\t\t" << dispersion() << std::endl;
 
 	std::cout << std::endl;
 
