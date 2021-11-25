@@ -64,9 +64,10 @@ void print_alphabet() {
 		return left.amount > right.amount;
 	});
 	std::for_each(alphabet.begin(), alphabet.end(), [](const Symbol &symbol) {
-		std::cout << symbol.symbol << "(" << symbol.amount << ")[";
+		std::cout << symbol.symbol << "(" << symbol.amount << ")";
+		std::cout << std::setw(5) << std::right << "[";
 		for (size_t i = 0; i < symbol.code.size(); ++i) {
-			std::cout << symbol.code.at(i);
+			std::cout << std::left << symbol.code.at(i);
 		}
 		std::cout << "]" << std::endl;
 	});
@@ -75,7 +76,9 @@ void print_alphabet() {
 
 Sequence::iterator get_by_code(std::vector<bool> &code) {
 	return std::find_if(ALPHABET.front().begin(), ALPHABET.front().end(),
-						[&code](const Symbol &symbol) { return code == symbol.code; });
+						[&code](const Symbol &symbol) {
+							return code == symbol.code;
+						});
 }
 
 double compression(std::string &text, std::vector<bool> &encoded) {
@@ -84,14 +87,11 @@ double compression(std::string &text, std::vector<bool> &encoded) {
 
 double average() {
 	double S = 0;
-	double total_amount = 0;
 	std::for_each(ALPHABET.front().begin(), ALPHABET.front().end(),
-				  [&total_amount](const Symbol &symbol) {
-					  total_amount += symbol.amount;
-				  });
-	std::for_each(ALPHABET.front().begin(), ALPHABET.front().end(),
-				  [&S, &total_amount](const Symbol &symbol) {
-					  S += ((double) symbol.amount / total_amount) * (double) symbol.code.size();
+				  [&S](const Symbol &symbol) {
+					  S += ((double) symbol.amount /
+							total_amount(ALPHABET.front())) *
+						   (double) symbol.code.size();
 				  });
 	return S;
 }
@@ -122,20 +122,16 @@ int main() {
 	std::cout << "===       Вариант 19       ===" << std::endl;
 	std::cout << std::endl;
 
-	std::string fio_ru = "Михольский Иван Олегович";
-	std::string fio_en = "Mikholskiy Ivan Olegovich";
-
-	std::string to_process = fio_en;
-
-	std::cout << to_process << std::endl
+	std::string fio = "Mikholskiy Ivan Olegovich";
+	std::cout << fio << std::endl
 			  << std::endl;
 
-	std::vector<bool> encoded = huffman_encode(to_process);
+	std::vector<bool> encoded = huffman_encode(fio);
 
 	print_alphabet();
 	std::cout << std::endl;
 
-	std::cout << "Коэффициент сжатия: " << compression(to_process, encoded) << std::endl;
+	std::cout << "Коэффициент сжатия: " << compression(fio, encoded) << std::endl;
 	std::cout << "Среднее:\t\t\t" << average() << " бит/символ" << std::endl;
 	std::cout << "Дисперсия:\t\t\t" << dispersion() << std::endl;
 
@@ -163,14 +159,12 @@ std::vector<bool> huffman_encode(std::string &text) {
 			Sequence new_sequence;
 			std::for_each(p.first.begin(), p.first.end(),
 						  [&new_sequence](Symbol &s) {
-							  // WARN Awful performance
-							  s.code.insert(s.code.begin(), 1, 0);
+							  s.code.push_back(0);
 							  new_sequence.push_back(s);
 						  });
 			std::for_each(p.second.begin(), p.second.end(),
 						  [&new_sequence](Symbol &s) {
-							  // WARN Awful performance
-							  s.code.insert(s.code.begin(), 1, 1);
+							  s.code.push_back(1);
 							  new_sequence.push_back(s);
 						  });
 
@@ -178,11 +172,20 @@ std::vector<bool> huffman_encode(std::string &text) {
 		}
 		alphabet.insert(alphabet.end(), new_alphabet.begin(), new_alphabet.end());
 	}
+
+
+	ALPHABET = alphabet;
+	std::for_each(ALPHABET.front().begin(), ALPHABET.front().end(),
+				  [](Symbol &symbol) {
+					  std::reverse(symbol.code.begin(),
+								   symbol.code.end());
+				  });
+
 	std::vector<bool> encoded;
 	for (char c : text) {
 		std::vector<bool> code =
-				std::find_if(alphabet.front().begin(),
-							 alphabet.front().end(),
+				std::find_if(ALPHABET.front().begin(),
+							 ALPHABET.front().end(),
 
 							 [&c](const Symbol &s) {
 								 return s.symbol == c;
@@ -190,7 +193,6 @@ std::vector<bool> huffman_encode(std::string &text) {
 						->code;
 		encoded.insert(encoded.end(), code.begin(), code.end());
 	}
-	ALPHABET = alphabet;
 	return encoded;
 }
 
@@ -246,10 +248,10 @@ std::pair<Sequence, Sequence> get_two_min_and_delete(Alphabet &alphabet) {
 		return total_amount(left) < total_amount(right);
 	};
 
-	Sequence min1 = *std::min_element(alphabet.begin(), alphabet.end(), comp);
+	Sequence min1 = *std::min_element(alphabet.cbegin(), alphabet.cend(), comp);
 	std::erase(alphabet, min1);
 
-	Sequence min2 = *std::min_element(alphabet.begin(), alphabet.end(), comp);
+	Sequence min2 = *std::min_element(alphabet.cbegin(), alphabet.cend(), comp);
 	std::erase(alphabet, min2);
 
 	return std::make_pair(min2, min1);
