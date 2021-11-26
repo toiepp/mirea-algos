@@ -1,10 +1,10 @@
 #include <cmath>
+#include <fstream>
 #include <iomanip>
 #include <iostream>
 #include <map>
 #include <set>
 #include <vector>
-#include <fstream>
 
 struct Symbol;
 
@@ -147,7 +147,7 @@ int main() {
 		long_text += buffer;
 	}
 
-	std::string to_process = t;
+	std::string to_process = long_text;
 
 	std::cout << to_process << std::endl
 			  << std::endl;
@@ -181,22 +181,20 @@ std::vector<bool> huffman_encode(std::string &text) {
 
 	while (alphabet.size() != 1) {
 		Alphabet new_alphabet;
-		while ((alphabet.size() != 1 && alphabet.size() % 2 != 0) || (alphabet.size() != 0 && alphabet.size() % 2 == 0)) {
-			auto p = get_two_min_and_delete(alphabet);
-			Sequence new_sequence;
-			std::for_each(p.first.begin(), p.first.end(),
-						  [&new_sequence](Symbol &s) {
-							  s.code.push_back(0);
-							  new_sequence.push_back(s);
-						  });
-			std::for_each(p.second.begin(), p.second.end(),
-						  [&new_sequence](Symbol &s) {
-							  s.code.push_back(1);
-							  new_sequence.push_back(s);
-						  });
+		auto p = get_two_min_and_delete(alphabet);
+		Sequence new_sequence;
+		std::for_each(p.first.begin(), p.first.end(),
+					  [&new_sequence](Symbol &s) {
+						  s.code.push_back(0);
+						  new_sequence.push_back(s);
+					  });
+		std::for_each(p.second.begin(), p.second.end(),
+					  [&new_sequence](Symbol &s) {
+						  s.code.push_back(1);
+						  new_sequence.push_back(s);
+					  });
 
-			new_alphabet.push_back(new_sequence);
-		}
+		new_alphabet.push_back(new_sequence);
 		alphabet.insert(alphabet.end(), new_alphabet.begin(), new_alphabet.end());
 	}
 
@@ -275,10 +273,10 @@ std::pair<Sequence, Sequence> get_two_min_and_delete(Alphabet &alphabet) {
 		return total_amount(left) < total_amount(right);
 	};
 
-	Sequence min1 = *std::min_element(alphabet.cbegin(), alphabet.cend(), comp);
+	Sequence min1 = *std::min_element(alphabet.rbegin(), alphabet.rend(), comp);
 	std::erase(alphabet, min1);
 
-	Sequence min2 = *std::min_element(alphabet.cbegin(), alphabet.cend(), comp);
+	Sequence min2 = *std::min_element(alphabet.rbegin(), alphabet.rend(), comp);
 	std::erase(alphabet, min2);
 
 	return std::make_pair(min2, min1);
