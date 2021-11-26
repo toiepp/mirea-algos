@@ -4,6 +4,7 @@
 #include <map>
 #include <set>
 #include <vector>
+#include <fstream>
 
 struct Symbol;
 
@@ -123,18 +124,29 @@ int main() {
 	std::cout << std::endl;
 
 	std::string fio = "Mikholskiy Ivan Olegovich";
-	fio = "Михольский Иван Олегович";
-	std::cout << fio << std::endl
+
+	std::ifstream in("/home/mikholskiyivan/main/mirea/mirea-algos/week6/practice6/text.txt");
+	std::string long_text;
+	std::string buffer;
+
+	while (std::getline(in, buffer)) {
+		long_text += buffer;
+	}
+
+	std::string to_process = long_text;
+
+	std::cout << to_process << std::endl
 			  << std::endl;
 
-	std::vector<bool> encoded = huffman_encode(fio);
+	std::vector<bool> encoded = huffman_encode(to_process);
 
 	print_alphabet();
 	std::cout << std::endl;
 
-	std::cout << "Коэффициент сжатия: " << compression(fio, encoded) << std::endl;
+	std::cout << "Коэффициент сжатия: " << compression(to_process, encoded) << std::endl;
 	std::cout << "Среднее:\t\t\t" << average() << " бит/символ" << std::endl;
 	std::cout << "Дисперсия:\t\t\t" << dispersion() << std::endl;
+	std::cout << "Конечный размер:\t" << encoded.size() << std::endl;
 
 	std::cout << std::endl;
 
