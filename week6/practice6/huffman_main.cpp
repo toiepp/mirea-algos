@@ -151,7 +151,7 @@ int main() {
 		long_text += buffer;
 	}
 
-	std::string to_process = fio;
+	std::string to_process = long_text;
 
 	std::cout << to_process << std::endl
 			  << std::endl;
@@ -161,10 +161,11 @@ int main() {
 	print_alphabet();
 	std::cout << std::endl;
 
+	std::cout << "Начальный размер:\t" << to_process.length() * 8 << " бит" << std::endl;
+	std::cout << "Конечный размер:\t" << encoded.size() << " бит" << std::endl;
 	std::cout << "Коэффициент сжатия: " << compression(to_process, encoded) << std::endl;
 	std::cout << "Среднее:\t\t\t" << average() << " бит/символ" << std::endl;
 	std::cout << "Дисперсия:\t\t\t" << dispersion() << std::endl;
-	std::cout << "Конечный размер:\t" << encoded.size() << std::endl;
 
 	std::cout << std::endl;
 
