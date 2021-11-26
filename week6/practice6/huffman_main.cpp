@@ -176,10 +176,10 @@ std::vector<bool> huffman_encode(std::string &text) {
 		std::for_each(p.second.begin(), p.second.end(),
 					  [&p](Symbol &s) {
 						  s.code.push_back(1);
-						  p.first.push_back(s);
+						  p.first.push_back(std::move(s));
 					  });
 
-		alphabet.push_back(p.first);
+		alphabet.push_back(std::move(p.first));
 	}
 
 	std::for_each(alphabet.front().begin(), alphabet.front().end(),
@@ -199,7 +199,7 @@ std::vector<bool> huffman_encode(std::string &text) {
 						->code;
 		encoded.insert(encoded.end(), code.begin(), code.end());
 	}
-	ALPHABET = alphabet;
+	ALPHABET = std::move(alphabet);
 
 	return encoded;
 }
@@ -246,8 +246,8 @@ Alphabet create_alphabet(std::string &text) {
 	std::for_each(alphabet.begin(), alphabet.end(),
 				  [&result](const std::pair<char, size_t> &p) {
 					  Sequence sequence;
-					  sequence.push_back(Symbol(p));
-					  result.push_back(sequence);
+					  sequence.push_back(Symbol(std::move(p)));
+					  result.push_back(std::move(sequence));
 				  });
 
 	return result;
@@ -264,5 +264,5 @@ std::pair<Sequence, Sequence> get_two_min_and_delete(Alphabet &alphabet) {
 	Sequence min2 = *std::min_element(alphabet.begin(), alphabet.end(), comp);
 	std::erase(alphabet, min2);
 
-	return std::make_pair(min2, min1);
+	return std::make_pair(std::move(min2), std::move(min1));
 }
