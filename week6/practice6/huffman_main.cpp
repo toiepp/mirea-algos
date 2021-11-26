@@ -206,29 +206,28 @@ std::vector<bool> huffman_encode(std::string &text) {
 
 std::string huffman_decode(std::vector<bool> &encoded) {
 	std::string result;
-	std::vector<bool> buffer;
-	Alphabet *alphabet = &ALPHABET;
 
-	auto comp = [](Symbol const &left, Symbol const &right) {
-		return left.code.size() < right.code.size();
-	};
+	size_t min_buffer_size =
+			std::min_element(ALPHABET.front().begin(),
+							 ALPHABET.front().end(),
+							 [](Symbol const &left, Symbol const &right) {
+								 return left.code.size() < right.code.size();
+							 })
+					->code.size();
 
-	size_t min_size =
-			std::min_element(ALPHABET.front().begin(), ALPHABET.front().end(), comp)->code.size();
-
-	size_t skip_count = 0;
 	for (size_t i = 0; i < encoded.size();) {
-		buffer.push_back(encoded.at(i));
-		Sequence::iterator seq_iter = get_by_code(buffer);
-		if (seq_iter != ALPHABET.front().end()) {
-			result += seq_iter->symbol;
-			i += buffer.size() - skip_count;
-			buffer.clear();
-			skip_count = 0;
-		} else {
-			skip_count++;
-			i += 1;
+		size_t min = min_buffer_size;
+		std::vector<bool> buffer = std::vector<bool>(encoded.begin() + i,
+													 encoded.begin() + i + min);
+		Sequence::iterator symbol = get_by_code(buffer);
+		while (symbol == ALPHABET.front().end()) {
+			bool next = *(encoded.begin() + i + min);
+			buffer.push_back(next);
+			min += 1;
+			symbol = get_by_code(buffer);
 		}
+		result += symbol->symbol;
+		i += buffer.size();
 	}
 
 	return result;
