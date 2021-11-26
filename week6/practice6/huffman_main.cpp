@@ -61,6 +61,10 @@ size_t total_amount(Sequence sequence) {
 
 void print_alphabet() {
 	std::vector<Symbol> alphabet = ALPHABET.front();
+	std::sort(alphabet.begin(), alphabet.end(),
+			  [](Symbol const &left, Symbol const &right) {
+				  return left.amount > right.amount;
+			  });
 	std::sort(alphabet.begin(), alphabet.end(), [](Symbol const &left, Symbol const &right) {
 		return left.amount > right.amount;
 	});
@@ -147,7 +151,7 @@ int main() {
 		long_text += buffer;
 	}
 
-	std::string to_process = long_text;
+	std::string to_process = fio;
 
 	std::cout << to_process << std::endl
 			  << std::endl;
@@ -260,11 +264,6 @@ Alphabet create_alphabet(std::string &text) {
 					  result.push_back(sequence);
 				  });
 
-	std::sort(result.begin(), result.end(),
-			  [](Sequence const &left, Sequence const &right) {
-				  return left.front().amount > right.front().amount;
-			  });
-
 	return result;
 }
 
@@ -273,10 +272,10 @@ std::pair<Sequence, Sequence> get_two_min_and_delete(Alphabet &alphabet) {
 		return total_amount(left) < total_amount(right);
 	};
 
-	Sequence min1 = *std::min_element(alphabet.rbegin(), alphabet.rend(), comp);
+	Sequence min1 = *std::min_element(alphabet.begin(), alphabet.end(), comp);
 	std::erase(alphabet, min1);
 
-	Sequence min2 = *std::min_element(alphabet.rbegin(), alphabet.rend(), comp);
+	Sequence min2 = *std::min_element(alphabet.begin(), alphabet.end(), comp);
 	std::erase(alphabet, min2);
 
 	return std::make_pair(min2, min1);
