@@ -168,50 +168,53 @@ std::vector<bool> huffman_encode(std::string &text) {
 	Alphabet alphabet = create_alphabet(text);
 
 	while (alphabet.size() != 1) {
-		Alphabet new_alphabet;
 		auto p = get_two_min_and_delete(alphabet);
-		Sequence new_sequence;
 		std::for_each(p.first.begin(), p.first.end(),
-					  [&new_sequence](Symbol &s) {
+					  [](Symbol &s) {
 						  s.code.push_back(0);
-						  new_sequence.push_back(s);
 					  });
 		std::for_each(p.second.begin(), p.second.end(),
-					  [&new_sequence](Symbol &s) {
+					  [&p](Symbol &s) {
 						  s.code.push_back(1);
-						  new_sequence.push_back(s);
+						  p.first.push_back(s);
 					  });
 
-		new_alphabet.push_back(new_sequence);
-		alphabet.insert(alphabet.end(), new_alphabet.begin(), new_alphabet.end());
+		alphabet.push_back(p.first);
 	}
 
-
-	ALPHABET = alphabet;
-	std::for_each(ALPHABET.front().begin(), ALPHABET.front().end(),
+	std::for_each(alphabet.front().begin(), alphabet.front().end(),
 				  [](Symbol &symbol) {
 					  std::reverse(symbol.code.begin(),
 								   symbol.code.end());
 				  });
 
 	std::vector<bool> encoded;
-	for (char c : text) {
+	for (char &c : text) {
 		std::vector<bool> code =
-				std::find_if(ALPHABET.front().begin(),
-							 ALPHABET.front().end(),
-
+				std::find_if(alphabet.front().begin(),
+							 alphabet.front().end(),
 							 [&c](const Symbol &s) {
 								 return s.symbol == c;
 							 })
 						->code;
 		encoded.insert(encoded.end(), code.begin(), code.end());
 	}
+	ALPHABET = alphabet;
+
 	return encoded;
 }
 
 std::string huffman_decode(std::vector<bool> &encoded) {
 	std::string result;
 	std::vector<bool> buffer;
+	Alphabet *alphabet = &ALPHABET;
+
+	auto comp = [](Symbol const &left, Symbol const &right) {
+		return left.code.size() < right.code.size();
+	};
+
+	size_t min_size =
+			std::min_element(ALPHABET.front().begin(), ALPHABET.front().end(), comp)->code.size();
 
 	size_t skip_count = 0;
 	for (size_t i = 0; i < encoded.size();) {
