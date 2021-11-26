@@ -124,6 +124,20 @@ int main() {
 	std::cout << std::endl;
 
 	std::string fio = "Mikholskiy Ivan Olegovich";
+	std::string t = "aaaaaaaaaaaaaaaaaaaaaaaa"
+					"bbbbbbbbbbbb"
+					"cccccccc"
+					"dddddddd"
+					"eeeeeeee"
+					"ffffffff"
+					"gggg"
+					"hhhh"
+					"iiii"
+					"jjjj"
+					"kkkk"
+					"llll"
+					"mmmm"
+					"nnnn";
 
 	std::ifstream in("/home/mikholskiyivan/main/mirea/mirea-algos/week6/practice6/text.txt");
 	std::string long_text;
@@ -133,7 +147,7 @@ int main() {
 		long_text += buffer;
 	}
 
-	std::string to_process = long_text;
+	std::string to_process = t;
 
 	std::cout << to_process << std::endl
 			  << std::endl;
