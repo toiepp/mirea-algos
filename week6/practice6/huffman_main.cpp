@@ -65,9 +65,6 @@ void print_alphabet() {
 			  [](Symbol const &left, Symbol const &right) {
 				  return left.amount > right.amount;
 			  });
-	std::sort(alphabet.begin(), alphabet.end(), [](Symbol const &left, Symbol const &right) {
-		return left.amount > right.amount;
-	});
 	std::for_each(alphabet.begin(), alphabet.end(), [](const Symbol &symbol) {
 		std::cout << symbol.symbol << "(" << symbol.amount << ")";
 		std::cout << std::setw(5) << std::right << "[";
@@ -128,20 +125,6 @@ int main() {
 	std::cout << std::endl;
 
 	std::string fio = "Mikholskiy Ivan Olegovich";
-	std::string t = "aaaaaaaaaaaaaaaaaaaaaaaa"
-					"bbbbbbbbbbbb"
-					"cccccccc"
-					"dddddddd"
-					"eeeeeeee"
-					"ffffffff"
-					"gggg"
-					"hhhh"
-					"iiii"
-					"jjjj"
-					"kkkk"
-					"llll"
-					"mmmm"
-					"nnnn";
 
 	std::ifstream in("/home/mikholskiyivan/main/mirea/mirea-algos/week6/practice6/text.txt");
 	std::string long_text;
@@ -151,7 +134,7 @@ int main() {
 		long_text += buffer;
 	}
 
-	std::string to_process = long_text;
+	std::string to_process = fio;
 
 	std::cout << to_process << std::endl
 			  << std::endl;
