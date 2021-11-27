@@ -1,36 +1,75 @@
-#include <iostream>
 #include <iomanip>
+#include <iostream>
 #include <vector>
 
-typedef std::vector<std::vector<size_t>> Field;
+/*
+62 95 78 69 87 29
+64 84 40 35 40 49
+77 32 91 46 60 84
+49 61 63 64 69 36
+84 40 19 45 64 52
+50 18 13 89 74 19
+*/
 
-void print_field(Field field) {
-	for (auto row : field) {
-		for (auto column : row) {
-			std::cout << std::setw(3) << std::left << column << " ";
-		}
-		std::cout << std::endl;
+struct Point {
+	int wieght;
+	size_t entrance_count;
+	size_t visit_count = 0;
+
+	void visit() {
+		visit_count++;
 	}
+};
+
+typedef std::vector<std::vector<int>> Field;
+
+Field create();
+
+void print_field(Field field);
+
+namespace brute {
+	// Решение методом грубой силы
+	void brute_force(Field &);
+
+	size_t count_paths(Field &);
 }
+
+namespace dyn {
+	// Решение методом динамического программирования
+	void dynamic_programming(Field &);
+}
+
 
 int main() {
 	std::cout << "=== Практическая работа №7 ===" << std::endl
 			  << "===        Вариант 6       ===" << std::endl;
 
+	Field field = create();
+
+//	print_field(field);
+
+	brute::brute_force(field);
+
+	return 0;
+}
+
+
+Field create() {
+	Field field;
+
 	int option;
 	std::cout << "Ввести поле (1) или использовать готовое (2): ";
 	std::cin >> option;
 
-	Field field;
-
 	switch (option) {
 		case 1: {
+			// строки и колонок
 			size_t n, m;
 			std::cout << "Введите размер поля (n x m): ";
 			std::cin >> n >> m;
 
 			field = Field(n);
-			std::fill(field.begin(), field.end(), std::vector<size_t>(n));
+			std::fill(field.begin(), field.end(), std::vector<int>(m));
 
 			int val;
 			for (size_t i = 0; i < n; ++i) {
@@ -67,8 +106,47 @@ int main() {
 			break;
 		}
 	}
+	return field;
+}
+
+void print_field(Field field) {
+	for (auto row : field) {
+		for (auto column : row) {
+			std::cout << std::setw(3) << std::left << column << " ";
+		}
+		std::cout << std::endl;
+	}
+}
+
+/*
+ * На каждый клекту поля приходится по 3 ответвления пути,
+ * кроме крайних правых и самых нижних, них только одно
+ * продолжение.
+ * */
+void brute::brute_force(Field &field) {
+	size_t path_count = count_paths(field);
+	print_field(field);
+	std::cout << path_count << std::endl;
+}
 
 
+size_t brute::count_paths(Field &field) {
+	if (field.size() == 1 || field.at(0).size() == 1) {
+		 return 1;
+	}
+	std::vector<int> counts(field.at(0).size(), 1);
+	std::vector<int> prev_state(counts.begin(), counts.end());
 
-	return 0;
+	for (size_t i = 1; i < counts.size(); ++i) {
+		counts[i] = counts.at(i - 1) + 2;
+	}
+
+	for (size_t i = 2; i < field.size(); ++i) {
+		prev_state = counts;
+		for (size_t j = 1; j < counts.size(); ++j) {
+			counts[j] = counts.at(j - 1) + prev_state.at(j) + prev_state.at(j - 1);
+		}
+	}
+
+	return *counts.rbegin();
 }
