@@ -11,16 +11,6 @@
 50 18 13 89 74 19
 */
 
-struct Point {
-	int wieght;
-	size_t entrance_count;
-	size_t visit_count = 0;
-
-	void visit() {
-		visit_count++;
-	}
-};
-
 typedef std::vector<std::vector<int>> Field;
 
 Field create();
@@ -120,13 +110,12 @@ void print_field(Field field) {
 
 /*
  * На каждый клекту поля приходится по 3 ответвления пути,
- * кроме крайних правых и самых нижних, них только одно
+ * кроме крайних правых и самых нижних, у них только одно
  * продолжение.
  * */
 void brute::brute_force(Field &field) {
 	size_t path_count = count_paths(field);
-	print_field(field);
-	std::cout << path_count << std::endl;
+
 }
 
 
