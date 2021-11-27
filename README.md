@@ -3,12 +3,16 @@
 ## Тема 1. Битовые операции
 Расположение: <i>[practice1](practice1)</i>
 
+[Отчет](https://docs.google.com/document/d/1VHfiV3crTE6l286fwBDplqd9KX9FV4fJIP3cdgp2E7s/edit?usp=sharing) по работе.
+
 Реализация битовых операций над битовыми массивами. Также реализована сортировка с помощью
 битового массива.
 
 ---
 ## Тема 2. Хэширование
 Расположение: <i>[practice2](practice2)</i>
+
+[Отчет](https://docs.google.com/document/d/1HLrhE56f41ULq67QXcR_NEXL736IAs7fIxVPcV86-NE/edit?usp=sharing) по работе.
 
 В данной практической я использую алгоритм хэширования с открытой адресацией.\
 И реализую такие операции:
@@ -22,6 +26,8 @@
 ## Тема 3. Поиск в тексте
 Расположение: <i>[practice3](practice3)</i>
 
+[Отчет](https://docs.google.com/document/d/1pMVrRjGy_wALlyDztc0xZS_5QGGuAZv22RgodEe1CvI/edit?usp=sharing) по работе.
+
 В данной практической я реализую следующие алгоритмы:
 - Поиск самого длинного слова в приложении, первая и поледняя буква которого равны;
 - Используя алгоритм Кнута-Мориса-Пратта, найти индекс последнего вхождения образца в текст.
@@ -30,6 +36,8 @@
 ---
 ## Тема 4. Дерерья
 Расположение: <i>[practice4](practice4)</i>
+
+[Отчет](https://docs.google.com/document/d/1fqblMcExXCva-_PAO6GF02NeSJzUMRUmXieoi4mudTs/edit?usp=sharing) по работе.
 
 В данной практической мною реализована такая структура хранения данных как **бинарвное дерево поиска или BST**.
 
@@ -45,6 +53,8 @@
 ## Тема 5. Графы
 Расположение: <i>[practice5](practice5)</i>
 
+[Отчет](https://docs.google.com/document/d/1yLHmdvDno89R3OyKLvfWF4_-1IbHCvp1aG6OAqnOMwQ/edit?usp=sharing) по работе.
+
 В данной практической я реализовал граф, который представлем в памяти как **матрица смежности**.
 
 А также реализовал такие операции над графом как нахождение
@@ -57,6 +67,8 @@
 Расположение <i>[practice6](practice6)</i>\
 Файл задания [здесь](https://online-edu.mirea.ru/pluginfile.php?file=%2F589271%2Fmod_assign%2Fintroattachment%2F0%2F%D0%9F%D0%A0-6%20%28%D0%BA%D0%BE%D0%B4%D0%B8%D1%80%D0%BE%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5%29.pdf&amp;forcedownload=1).
 
+[Отчет](https://docs.google.com/document/d/1yWCNzvnZ7Is5ifFxpaiQierqs6uvDMXtna7DBhYVZMA/edit?usp=sharing) по работе.
+
 В данной практической я реализую такие алгоритмы как:
 - Кодирование фразы методом [Шеннона-Фано](https://en.wikipedia.org/wiki/Shannon%E2%80%93Fano_coding);
 - Кодирование фразы методом [Хаффмана](https://ru.wikipedia.org/wiki/%D0%9A%D0%BE%D0%B4_%D0%A5%D0%B0%D1%84%D1%84%D0%BC%D0%B0%D0%BD%D0%B0#:~:text=%D0%90%D0%BB%D0%B3%D0%BE%D1%80%D0%B8%D1%82%D0%BC%20%D0%A5%D0%B0%D1%84%D1%84%D0%BC%D0%B0%D0%BD%D0%B0%20%E2%80%94%20%D0%B6%D0%B0%D0%B4%D0%BD%D1%8B%D0%B9%20%D0%B0%D0%BB%D0%B3%D0%BE%D1%80%D0%B8%D1%82%D0%BC%20%D0%BE%D0%BF%D1%82%D0%B8%D0%BC%D0%B0%D0%BB%D1%8C%D0%BD%D0%BE%D0%B3%D0%BE,%D0%BF%D1%80%D0%B8%20%D0%BD%D0%B0%D0%BF%D0%B8%D1%81%D0%B0%D0%BD%D0%B8%D0%B8%20%D0%B8%D0%BC%20%D0%BA%D1%83%D1%80%D1%81%D0%BE%D0%B2%D0%BE%D0%B9%20%D1%80%D0%B0%D0%B1%D0%BE%D1%82%D1%8B.)
@@ -64,6 +76,8 @@
 ---
 ## Тема 7. Стратегия
 Расположение <i>[practice7](practice7)</i>
+
+[Отчет]() по работе.
 
 **Постановка задачи:** Дано прямоугольное поле размером n*m клеток. Можно совершать шаги длиной в одну
 клетку вправо, вниз или по диагонали вправовниз. В каждой клетке записано
