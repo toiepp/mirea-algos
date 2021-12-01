@@ -1,6 +1,7 @@
 #include <iomanip>
 #include <iostream>
 #include <limits>
+#include <stack>
 #include <vector>
 
 #define INF std::numeric_limits<int>::max()
@@ -22,11 +23,11 @@
 typedef std::vector<std::vector<int>> Field;
 
 struct Edge {
-	int u;
-	int v;
-	int w;
+	int u = INF;
+	int v = INF;
+	int w = INF;
 
-	Edge() : u(INF), v(INF), w(INF) {}
+	Edge() {}
 
 	Edge(int s, int d, int w) : u(s), v(d), w(w) {}
 };
@@ -74,28 +75,45 @@ public:
 
 #ifdef TEST
 	void show_graph() {
-		std::for_each(graph.begin(), graph.end(),
+		std::for_each(graph.begin(), graph.end() - 1,
 					  [](const Edge &e) {
 						  std::cout << e << std::endl;
 					  });
 	}
 #endif
 
-	int solve() {
+	void solve() {
 		std::vector<int> dist(graph.rbegin()->u + 1, INF);
+		std::vector<std::vector<int>> paths(dist.size());
+		std::fill(paths.begin(), paths.end(), std::vector<int>(1, 0));
 		dist[0] = 0;
 
-		for (int i = 0; i < graph.size(); ++i) {
-			for (std::vector<Edge>::iterator e = graph.begin(); e != (graph.end() - 1); ++e) {
-				if (dist.at(e->u) != INF) {
-					if (dist.at(e->u) + e->w < dist.at(e->v)) {
-						dist[e->v] = e->w + dist.at(e->u);
+		for (std::vector<Edge>::iterator e = graph.begin(); e != (graph.end() - 1); ++e) {
+			if (dist.at(e->u) != INF) {
+				if (dist.at(e->u) + e->w < dist.at(e->v)) {
+					int save = dist.at(e->v);
+					dist[e->v] = e->w + dist.at(e->u);
+					// Добавлять путь той вершины,
+					// из который мы пришли
+					//					paths[e->v].push_back(e->u);
+					if (save > dist.at(e->v)) {
+						paths.at(e->v).clear();
+						paths.at(e->v).push_back(0);
 					}
+					for (int el : paths.at(e->u)) {
+						if (el != 0) paths.at(e->v).push_back(el);
+					}
+					paths.at(e->v).push_back(e->v);
 				}
 			}
 		}
 
-		return *dist.rbegin();
+		std::cout << "Самый короткий путь: ";
+		for (int i = 0; i < paths.rbegin()->size() - 1; ++i) {
+			std::cout << paths.rbegin()->at(i) << " --> ";
+		}
+		std::cout << *paths.rbegin()->rbegin() << std::endl;
+		std::cout << "Длина пути: " << *dist.rbegin() << std::endl;
 	}
 };
 
@@ -116,8 +134,8 @@ int main() {
 	Field field = create();
 	Solution solution(field);
 
-	//	solution.show_graph();
-	std::cout << solution.solve() << std::endl;
+	solution.show_graph();
+	solution.solve();
 }
 #endif
 
