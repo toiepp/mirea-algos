@@ -45,11 +45,12 @@ std::ostream &operator<<(std::ostream &out, const Edge &e) {
 class Solution {
 public:
 	std::vector<Edge> graph;
+	Field f;
 
 	// Строит граф на основе вершин
 	// Граф представлен как вектор взвешенных
 	// ребер между вершинами
-	Solution(Field &field) {
+	Solution(Field &field) : f(std::move(field)) {
 		graph = std::vector<Edge>();
 		int counter = 0;
 		for (size_t i = 0; i < field.size(); ++i) {
@@ -80,6 +81,15 @@ public:
 						  std::cout << e << std::endl;
 					  });
 	}
+
+	void show_field() {
+		int counter = 0;
+		for (int i = 0; i < f.size(); ++i) {
+			for (int j = 0; j < f.at(0).size(); ++j) {
+				printf("([%d] %d)", counter++, f.at(i).at(j));
+			}
+		}
+	}
 #endif
 
 	void solve() {
@@ -93,9 +103,6 @@ public:
 				if (dist.at(e->u) + e->w < dist.at(e->v)) {
 					int save = dist.at(e->v);
 					dist[e->v] = e->w + dist.at(e->u);
-					// Добавлять путь той вершины,
-					// из который мы пришли
-					//					paths[e->v].push_back(e->u);
 					if (save > dist.at(e->v)) {
 						paths.at(e->v).clear();
 						paths.at(e->v).push_back(0);
@@ -135,6 +142,7 @@ int main() {
 	Solution solution(field);
 
 	solution.show_graph();
+	solution.show_field();
 	solution.solve();
 }
 #endif
