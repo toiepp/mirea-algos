@@ -4,7 +4,7 @@
 #include <limits>
 
 #define INF std::numeric_limits<int>::infinity()
-//#define TEST
+#define TEST
 
 /*
 62 95 78 69 87 29
@@ -18,21 +18,17 @@
 typedef std::vector<std::vector<int>> Field;
 
 struct Edge {
-	int source;
-	int dest;
-	int weight;
+	int u;
+	int v;
+	int w;
 
-	Edge() : source(INF), dest(INF), weight(INF) {}
+	Edge() : u(INF), v(INF), w(INF) {}
 
-	Edge(int s, int d, int w) : source(s), dest(d), weight(w) {}
+	Edge(int s, int d, int w) : u(s), v(d), w(w) {}
 };
 
-bool operator<(const Edge &left, const Edge &right) {
-	return left.source < right.source || left.dest < right.dest || left.weight < right.weight;
-}
-
 std::ostream &operator<<(std::ostream &out, const Edge &e) {
-	out << std::setw(5) << std::left << e.source << "-<" << e.weight << ">->" << std::setw(5) << std::right << e.dest;
+	out << std::setw(5) << std::left << e.u << "-<" << e.w << ">->" << std::setw(5) << std::right << e.v;
 	return out;
 }
 
@@ -68,7 +64,7 @@ public:
 				counter++;
 			}
 		}
-		*graph.rbegin() = Edge(field.at(0).size() * field.size(), INF, INF);
+		graph.push_back(Edge(field.at(0).size() * field.size(), INF, INF));
 		graph.shrink_to_fit();
 	}
 
@@ -80,6 +76,17 @@ public:
 					  });
 	}
 #endif
+
+	int solve() {
+		std::vector<int> dist(graph.size(), INF);
+		dist[0] = 0;
+
+		for (int i = 0; i < graph.size(); ++i) {
+
+		}
+
+		return 0;
+	}
 };
 
 Field create();
@@ -100,8 +107,10 @@ int main() {
 }
 #else
 int main() {
-	int a = INF;
-	std::cout << a << std::endl;
+	Field field = create();
+	Solution solution(field);
+
+	solution.show_graph();
 }
 #endif
 
