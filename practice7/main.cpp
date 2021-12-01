@@ -17,18 +17,7 @@ Field create();
 
 void print_field(Field field);
 
-namespace brute {
-	// Решение методом грубой силы
-	void brute_force(Field &);
-
-	size_t count_paths(Field &);
-}
-
-namespace dyn {
-	// Решение методом динамического программирования
-	void dynamic_programming(Field &);
-}
-
+int get_shortest(Field &);
 
 int main() {
 	std::cout << "=== Практическая работа №7 ===" << std::endl
@@ -36,9 +25,7 @@ int main() {
 
 	Field field = create();
 
-//	print_field(field);
-
-	brute::brute_force(field);
+	get_shortest(field);
 
 	return 0;
 }
@@ -108,18 +95,7 @@ void print_field(Field field) {
 	}
 }
 
-/*
- * На каждый клекту поля приходится по 3 ответвления пути,
- * кроме крайних правых и самых нижних, у них только одно
- * продолжение.
- * */
-void brute::brute_force(Field &field) {
-	size_t path_count = count_paths(field);
-
-}
-
-
-size_t brute::count_paths(Field &field) {
+size_t count_paths(Field &field) {
 	if (field.size() == 1 || field.at(0).size() == 1) {
 		 return 1;
 	}
@@ -138,4 +114,8 @@ size_t brute::count_paths(Field &field) {
 	}
 
 	return *counts.rbegin();
+}
+
+int get_shortest(Field &field) {
+
 }
