@@ -1,6 +1,10 @@
 #include <iomanip>
 #include <iostream>
 #include <vector>
+#include <limits>
+
+#define INF std::numeric_limits<int>::infinity()
+//#define TEST
 
 /*
 62 95 78 69 87 29
@@ -13,23 +17,93 @@
 
 typedef std::vector<std::vector<int>> Field;
 
+struct Edge {
+	int source;
+	int dest;
+	int weight;
+
+	Edge() : source(INF), dest(INF), weight(INF) {}
+
+	Edge(int s, int d, int w) : source(s), dest(d), weight(w) {}
+};
+
+bool operator<(const Edge &left, const Edge &right) {
+	return left.source < right.source || left.dest < right.dest || left.weight < right.weight;
+}
+
+std::ostream &operator<<(std::ostream &out, const Edge &e) {
+	out << std::setw(5) << std::left << e.source << "-<" << e.weight << ">->" << std::setw(5) << std::right << e.dest;
+	return out;
+}
+
+/*
+ * Решение задачи с помощью алгоритма Беллмана-Форда,
+ * на основе динамеческого программирования.
+ * */
+
+class Solution {
+public:
+	std::vector<Edge> graph;
+
+	// Строит граф на основе вершин
+	// Граф представлен как вектор взвешенных
+	// ребер между вершинами
+	Solution(Field &field) {
+		graph = std::vector<Edge>();
+		int counter = 1;
+		for (size_t i = 0; i < field.size(); ++i) {
+			for (size_t j = 0; j < field.at(0).size(); ++j) {
+				if (j != field.at(0).size() - 1) {
+					Edge right(counter, counter + 1, field.at(i).at(j + 1));
+					graph.push_back(right);
+				}
+				if (i != field.size() - 1) {
+					Edge below(counter, counter + field.at(0).size(), field.at(i + 1).at(j));
+					graph.push_back(below);
+				}
+				if (i != field.size() - 1 && j != field.at(0).size() - 1) {
+					Edge right_below(counter, counter + field.at(0).size() + 1, field.at(i + 1).at(j + 1));
+					graph.push_back(right_below);
+				}
+				counter++;
+			}
+		}
+		*graph.rbegin() = Edge(field.at(0).size() * field.size(), INF, INF);
+		graph.shrink_to_fit();
+	}
+
+#ifdef TEST
+	void show_graph() {
+		std::for_each(graph.begin(), graph.end(),
+					  [](const Edge &e) {
+						  std::cout << e << std::endl;
+					  });
+	}
+#endif
+};
+
 Field create();
 
 void print_field(Field field);
 
 int get_shortest(Field &);
 
+#ifndef TEST
 int main() {
 	std::cout << "=== Практическая работа №7 ===" << std::endl
 			  << "===        Вариант 6       ===" << std::endl;
 
 	Field field = create();
-
-	get_shortest(field);
+	Solution solution(field);
 
 	return 0;
 }
-
+#else
+int main() {
+	int a = INF;
+	std::cout << a << std::endl;
+}
+#endif
 
 Field create() {
 	Field field;
@@ -97,7 +171,7 @@ void print_field(Field field) {
 
 size_t count_paths(Field &field) {
 	if (field.size() == 1 || field.at(0).size() == 1) {
-		 return 1;
+		return 1;
 	}
 	std::vector<int> counts(field.at(0).size(), 1);
 	std::vector<int> prev_state(counts.begin(), counts.end());
@@ -114,8 +188,4 @@ size_t count_paths(Field &field) {
 	}
 
 	return *counts.rbegin();
-}
-
-int get_shortest(Field &field) {
-
 }
