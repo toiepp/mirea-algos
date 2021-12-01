@@ -90,23 +90,23 @@ public:
 		graph = std::vector<Edge>();
 		int counter = 0;
 		for (size_t i = 0; i < field.size(); ++i) {
-			for (size_t j = 0; j < field.at(0).size(); ++j) {
-				if (j != field.at(0).size() - 1) {
+			for (size_t j = 0; j < field.front().size(); ++j) {
+				if (j != field.front().size() - 1) {
 					Edge right(counter, counter + 1, field.at(i).at(j + 1));
 					graph.push_back(right);
 				}
 				if (i != field.size() - 1) {
-					Edge below(counter, counter + field.at(0).size(), field.at(i + 1).at(j));
+					Edge below(counter, counter + field.front().size(), field.at(i + 1).at(j));
 					graph.push_back(below);
 				}
-				if (i != field.size() - 1 && j != field.at(0).size() - 1) {
-					Edge right_below(counter, counter + field.at(0).size() + 1, field.at(i + 1).at(j + 1));
+				if (i != field.size() - 1 && j != field.front().size() - 1) {
+					Edge right_below(counter, counter + field.front().size() + 1, field.at(i + 1).at(j + 1));
 					graph.push_back(right_below);
 				}
 				counter++;
 			}
 		}
-		graph.push_back(Edge(field.at(0).size() * field.size() - 1, INF, INF));
+		graph.push_back(Edge(field.front().size() * field.size() - 1, INF, INF));
 		graph.shrink_to_fit();
 	}
 
@@ -137,18 +137,19 @@ public:
 			}
 		}
 
+
 		std::cout << "Самый короткий путь: " << std::endl;
 		std::vector<int> path = *paths.rbegin();
-		int counter = 0;
+		int name = 0;
 		for (auto row : field) {
 			for (auto column : row) {
-				std::string out = "[(" + std::to_string(counter) + ") " + std::to_string(column) + "]";
-				if (std::find(path.begin(), path.end(), counter) != path.end()) {
+				std::string out = "[(" + std::to_string(name) + ") " + std::to_string(column) + "]";
+				if (std::find(path.begin(), path.end(), name) != path.end()) {
 					std::cout << mark << std::setw(12) << out << close;
 				} else {
 					std::cout << std::setw(12) << out;
 				}
-				counter++;
+				name++;
 			}
 			std::cout << std::endl;
 		}
