@@ -101,10 +101,6 @@ public:
 
 Field create();
 
-void print_field(Field field);
-
-int get_shortest(Field &);
-
 #ifndef TEST
 int main() {
 	std::cout << "=== Практическая работа №7 ===" << std::endl
@@ -178,34 +174,4 @@ Field create() {
 		}
 	}
 	return field;
-}
-
-void print_field(Field field) {
-	for (auto row : field) {
-		for (auto column : row) {
-			std::cout << std::setw(3) << std::left << column << " ";
-		}
-		std::cout << std::endl;
-	}
-}
-
-size_t count_paths(Field &field) {
-	if (field.size() == 1 || field.at(0).size() == 1) {
-		return 1;
-	}
-	std::vector<int> counts(field.at(0).size(), 1);
-	std::vector<int> prev_state(counts.begin(), counts.end());
-
-	for (size_t i = 1; i < counts.size(); ++i) {
-		counts[i] = counts.at(i - 1) + 2;
-	}
-
-	for (size_t i = 2; i < field.size(); ++i) {
-		prev_state = counts;
-		for (size_t j = 1; j < counts.size(); ++j) {
-			counts[j] = counts.at(j - 1) + prev_state.at(j) + prev_state.at(j - 1);
-		}
-	}
-
-	return *counts.rbegin();
 }
