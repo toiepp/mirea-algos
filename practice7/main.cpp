@@ -1,9 +1,9 @@
 #include <iomanip>
 #include <iostream>
-#include <vector>
 #include <limits>
+#include <vector>
 
-#define INF std::numeric_limits<int>::infinity()
+#define INF std::numeric_limits<int>::max()
 #define TEST
 
 /*
@@ -13,6 +13,10 @@
 49 61 63 64 69 36
 84 40 19 45 64 52
 50 18 13 89 74 19
+
+3 2 5
+1 23 7
+2 8 1
 */
 
 typedef std::vector<std::vector<int>> Field;
@@ -46,7 +50,7 @@ public:
 	// ребер между вершинами
 	Solution(Field &field) {
 		graph = std::vector<Edge>();
-		int counter = 1;
+		int counter = 0;
 		for (size_t i = 0; i < field.size(); ++i) {
 			for (size_t j = 0; j < field.at(0).size(); ++j) {
 				if (j != field.at(0).size() - 1) {
@@ -64,7 +68,7 @@ public:
 				counter++;
 			}
 		}
-		graph.push_back(Edge(field.at(0).size() * field.size(), INF, INF));
+		graph.push_back(Edge(field.at(0).size() * field.size() - 1, INF, INF));
 		graph.shrink_to_fit();
 	}
 
@@ -78,14 +82,20 @@ public:
 #endif
 
 	int solve() {
-		std::vector<int> dist(graph.size(), INF);
+		std::vector<int> dist(graph.rbegin()->u + 1, INF);
 		dist[0] = 0;
 
 		for (int i = 0; i < graph.size(); ++i) {
-
+			for (std::vector<Edge>::iterator e = graph.begin(); e != (graph.end() - 1); ++e) {
+				if (dist.at(e->u) != INF) {
+					if (dist.at(e->u) + e->w < dist.at(e->v)) {
+						dist[e->v] = e->w + dist.at(e->u);
+					}
+				}
+			}
 		}
 
-		return 0;
+		return *dist.rbegin();
 	}
 };
 
@@ -110,7 +120,8 @@ int main() {
 	Field field = create();
 	Solution solution(field);
 
-	solution.show_graph();
+	//	solution.show_graph();
+	std::cout << solution.solve() << std::endl;
 }
 #endif
 
