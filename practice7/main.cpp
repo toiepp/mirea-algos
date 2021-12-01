@@ -5,9 +5,8 @@
 #include <vector>
 
 #define INF std::numeric_limits<int>::max()
-#define underline "\033[4m"
+#define mark "\033[1m\033[31m"
 #define close "\033[0m"
-#define TEST
 
 /*
 62 95 78 69 87 29
@@ -76,7 +75,6 @@ public:
 		graph.shrink_to_fit();
 	}
 
-#ifdef TEST
 	void show_graph() {
 		std::for_each(graph.begin(), graph.end() - 1,
 					  [](const Edge &e) {
@@ -84,18 +82,9 @@ public:
 					  });
 	}
 
-	void show_field() {
-		int counter = 0;
-		for (auto row : field) {
-			for (auto column : row) {
-				std::string out = "[(" + std::to_string(counter++) + ") " + std::to_string(column) + "] ";
-				std::cout << std::setw(12) << out;
-			}
-			std::cout << std::endl;
-		}
-	}
-#endif
-
+	/*
+	 * Исходная кледка не включается в общую сумму пути
+	 * */
 	void solve() {
 		std::vector<int> dist(graph.rbegin()->u + 1, INF);
 		std::vector<std::vector<int>> paths(dist.size());
@@ -119,18 +108,23 @@ public:
 			}
 		}
 
-		std::cout << "Самый короткий путь: ";
-		for (int i = 0; i < paths.rbegin()->size() - 1; ++i) {
-			int name = paths.rbegin()->at(i);
-			std::cout << "[("
-					  << name << ") "
-					  << field.at(name / field.at(0).size()).at(name % field.size())
-					  << "] -->";
+		std::cout << "Самый короткий путь: " << std::endl;
+
+		std::vector<int> path = *paths.rbegin();
+		int counter = 0;
+		for (auto row : field) {
+			for (auto column : row) {
+				std::string out = "[(" + std::to_string(counter) + ") " + std::to_string(column) + "]";
+				if (std::find(path.begin(), path.end(), counter) != path.end()) {
+					std::cout << mark << std::setw(12) << out << close;
+				} else {
+					std::cout << std::setw(12) << out;
+				}
+				counter++;
+			}
+			std::cout << std::endl;
 		}
-		std::cout << "[("
-				  << *paths.rbegin()->rbegin() << ") "
-				  << field.at(*paths.rbegin()->rbegin() / field.at(0).size()).at(*paths.rbegin()->rbegin() % field.size())
-				  << "]" << std::endl;
+
 		std::cout << "Длина пути: " << *dist.rbegin() << std::endl;
 	}
 };
@@ -142,7 +136,6 @@ int main() {
 	Field field = create();
 	Solution solution(field);
 	solution.show_graph();
-	solution.show_field();
 	solution.solve();
 }
 
