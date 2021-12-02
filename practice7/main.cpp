@@ -7,12 +7,6 @@
 #define mark "\033[1m\033[31m"
 #define close "\033[0m"
 
-/*
-3  2 5
-1 23 7
-2  8 1
- * */
-
 typedef std::vector<std::vector<int>> Field;
 
 struct Edge {
@@ -124,24 +118,6 @@ public:
 		std::vector<std::vector<int>> paths(dist.size());
 		std::fill(paths.begin(), paths.end(), std::vector<int>(1, 0));
 		dist[0] = 0;
-
-		// Нахожу кратчайший путь до каждой вершины
-//		for (std::vector<Edge>::iterator e = graph.begin(); e != (graph.end() - 1); ++e) {
-//			if (dist.at(e->u) != INF) {
-//				if (dist.at(e->u) + e->w < dist.at(e->v)) {
-//					int save = dist.at(e->v);
-//					dist[e->v] = e->w + dist.at(e->u);
-//					if (save > dist.at(e->v)) {
-//						paths.at(e->v).clear();
-//						paths.at(e->v).push_back(0);
-//					}
-//					for (int el : paths.at(e->u)) {
-//						if (el != 0) paths.at(e->v).push_back(el);
-//					}
-//					paths.at(e->v).push_back(e->v);
-//				}
-//			}
-//		}
 
 		int counter = 0;
 		for (int i = 0; i < field.size(); ++i) {
