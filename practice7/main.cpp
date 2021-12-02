@@ -7,6 +7,12 @@
 #define mark "\033[1m\033[31m"
 #define close "\033[0m"
 
+/*
+3  2 5
+1 23 7
+2  8 1
+ * */
+
 typedef std::vector<std::vector<int>> Field;
 
 struct Edge {
@@ -16,7 +22,7 @@ struct Edge {
 
 	Edge() {}
 
-	Edge(int s, int d, int w) : u(s), v(d), w(w) {}
+	Edge(int u, int v, int w) : u(u), v(v), w(w) {}
 };
 
 std::ostream &operator<<(std::ostream &out, const Edge &e) {
@@ -113,30 +119,108 @@ public:
 	// Находит кратчайший путь методом Беллмана-Форда
 	void solve() {
 		// Вектор кратчайших расстояний до каждой вершины
-		std::vector<int> dist(graph.rbegin()->u + 1, INF);
+		std::vector<int> dist(field.front().size() * field.size(), INF);
 		// Вектор кратчайших путей до каждый вершины
 		std::vector<std::vector<int>> paths(dist.size());
 		std::fill(paths.begin(), paths.end(), std::vector<int>(1, 0));
 		dist[0] = 0;
 
-		// Нахожу кратчайший путь до каждый вершины
-		for (std::vector<Edge>::iterator e = graph.begin(); e != (graph.end() - 1); ++e) {
-			if (dist.at(e->u) != INF) {
-				if (dist.at(e->u) + e->w < dist.at(e->v)) {
-					int save = dist.at(e->v);
-					dist[e->v] = e->w + dist.at(e->u);
-					if (save > dist.at(e->v)) {
-						paths.at(e->v).clear();
-						paths.at(e->v).push_back(0);
+		// Нахожу кратчайший путь до каждой вершины
+//		for (std::vector<Edge>::iterator e = graph.begin(); e != (graph.end() - 1); ++e) {
+//			if (dist.at(e->u) != INF) {
+//				if (dist.at(e->u) + e->w < dist.at(e->v)) {
+//					int save = dist.at(e->v);
+//					dist[e->v] = e->w + dist.at(e->u);
+//					if (save > dist.at(e->v)) {
+//						paths.at(e->v).clear();
+//						paths.at(e->v).push_back(0);
+//					}
+//					for (int el : paths.at(e->u)) {
+//						if (el != 0) paths.at(e->v).push_back(el);
+//					}
+//					paths.at(e->v).push_back(e->v);
+//				}
+//			}
+//		}
+
+		int counter = 0;
+		for (int i = 0; i < field.size(); ++i) {
+			for (int j = 0; j < field.front().size(); ++j) {
+				int u, v, w;
+				if (i == field.size() - 1 && j == field.front().size() - 1) {
+					int top = dist.at(counter - field.front().size());
+					int left = dist.at(counter - 1);
+					int top_left = dist.at(counter - field.front().size() + 1);
+					std::vector<int> all = {top, left, top_left};
+					dist.rbegin() += *std::min(all.begin(), all.end());
+					break;
+				}
+				// Если один путь вправо
+				if (i == field.size() - 1) {
+					u = counter;
+					v = counter + 1;
+					w = field.at(i).at(j + 1);
+					if (dist.at(u) != INF && dist.at(u) + w < dist.at(v)) {
+						int save = dist.at(v);
+						dist[v] = w + dist.at(u);
+						if (save > dist.at(v)) {
+							paths.at(v).clear();
+							paths.at(v).push_back(0);
+						}
+						for (int el : paths.at(u)) {
+							if (el != 0) paths.at(v).push_back(el);
+						}
+						paths.at(v).push_back(v);
 					}
-					for (int el : paths.at(e->u)) {
-						if (el != 0) paths.at(e->v).push_back(el);
+					counter++;
+					continue;
+				}
+				// Если один путь вниз
+				if (j == field.front().size() - 1) {
+					u = counter;
+					v = counter + field.front().size();
+					w = field.at(i + 1).at(j);
+					if (dist.at(u) != INF && dist.at(u) + w < dist.at(v)) {
+						int save = dist.at(v);
+						dist[v] = w + dist.at(u);
+						if (save > dist.at(v)) {
+							paths.at(v).clear();
+							paths.at(v).push_back(0);
+						}
+						for (int el : paths.at(u)) {
+							if (el != 0) paths.at(v).push_back(el);
+						}
+						paths.at(v).push_back(v);
 					}
-					paths.at(e->v).push_back(e->v);
+					counter++;
+					continue;
+				}
+				// Если 3 пути
+				if (i < field.size() && j < field.front().size()) {
+					Edge right(counter, counter + 1, field.at(i).at(j + 1));
+					Edge below(counter, counter + field.front().size(), field.at(i + 1).at(j));
+					Edge right_below(counter, counter + field.front().size() + 1, field.at(i + 1).at(j + 1));
+					std::vector<Edge> edges {right, below, right_below};
+
+					for (Edge e : edges) {
+						if (dist.at(e.u) != INF && dist.at(e.u) + e.w < dist.at(e.v)) {
+							int save = dist.at(e.v);
+							dist[e.v] = e.w + dist.at(e.u);
+							if (save > dist.at(e.v)) {
+								paths.at(e.v).clear();
+								paths.at(e.v).push_back(0);
+							}
+							for (int el : paths.at(e.u)) {
+								if (el != 0) paths.at(e.v).push_back(el);
+							}
+							paths.at(e.v).push_back(e.v);
+						}
+					}
+					counter++;
+					continue;
 				}
 			}
 		}
-
 
 		std::cout << "Самый короткий путь: " << std::endl;
 		std::vector<int> path = *paths.rbegin();
