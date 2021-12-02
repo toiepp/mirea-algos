@@ -147,7 +147,9 @@ public:
 		for (int i = 0; i < field.size(); ++i) {
 			for (int j = 0; j < field.front().size(); ++j) {
 				int u, v, w;
+				// Если один путь вправо
 				if (i == field.size() - 1 && j == field.front().size() - 1) {
+					if (field.size() == 1) break;
 					int top = dist.at(counter - field.front().size());
 					int left = dist.at(counter - 1);
 					int top_left = dist.at(counter - field.front().size() + 1);
@@ -155,7 +157,6 @@ public:
 					dist.rbegin() += *std::min(all.begin(), all.end());
 					break;
 				}
-				// Если один путь вправо
 				if (i == field.size() - 1) {
 					u = counter;
 					v = counter + 1;
