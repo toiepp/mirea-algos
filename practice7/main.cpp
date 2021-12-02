@@ -26,7 +26,6 @@ std::ostream &operator<<(std::ostream &out, const Edge &e) {
 
 class Solution {
 public:
-	std::vector<Edge> graph;
 	Field field;
 
 	// Возвращает стандартное поле или введенное поле
@@ -86,29 +85,7 @@ public:
 	}
 
 	// Строит граф на основе поля
-	Solution() : field(Solution::create()) {
-		graph = std::vector<Edge>();
-		int counter = 0;
-		for (size_t i = 0; i < field.size(); ++i) {
-			for (size_t j = 0; j < field.front().size(); ++j) {
-				if (j != field.front().size() - 1) {
-					Edge right(counter, counter + 1, field.at(i).at(j + 1));
-					graph.push_back(right);
-				}
-				if (i != field.size() - 1) {
-					Edge below(counter, counter + field.front().size(), field.at(i + 1).at(j));
-					graph.push_back(below);
-				}
-				if (i != field.size() - 1 && j != field.front().size() - 1) {
-					Edge right_below(counter, counter + field.front().size() + 1, field.at(i + 1).at(j + 1));
-					graph.push_back(right_below);
-				}
-				counter++;
-			}
-		}
-		graph.push_back(Edge(field.front().size() * field.size() - 1, INF, INF));
-		graph.shrink_to_fit();
-	}
+	Solution() : field(Solution::create()) {}
 
 	// Находит кратчайший путь методом Беллмана-Форда
 	void solve() {
@@ -177,7 +154,7 @@ public:
 					Edge right(counter, counter + 1, field.at(i).at(j + 1));
 					Edge below(counter, counter + field.front().size(), field.at(i + 1).at(j));
 					Edge right_below(counter, counter + field.front().size() + 1, field.at(i + 1).at(j + 1));
-					std::vector<Edge> edges {right, below, right_below};
+					std::vector<Edge> edges{right, below, right_below};
 
 					for (Edge e : edges) {
 						if (dist.at(e.u) != INF && dist.at(e.u) + e.w < dist.at(e.v)) {
