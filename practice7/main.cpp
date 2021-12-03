@@ -4,8 +4,12 @@
 #include <vector>
 
 #define INF std::numeric_limits<int>::max()
-#define mark "\033[1m\033[31m"
-#define close "\033[0m"
+#define MARK "\033[1m\033[31m"
+#define CLOSE "\033[0m"
+
+/*
+3 2 5 1 23 7 2 8 1
+*/
 
 typedef std::vector<std::vector<int>> Field;
 
@@ -18,11 +22,6 @@ struct Edge {
 
 	Edge(int u, int v, int w) : u(u), v(v), w(w) {}
 };
-
-std::ostream &operator<<(std::ostream &out, const Edge &e) {
-	out << std::setw(5) << std::left << e.u << "-<" << e.w << ">->" << std::setw(5) << std::right << e.v;
-	return out;
-}
 
 class Solution {
 public:
@@ -89,12 +88,11 @@ public:
 
 	// Находит кратчайший путь методом Беллмана-Форда
 	void solve() {
-		// Вектор кратчайших расстояний до каждой вершины
 		std::vector<int> dist(field.front().size() * field.size(), INF);
-		// Вектор кратчайших путей до каждый вершины
+		dist[0] = 0;
+
 		std::vector<std::vector<int>> paths(dist.size());
 		std::fill(paths.begin(), paths.end(), std::vector<int>(1, 0));
-		dist[0] = 0;
 
 		int counter = 0;
 		for (int i = 0; i < field.size(); ++i) {
@@ -165,7 +163,9 @@ public:
 								paths.at(e.v).push_back(0);
 							}
 							for (int el : paths.at(e.u)) {
-								if (el != 0) paths.at(e.v).push_back(el);
+								if (el != 0) {
+									paths.at(e.v).push_back(el);
+								}
 							}
 							paths.at(e.v).push_back(e.v);
 						}
@@ -183,7 +183,7 @@ public:
 			for (auto column : row) {
 				std::string out = "[(" + std::to_string(name) + ") " + std::to_string(column) + "]";
 				if (std::find(path.begin(), path.end(), name) != path.end()) {
-					std::cout << mark << std::setw(12) << out << close;
+					std::cout << MARK << std::setw(12) << out << CLOSE;
 				} else {
 					std::cout << std::setw(12) << out;
 				}
