@@ -181,12 +181,10 @@ public:
 		int name = 0;
 		for (auto row : field) {
 			for (auto column : row) {
-				std::string out = "[(" + std::to_string(name) + ") " + std::to_string(column) + "]";
 				if (std::find(path.begin(), path.end(), name) != path.end()) {
-					std::cout << MARK << std::setw(12) << out << CLOSE;
-				} else {
-					std::cout << std::setw(12) << out;
+					std::cout << MARK;
 				}
+				std::cout << std::setw(4) << column << CLOSE;
 				name++;
 			}
 			std::cout << std::endl;
