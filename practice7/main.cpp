@@ -24,9 +24,28 @@ struct Edge {
 };
 
 class Solution {
-public:
+private:
 	Field field;
+	size_t count_paths() {
+		if (field.size() == 1 || field.at(0).size() == 1) {
+			return 1;
+		}
+		std::vector<int> counts(field.at(0).size(), 1);
+		std::vector<int> prev_state(counts.begin(), counts.end());
 
+		for (size_t i = 1; i < counts.size(); ++i) {
+			counts[i] = counts.at(i - 1) + 2;
+		}
+
+		for (size_t i = 2; i < field.size(); ++i) {
+			prev_state = counts;
+			for (size_t j = 1; j < counts.size(); ++j) {
+				counts[j] = counts.at(j - 1) + prev_state.at(j) + prev_state.at(j - 1);
+			}
+		}
+
+		return *counts.rbegin();
+	}
 	// Возвращает стандартное поле или введенное поле
 	Field create() {
 		Field f;
@@ -82,11 +101,11 @@ public:
 		}
 		return f;
 	}
-
+public:
 	// Строит граф на основе поля
 	Solution() : field(Solution::create()) {}
 
-	// Находит кратчайший путь методом Беллмана-Форда
+	// Находит кратчайший путь  методом Беллмана-Форда
 	void solve() {
 		std::vector<int> dist(field.front().size() * field.size(), INF);
 		dist[0] = 0;
@@ -192,9 +211,16 @@ public:
 
 		std::cout << "Длина пути: " << *dist.rbegin() << std::endl;
 	}
+
+	/*
+	 * 1. Полный перебор по ВСЕМ ВОЗМОЖНЫМ путям*/
+	void brute_solve() {
+		size_t paths_count = count_paths();
+	}
 };
 
 int main() {
 	Solution solution;
 	solution.solve();
+	solution.brute_solve();
 }
