@@ -1,7 +1,7 @@
+#include <chrono>
 #include <iomanip>
 #include <iostream>
 #include <limits>
-#include <chrono>
 #include <vector>
 
 #define INF std::numeric_limits<int>::max()
@@ -88,17 +88,15 @@ private:
 		// Если путь заканчивается не в правом нижнем углу
 		if (path.back() != field.size() * field.front().size() - 1) { return false; }
 		for (size_t k = 0; k < path.size() - 1; ++k) {
-			int i = path.at(k) / field.size();
+			int i = path.at(k) / field.front().size();
 			int j = path.at(k) % field.front().size();
-			int i_next = path.at(k + 1) / field.size();
+			int i_next = path.at(k + 1) / field.front().size();
 			int j_next = path.at(k + 1) % field.front().size();
-			if (i != i_next && i_next - i != 1) {
-				return false;
-			}
-			if (j != j_next && j_next - j != 1) {
+			if (i_next - i > 1 || j_next - j > 1 || i_next - i < 0 || j_next - j < 0) {
 				return false;
 			}
 		}
+		std::cout << std::endl;
 		return true;
 	}
 
@@ -122,7 +120,9 @@ private:
 	}
 
 	int get_weight_by_name(int name) {
-		return field.at(name / field.size()).at(name % field.front().size());
+		int i = (field.size() != 1) ? (name / field.front().size()) : 0;
+		int j = (field.front().size() != 1) ? (name % field.front().size()) : 0;
+		return field.at(i).at(j);
 	}
 
 public:
@@ -258,18 +258,13 @@ public:
 		std::vector<int> names(field.size() * field.front().size());
 		std::for_each(names.begin(), names.end(), [&name](int &n) { n = name++; });
 
-		printf("Computing paths...\n");
-
 		std::vector<std::vector<int>> paths;
-		for (int sz = field.size() + field.front().size() - 1; sz >= std::min(field.size(), field.front().size()); sz--) {
+		for (int sz = field.size() + field.front().size() - 1; sz >= std::max(field.front().size(), field.size()); sz--) {
 			BRUTE_COUNT++;
-			printf("sz: %d\n", sz);
 			auto counted_paths = get_all_paths(names, sz);
 			paths.insert(paths.end(), counted_paths.begin(), counted_paths.end());
 			BRUTE_COUNT += counted_paths.size();
 		}
-
-		printf("Amount of paths: %zu\n", paths.size());
 
 		int min_weight = std::numeric_limits<int>::max();
 		std::vector<int> min_path;
@@ -319,5 +314,5 @@ int main() {
 	end = std::chrono::high_resolution_clock::now();
 	auto duration2 = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
 
-	printf("Brute force: %d, %ld ms\nDynamic prog: %d, %ld ms\n", BRUTE_COUNT, duration1, DYN_COUNT, duration2);
+	printf("Brute force: %d, %ld ms\nDynamic prog: %d, %ld ms\n", BRUTE_COUNT, duration2, DYN_COUNT, duration1);
 }
