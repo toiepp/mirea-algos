@@ -1,11 +1,15 @@
 #include <iomanip>
 #include <iostream>
 #include <limits>
+#include <chrono>
 #include <vector>
 
 #define INF std::numeric_limits<int>::max()
 #define MARK "\033[1m\033[31m"
 #define CLOSE "\033[0m"
+
+int BRUTE_COUNT = 0;
+int DYN_COUNT = 0;
 
 typedef std::vector<std::vector<int>> Field;
 
@@ -78,28 +82,7 @@ private:
 		return f;
 	}
 
-	size_t count_paths() {
-		if (field.size() == 1 || field.at(0).size() == 1) {
-			return 1;
-		}
-		std::vector<int> counts(field.at(0).size(), 1);
-		std::vector<int> prev_state(counts.begin(), counts.end());
-
-		for (size_t i = 1; i < counts.size(); ++i) {
-			counts[i] = counts.at(i - 1) + 2;
-		}
-
-		for (size_t i = 2; i < field.size(); ++i) {
-			prev_state = counts;
-			for (size_t j = 1; j < counts.size(); ++j) {
-				counts[j] = counts.at(j - 1) + prev_state.at(j) + prev_state.at(j - 1);
-			}
-		}
-
-		return *counts.rbegin();
-	}
-
-	bool valid_path(const std::vector<int> &path) {
+	bool is_valid_path(const std::vector<int> &path) {
 		// Если путь начинается не с верхнего левого угла
 		if (path.at(0) != 0) { return false; }
 		// Если путь заканчивается не в правом нижнем углу
@@ -122,27 +105,19 @@ private:
 	std::vector<std::vector<int>> get_all_paths(std::vector<int> &c, int k) {
 		std::vector<std::vector<int>> result;
 		std::vector<int> combination;
-		int n = c.size();
-		long long combo = (1 << k) - 1;
-		while (combo < 1 << n) {
 
-			for (int i = 0; i < n; ++i) {
-				if ((combo >> i) & 1) {
-					combination.push_back(c.at(i));
-				}
+		std::string bitmask(k, 1);
+		bitmask.resize(c.size(), 0);
+
+		do {
+			for (int i = 0; i < c.size(); ++i) {
+				BRUTE_COUNT++;
+				if (bitmask.at(i)) combination.push_back(i);
 			}
-			//			if (validate_path(combination)) {
 			result.push_back(combination);
-			//			}
 			combination.clear();
+		} while (std::prev_permutation(bitmask.begin(), bitmask.end()));
 
-			long long x = combo & -combo;
-			long long y = combo + x;
-			long long z = (combo & ~y);
-			combo = z / x;
-			combo >>= 1;
-			combo |= y;
-		}
 		return result;
 	}
 
@@ -161,12 +136,14 @@ public:
 
 		std::vector<std::vector<int>> paths(dist.size());
 		std::fill(paths.begin(), paths.end(), std::vector<int>(1, 0));
+		DYN_COUNT += paths.size();
 
 		int counter = 0;
 		for (int i = 0; i < field.size(); ++i) {
 			for (int j = 0; j < field.front().size(); ++j) {
 				int u, v, w;
 				// Если один путь вправо
+				DYN_COUNT++;
 				if (i == field.size() - 1 && j == field.front().size() - 1) {
 					if (field.size() == 1) break;
 					int top = dist.at(counter - field.front().size());
@@ -176,46 +153,57 @@ public:
 					dist.rbegin() += *std::min(all.begin(), all.end());
 					break;
 				}
+				DYN_COUNT++;
 				if (i == field.size() - 1) {
 					u = counter;
 					v = counter + 1;
 					w = field.at(i).at(j + 1);
+					DYN_COUNT++;
 					if (dist.at(u) != INF && dist.at(u) + w < dist.at(v)) {
 						int save = dist.at(v);
 						dist[v] = w + dist.at(u);
+						DYN_COUNT++;
 						if (save > dist.at(v)) {
 							paths.at(v).clear();
 							paths.at(v).push_back(0);
 						}
 						for (int el : paths.at(u)) {
+							DYN_COUNT++;
 							if (el != 0) paths.at(v).push_back(el);
 						}
+						DYN_COUNT++;
 						paths.at(v).push_back(v);
 					}
 					counter++;
 					continue;
 				}
 				// Если один путь вниз
+				DYN_COUNT++;
 				if (j == field.front().size() - 1) {
 					u = counter;
 					v = counter + field.front().size();
 					w = field.at(i + 1).at(j);
+					DYN_COUNT++;
 					if (dist.at(u) != INF && dist.at(u) + w < dist.at(v)) {
 						int save = dist.at(v);
 						dist[v] = w + dist.at(u);
+						DYN_COUNT++;
 						if (save > dist.at(v)) {
 							paths.at(v).clear();
 							paths.at(v).push_back(0);
 						}
 						for (int el : paths.at(u)) {
+							DYN_COUNT++;
 							if (el != 0) paths.at(v).push_back(el);
 						}
+						DYN_COUNT++;
 						paths.at(v).push_back(v);
 					}
 					counter++;
 					continue;
 				}
 				// Если 3 пути
+				DYN_COUNT++;
 				if (i < field.size() && j < field.front().size()) {
 					Edge right(counter, counter + 1, field.at(i).at(j + 1));
 					Edge below(counter, counter + field.front().size(), field.at(i + 1).at(j));
@@ -223,18 +211,22 @@ public:
 					std::vector<Edge> edges{right, below, right_below};
 
 					for (Edge e : edges) {
+						DYN_COUNT++;
 						if (dist.at(e.u) != INF && dist.at(e.u) + e.w < dist.at(e.v)) {
 							int save = dist.at(e.v);
 							dist[e.v] = e.w + dist.at(e.u);
+							DYN_COUNT++;
 							if (save > dist.at(e.v)) {
 								paths.at(e.v).clear();
 								paths.at(e.v).push_back(0);
 							}
 							for (int el : paths.at(e.u)) {
+								DYN_COUNT++;
 								if (el != 0) {
 									paths.at(e.v).push_back(el);
 								}
 							}
+							DYN_COUNT++;
 							paths.at(e.v).push_back(e.v);
 						}
 					}
@@ -266,34 +258,34 @@ public:
 		std::vector<int> names(field.size() * field.front().size());
 		std::for_each(names.begin(), names.end(), [&name](int &n) { n = name++; });
 
-		std::vector<std::vector<int>> paths1 =
-				get_all_paths(names, field.size() + field.front().size() - 1);
-		std::vector<std::vector<int>> paths2 =
-				get_all_paths(names, field.size() + field.front().size() - 2);
+		printf("Computing paths...\n");
 
-		std::vector<std::vector<int>> paths(paths1.begin(), paths1.end());
-		paths.insert(paths.end(), paths2.begin(), paths2.end());
+		std::vector<std::vector<int>> paths;
+		for (int sz = field.size() + field.front().size() - 1; sz >= std::min(field.size(), field.front().size()); sz--) {
+			BRUTE_COUNT++;
+			printf("sz: %d\n", sz);
+			auto counted_paths = get_all_paths(names, sz);
+			paths.insert(paths.end(), counted_paths.begin(), counted_paths.end());
+			BRUTE_COUNT += counted_paths.size();
+		}
 
-		std::cout << paths.size() << std::endl;
+		printf("Amount of paths: %zu\n", paths.size());
 
-		/* 1. Пройтись по всем путям
-		 * 2. Проверить, можно ли пройти по такому пути.
-		 * 3. Если да то посчитать его вес*/
 		int min_weight = std::numeric_limits<int>::max();
 		std::vector<int> min_path;
 		for (auto &path : paths) {
-			bool valid = valid_path(path);
+			bool valid = is_valid_path(path);
+			BRUTE_COUNT++;
 			if (valid) {
 				int weight = 0;
-				for (int &n : path) { weight += get_weight_by_name(n); }
+				for (int &n : path) {
+					weight += get_weight_by_name(n);
+					BRUTE_COUNT++;
+				}
 				if (weight < min_weight) {
 					min_weight = weight;
 					min_path = path;
 				}
-				for (int el : path) {
-					std::cout << el << " ";
-				}
-				std::cout << std::endl;
 			}
 		}
 
@@ -314,8 +306,18 @@ public:
 	}
 };
 
+
 int main() {
 	Solution solution;
-		solution.solve();
-//	solution.brute_solve();
+	auto start = std::chrono::high_resolution_clock::now();
+	solution.solve();
+	auto end = std::chrono::high_resolution_clock::now();
+	auto duration1 = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
+
+	start = std::chrono::high_resolution_clock::now();
+	solution.brute_solve();
+	end = std::chrono::high_resolution_clock::now();
+	auto duration2 = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
+
+	printf("Brute force: %d, %ld ms\nDynamic prog: %d, %ld ms\n", BRUTE_COUNT, duration1, DYN_COUNT, duration2);
 }
