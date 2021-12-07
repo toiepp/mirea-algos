@@ -99,30 +99,55 @@ private:
 		return *counts.rbegin();
 	}
 
-	bool validate_path(const std::vector<int> &path) {
-		int right_step = 1;
-		int down_step = field.front().size();
-		int bias_step = field.front().size() + 1;
-		for (size_t i = 0; i < path.size(); ++i) {
-			if (path.at(i + 1) - path.at(i) != right_step || path.at(i + 1) - path.at(i) != down_step || path.at(i + 1) - path.at(i) != bias_step) {
+	bool valid_path(const std::vector<int> &path) {
+		// Если путь начинается не с верхнего левого угла
+		if (path.at(0) != 0) { return false; }
+		// Если путь заканчивается не в правом нижнем углу
+		if (path.back() != field.size() * field.front().size() - 1) { return false; }
+		for (size_t k = 0; k < path.size() - 1; ++k) {
+			int i = path.at(k) / field.size();
+			int j = path.at(k) % field.front().size();
+			int i_next = path.at(k + 1) / field.size();
+			int j_next = path.at(k + 1) % field.front().size();
+			if (i != i_next && i_next - i != 1) {
+				return false;
+			}
+			if (j != j_next && j_next - j != 1) {
 				return false;
 			}
 		}
 		return true;
 	}
 
-	bool next_combination(std::vector<int> &a, int n) {
-		int k = (int) a.size();
-		for (int i = k - 1; i >= 0; --i) {
-			if (a[i] < n - k + i + 1) {
-				++a[i];
-				for (int j = i + 1; j < k; ++j) {
-					a[j] = a[j - 1] + 1;
+	std::vector<std::vector<int>> get_all_paths(std::vector<int> &c, int k) {
+		std::vector<std::vector<int>> result;
+		std::vector<int> combination;
+		int n = c.size();
+		long long combo = (1 << k) - 1;
+		while (combo < 1 << n) {
+
+			for (int i = 0; i < n; ++i) {
+				if ((combo >> i) & 1) {
+					combination.push_back(c.at(i));
 				}
-				return true;
 			}
+			//			if (validate_path(combination)) {
+			result.push_back(combination);
+			//			}
+			combination.clear();
+
+			long long x = combo & -combo;
+			long long y = combo + x;
+			long long z = (combo & ~y);
+			combo = z / x;
+			combo >>= 1;
+			combo |= y;
 		}
-		return false;
+		return result;
+	}
+
+	int get_weight_by_name(int name) {
+		return field.at(name / field.size()).at(name % field.front().size());
 	}
 
 public:
@@ -236,35 +261,61 @@ public:
 		std::cout << "Длина пути: " << *dist.rbegin() << std::endl;
 	}
 
-	/*
-	 * 1. Сгенерировать все перестановки*/
 	void brute_solve() {
-		// Создаю массив, который будет хранить ВСЕ пути (на пути клетки поля не повторяются)
-		std::vector<std::vector<int>> valid_paths(count_paths());
-
 		int name = 0;
 		std::vector<int> names(field.size() * field.front().size());
 		std::for_each(names.begin(), names.end(), [&name](int &n) { n = name++; });
 
-		int i = 0;
-		do {
-			if (validate_path(names)) {
-				valid_paths[i] = names;
-				i++;
-			}
-		} while (std::next_permutation(names.begin(), names.end()));
+		std::vector<std::vector<int>> paths1 =
+				get_all_paths(names, field.size() + field.front().size() - 1);
+		std::vector<std::vector<int>> paths2 =
+				get_all_paths(names, field.size() + field.front().size() - 2);
 
-		std::for_each(valid_paths.begin(), valid_paths.end(), [](const std::vector<int> &path) {
-			for (int el : path) {
-				std::cout << el;
+		std::vector<std::vector<int>> paths(paths1.begin(), paths1.end());
+		paths.insert(paths.end(), paths2.begin(), paths2.end());
+
+		std::cout << paths.size() << std::endl;
+
+		/* 1. Пройтись по всем путям
+		 * 2. Проверить, можно ли пройти по такому пути.
+		 * 3. Если да то посчитать его вес*/
+		int min_weight = std::numeric_limits<int>::max();
+		std::vector<int> min_path;
+		for (auto &path : paths) {
+			bool valid = valid_path(path);
+			if (valid) {
+				int weight = 0;
+				for (int &n : path) { weight += get_weight_by_name(n); }
+				if (weight < min_weight) {
+					min_weight = weight;
+					min_path = path;
+				}
+				for (int el : path) {
+					std::cout << el << " ";
+				}
+				std::cout << std::endl;
+			}
+		}
+
+		std::cout << "Самый короткий путь: " << std::endl;
+		int n = 0;
+		for (auto row : field) {
+			for (auto column : row) {
+				if (std::find(min_path.begin(), min_path.end(), n) != min_path.end()) {
+					std::cout << MARK;
+				}
+				std::cout << std::setw(4) << column << CLOSE;
+				n++;
 			}
 			std::cout << std::endl;
-		});
+		}
+
+		std::cout << "Длина пути: " << min_weight - field.at(0).at(0) << std::endl;
 	}
 };
 
 int main() {
 	Solution solution;
-	//	solution.solve();
-	solution.brute_solve();
+		solution.solve();
+//	solution.brute_solve();
 }
