@@ -99,8 +99,30 @@ private:
 		return *counts.rbegin();
 	}
 
-	unsigned long long factorial(int n) {
-		return (n == 0 || n == 1) ? 1 : n * factorial(n - 1);
+	bool validate_path(const std::vector<int> &path) {
+		int right_step = 1;
+		int down_step = field.front().size();
+		int bias_step = field.front().size() + 1;
+		for (size_t i = 0; i < path.size(); ++i) {
+			if (path.at(i + 1) - path.at(i) != right_step || path.at(i + 1) - path.at(i) != down_step || path.at(i + 1) - path.at(i) != bias_step) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	bool next_combination(std::vector<int> &a, int n) {
+		int k = (int) a.size();
+		for (int i = k - 1; i >= 0; --i) {
+			if (a[i] < n - k + i + 1) {
+				++a[i];
+				for (int j = i + 1; j < k; ++j) {
+					a[j] = a[j - 1] + 1;
+				}
+				return true;
+			}
+		}
+		return false;
 	}
 
 public:
@@ -218,19 +240,26 @@ public:
 	 * 1. Сгенерировать все перестановки*/
 	void brute_solve() {
 		// Создаю массив, который будет хранить ВСЕ пути (на пути клетки поля не повторяются)
-		std::vector<std::vector<int>> all_paths(factorial(field.size() * field.front().size()));
+		std::vector<std::vector<int>> valid_paths(count_paths());
 
 		int name = 0;
 		std::vector<int> names(field.size() * field.front().size());
-		std::for_each(names.begin(), names.end(), [&name](int &n) {
-			n = name++;
-		});
+		std::for_each(names.begin(), names.end(), [&name](int &n) { n = name++; });
 
 		int i = 0;
 		do {
-			all_paths[i] = names;
-			i++;
+			if (validate_path(names)) {
+				valid_paths[i] = names;
+				i++;
+			}
 		} while (std::next_permutation(names.begin(), names.end()));
+
+		std::for_each(valid_paths.begin(), valid_paths.end(), [](const std::vector<int> &path) {
+			for (int el : path) {
+				std::cout << el;
+			}
+			std::cout << std::endl;
+		});
 	}
 };
 
