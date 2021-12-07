@@ -7,10 +7,6 @@
 #define MARK "\033[1m\033[31m"
 #define CLOSE "\033[0m"
 
-/*
-3 2 5 1 23 7 2 8 1
-*/
-
 typedef std::vector<std::vector<int>> Field;
 
 struct Edge {
@@ -26,26 +22,6 @@ struct Edge {
 class Solution {
 private:
 	Field field;
-	size_t count_paths() {
-		if (field.size() == 1 || field.at(0).size() == 1) {
-			return 1;
-		}
-		std::vector<int> counts(field.at(0).size(), 1);
-		std::vector<int> prev_state(counts.begin(), counts.end());
-
-		for (size_t i = 1; i < counts.size(); ++i) {
-			counts[i] = counts.at(i - 1) + 2;
-		}
-
-		for (size_t i = 2; i < field.size(); ++i) {
-			prev_state = counts;
-			for (size_t j = 1; j < counts.size(); ++j) {
-				counts[j] = counts.at(j - 1) + prev_state.at(j) + prev_state.at(j - 1);
-			}
-		}
-
-		return *counts.rbegin();
-	}
 	// Возвращает стандартное поле или введенное поле
 	Field create() {
 		Field f;
@@ -101,6 +77,32 @@ private:
 		}
 		return f;
 	}
+
+	size_t count_paths() {
+		if (field.size() == 1 || field.at(0).size() == 1) {
+			return 1;
+		}
+		std::vector<int> counts(field.at(0).size(), 1);
+		std::vector<int> prev_state(counts.begin(), counts.end());
+
+		for (size_t i = 1; i < counts.size(); ++i) {
+			counts[i] = counts.at(i - 1) + 2;
+		}
+
+		for (size_t i = 2; i < field.size(); ++i) {
+			prev_state = counts;
+			for (size_t j = 1; j < counts.size(); ++j) {
+				counts[j] = counts.at(j - 1) + prev_state.at(j) + prev_state.at(j - 1);
+			}
+		}
+
+		return *counts.rbegin();
+	}
+
+	unsigned long long factorial(int n) {
+		return (n == 0 || n == 1) ? 1 : n * factorial(n - 1);
+	}
+
 public:
 	// Строит граф на основе поля
 	Solution() : field(Solution::create()) {}
@@ -213,14 +215,27 @@ public:
 	}
 
 	/*
-	 * 1. Полный перебор по ВСЕМ ВОЗМОЖНЫМ путям*/
+	 * 1. Сгенерировать все перестановки*/
 	void brute_solve() {
-		size_t paths_count = count_paths();
+		// Создаю массив, который будет хранить ВСЕ пути (на пути клетки поля не повторяются)
+		std::vector<std::vector<int>> all_paths(factorial(field.size() * field.front().size()));
+
+		int name = 0;
+		std::vector<int> names(field.size() * field.front().size());
+		std::for_each(names.begin(), names.end(), [&name](int &n) {
+			n = name++;
+		});
+
+		int i = 0;
+		do {
+			all_paths[i] = names;
+			i++;
+		} while (std::next_permutation(names.begin(), names.end()));
 	}
 };
 
 int main() {
 	Solution solution;
-	solution.solve();
+	//	solution.solve();
 	solution.brute_solve();
 }
