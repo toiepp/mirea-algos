@@ -305,14 +305,17 @@ public:
 int main() {
 	Solution solution;
 	auto start = std::chrono::high_resolution_clock::now();
-	solution.solve();
+	solution.brute_solve();
 	auto end = std::chrono::high_resolution_clock::now();
 	auto duration1 = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
 
 	start = std::chrono::high_resolution_clock::now();
-	solution.brute_solve();
+	solution.solve();
 	end = std::chrono::high_resolution_clock::now();
 	auto duration2 = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
 
-	printf("Brute force: %d, %ld ms\nDynamic prog: %d, %ld ms\n", BRUTE_COUNT, duration2, DYN_COUNT, duration1);
+	printf("Brute force: %d, %ld ms\n"
+		   "Dynamic prog: %d, %ld ms\n",
+		   BRUTE_COUNT, duration1,
+		   DYN_COUNT, duration2);
 }
